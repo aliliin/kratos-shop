@@ -12,9 +12,9 @@ var conn *grpc.ClientConn
 
 func main() {
 	Init()
-	//TestGetUserList() // 获取用户列表
-	TestCreateUser() // 创建用户
-	//TestUpdateUser()  // 更新用户
+	TestGetUserList() // 获取用户列表
+	//TestCreateUser() // 创建用户
+	//TestUpdateUser() // 更新用户
 	//TestGetUserByMobile() // 根据手机获取用户
 	//TestGetUserById() // 根据ID 获取用户
 	conn.Close()
@@ -42,7 +42,7 @@ func TestGetUserById() {
 
 func TestGetUserByMobile() {
 	rsp, err := userClient.GetUserByMobile(context.Background(), &v1.MobileRequest{
-		Mobile: "13501167215",
+		Mobile: "13501167228",
 	})
 	if err != nil {
 		panic("grpc get user by mobile err" + err.Error())
@@ -52,7 +52,7 @@ func TestGetUserByMobile() {
 
 func TestUpdateUser() {
 	rsp, err := userClient.UpdateUser(context.Background(), &v1.UpdateUserInfo{
-		Id:       1,
+		Id:       19,
 		Gender:   "female",
 		NickName: fmt.Sprintf("YWW%d", 233),
 	})
@@ -80,7 +80,7 @@ func TestCreateUser() {
 func TestGetUserList() {
 	r, err := userClient.GetUserList(context.Background(), &v1.PageInfo{
 		Pn:    1,
-		PSize: 4,
+		PSize: 6,
 	})
 
 	if err != nil {
@@ -98,4 +98,5 @@ func TestGetUserList() {
 		}
 		fmt.Println(checkRsp.Success)
 	}
+	fmt.Println(r.Total)
 }

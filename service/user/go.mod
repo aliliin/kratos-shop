@@ -7,6 +7,7 @@ require (
 	github.com/go-kratos/beer-shop v0.0.0-20220112125010-bc65b79e0f7b
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20220131005031-86b8b6c366b9
 	github.com/go-kratos/kratos/v2 v2.1.5
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/consul/api v1.12.0
 	google.golang.org/grpc v1.43.0
