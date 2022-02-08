@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="RepoImpl Suite" tests="1" failures="1" errors="0" time="18.26">
+      <testcase name="BeforeSuite" classname="RepoImpl Suite" time="18.260546958">
+          <failure type="Panic">/Users/hejx/study/kratos-shop/service/user/internal/data/impl_suite_test.go:25&#xA;Test Panicked&#xA;/Users/hejx/study/kratos-shop/service/user/internal/data/data.go:52</failure>
+      </testcase>
+  </testsuite>
