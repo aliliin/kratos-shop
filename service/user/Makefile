@@ -81,3 +81,7 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
+
+.PHONY: test # 快速测试，运行repo以外的所有测试
+test:
+	ginkgo -r -cover -v .
