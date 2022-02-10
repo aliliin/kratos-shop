@@ -23,7 +23,7 @@ var ctx context.Context
 
 var dbi data.DbInitializer
 var _ = BeforeSuite(func() {
-	con, f := data.DockerMysql("mysql/mysql-server", "5.7")
+	con, f := data.DockerMysql("mariadb", "latest")
 	fmt.Println(con)
 	cleaner = f
 	config := &conf.Data{Database: &conf.Data_Database{
@@ -40,7 +40,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	//cleaner()
+	cleaner()
 })
 
 var _ = BeforeEach(func() {

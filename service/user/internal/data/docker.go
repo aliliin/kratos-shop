@@ -55,9 +55,9 @@ func innerDockerMysql(img, version string) (string, func()) {
 	}); err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
-	if err = pool.Purge(resource); err != nil {
+	/*if err = pool.Purge(resource); err != nil {
 		log.Fatalf("Could not purge resource: %s", err)
-	}
+	}*/
 	return conStr, func() {
 		err := resource.Close()
 		chk(err)
