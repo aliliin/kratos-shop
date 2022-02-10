@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang/protobuf/ptypes/empty"
+	"go.opentelemetry.io/otel"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
 	v1 "user/api/user/v1"
@@ -39,6 +40,11 @@ func (u *UserService) CreateUser(ctx context.Context, req *v1.CreateUserInfo) (*
 
 // GetUserList .
 func (u *UserService) GetUserList(ctx context.Context, req *v1.PageInfo) (*v1.UserListResponse, error) {
+
+	tr := otel.Tracer("service")
+	ctx, span := tr.Start(ctx, "get user list")
+	defer span.End()
+
 	list, total, err := u.uc.List(ctx, int(req.Pn), int(req.PSize))
 	if err != nil {
 		return nil, err
@@ -71,6 +77,10 @@ func UserResponse(user *biz.User) v1.UserInfoResponse {
 
 // GetUserByMobile .
 func (u *UserService) GetUserByMobile(ctx context.Context, req *v1.MobileRequest) (*v1.UserInfoResponse, error) {
+	tr := otel.Tracer("service")
+	ctx, span := tr.Start(ctx, "get user list")
+	defer span.End()
+
 	user, err := u.uc.UserByMobile(ctx, req.Mobile)
 	if err != nil {
 		return nil, err
@@ -102,6 +112,9 @@ func (u *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserInfo) (*
 
 // CheckPassword .
 func (u *UserService) CheckPassword(ctx context.Context, req *v1.PasswordCheckInfo) (*v1.CheckResponse, error) {
+	tr := otel.Tracer("service")
+	ctx, span := tr.Start(ctx, "check user  password")
+	defer span.End()
 	check, err := u.uc.CheckPassword(ctx, req.Password, req.EncryptedPassword)
 	if err != nil {
 		return nil, err

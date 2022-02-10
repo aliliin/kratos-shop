@@ -89,14 +89,14 @@ func TestGetUserList() {
 
 	for _, user := range r.Data {
 		fmt.Println(user.Mobile, user.NickName, user.Password)
-		checkRsp, err := userClient.CheckPassword(context.Background(), &v1.PasswordCheckInfo{
-			Password:          "admin",
-			EncryptedPassword: user.Password,
-		})
-		if err != nil {
-			panic(" get check user  psw err" + err.Error())
-		}
-		fmt.Println(checkRsp.Success)
+		//checkRsp, err := userClient.CheckPassword(context.Background(), &v1.PasswordCheckInfo{
+		//	Password:          "admin",
+		//	EncryptedPassword: user.Password,
+		//})
+		//if err != nil {
+		//	panic(" get check user  psw err" + err.Error())
+		//}
+		//fmt.Println(checkRsp.Success)
 	}
 	fmt.Println(r.Total)
 }
