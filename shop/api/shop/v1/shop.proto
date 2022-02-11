@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package shop.shop.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "shop/api/shop/v1;v1";
+
+// The greeting service definition.
+service Shop {
+  rpc Register (RegisterReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/v1/register"
+      body: "*"
+    };
+  }
+}
+
+message RegisterReq {
+  string mobile = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message RegisterReply {
+  int64 id = 1;
+}
