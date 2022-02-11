@@ -1,7 +1,6 @@
 package data
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/ory/dockertest/v3"
 	log "github.com/sirupsen/logrus"
@@ -39,13 +38,14 @@ func innerDockerMysql(img, version string) (string, func()) {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
+	time.Sleep(5 * time.Second)
 	// 5分钟后自动清除
 	resource.Expire(600)
 
 	conStr := fmt.Sprintf("root:secret@(localhost:%s)/mysql", resource.GetPort("3306/tcp"))
 
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
-	if err := pool.Retry(func() error {
+	/*if err := pool.Retry(func() error {
 		var err error
 		db, err := sql.Open("mysql", conStr)
 		if err != nil {
@@ -54,13 +54,14 @@ func innerDockerMysql(img, version string) (string, func()) {
 		return db.Ping()
 	}); err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
-	}
+	}*/
 	/*if err = pool.Purge(resource); err != nil {
 		log.Fatalf("Could not purge resource: %s", err)
 	}*/
 	return conStr, func() {
-		err := resource.Close()
-		chk(err)
+		if err = pool.Purge(resource); err != nil {
+			log.Fatalf("Could not purge resource: %s", err)
+		}
 	}
 }
 

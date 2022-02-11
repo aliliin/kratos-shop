@@ -8,6 +8,7 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20220131005031-86b8b6c366b9
 	github.com/go-kratos/kratos/v2 v2.1.5
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/wire v0.5.0
