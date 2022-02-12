@@ -10,6 +10,7 @@ require (
 	github.com/go-kratos/kratos/v2 v2.1.5
 	github.com/go-redis/redis/extra/redisotel v0.3.0
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/wire v0.5.0
@@ -22,14 +23,16 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.18.1
+	github.com/ory/dockertest/v3 v3.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.3.0
 	go.opentelemetry.io/otel/sdk v1.3.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
 	google.golang.org/grpc v1.43.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

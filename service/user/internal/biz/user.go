@@ -21,6 +21,11 @@ type User struct {
 	IsDeletedAt bool
 }
 
+func (User) TableName() string {
+	return "users"
+}
+
+//go:generate mockgen -destination=../mocks/mrepo/user.go -package=mrepo . UserRepo
 type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
 	ListUser(ctx context.Context, pageNum, pageSize int) ([]*User, int, error)
@@ -31,6 +36,7 @@ type UserRepo interface {
 
 type UserUsecase struct {
 	repo UserRepo
+	info UserRepo
 	log  *log.Helper
 }
 

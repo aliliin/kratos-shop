@@ -32,7 +32,7 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	var user biz.User
 	result := r.data.db.Where(&biz.User{Mobile: u.Mobile}).First(&user)
 	if result.RowsAffected == 1 {
-		return nil, status.Errorf(codes.AlreadyExists, "用户已存在")
+		return nil, status.Errorf(codes.AlreadyExists, "用户已存在"+u.Mobile)
 	}
 
 	user.Mobile = u.Mobile

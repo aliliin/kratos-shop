@@ -55,6 +55,10 @@ generate:
 wire:
 	cd cmd/user/ && wire
 
+.PHONY: test # 快速测试，运行repo以外的所有测试
+test:
+	ginkgo -r -cover -v .
+
 .PHONY: all
 # generate all
 all:
@@ -62,6 +66,7 @@ all:
 	make errors;
 	make config;
 	make generate;
+
 
 # show help
 help:

@@ -16,7 +16,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewDB, NewUserRepo)
+var ProviderSet = wire.NewSet(NewDB, NewRedis, NewUserRepo)
 
 type Data struct {
 	db  *gorm.DB
@@ -32,48 +32,50 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*
 }
 
 // NewDB .
-//func NewDB(c *conf.Data) *gorm.DB {
-//	// 终端打印输入 sql 执行记录
-//	newLogger := logger.New(
-//		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
-//		logger.Config{
-//			SlowThreshold: time.Second, // 慢查询 SQL 阈值
-//			Colorful:      true,        // 禁用彩色打印
-//			//IgnoreRecordNotFoundError: false,
-//			LogLevel: logger.Info, // Log lever
-//		},
-//	)
-//
-//	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
-//		Logger: newLogger,
-//		NamingStrategy: schema.NamingStrategy{
-//			SingularTable: true, // 表名是否加 s
-//		},
-//	})
-//
-//	if err != nil {
-//		log.Errorf("failed opening connection to sqlite: %v", err)
-//		panic("failed to connect database")
-//	}
-//	return db
-//}
+func NewDB(c *conf.Data) *gorm.DB {
+	// 终端打印输入 sql 执行记录
+	newLogger := logger.New(
+		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second, // 慢查询 SQL 阈值
+			Colorful:      true,        // 禁用彩色打印
+			//IgnoreRecordNotFoundError: false,
+			LogLevel: logger.Info, // Log lever
+		},
+	)
 
-//func NewRedis(c *conf.Data) *redis.Client {
-//	rdb := redis.NewClient(&redis.Options{
-//		Addr:         c.Redis.Addr,
-//		Password:     c.Redis.Password,
-//		DB:           int(c.Redis.Db),
-//		DialTimeout:  c.Redis.DialTimeout.AsDuration(),
-//		WriteTimeout: c.Redis.WriteTimeout.AsDuration(),
-//		ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
-//	})
-//	rdb.AddHook(redisotel.TracingHook{})
-//	if err := rdb.Close(); err != nil {
-//		log.Error(err)
-//	}
-//	return rdb
-//}
+	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
+		Logger: newLogger,
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true, // 表名是否加 s
+		},
+	})
 
+	if err != nil {
+		log.Errorf("failed opening connection to sqlite: %v", err)
+		panic("failed to connect database")
+	}
+
+	return db
+}
+
+func NewRedis(c *conf.Data) *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:         c.Redis.Addr,
+		Password:     c.Redis.Password,
+		DB:           int(c.Redis.Db),
+		DialTimeout:  c.Redis.DialTimeout.AsDuration(),
+		WriteTimeout: c.Redis.WriteTimeout.AsDuration(),
+		ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
+	})
+	rdb.AddHook(redisotel.TracingHook{})
+	if err := rdb.Close(); err != nil {
+		log.Error(err)
+	}
+	return rdb
+}
+
+/**
 // NewDB .
 func NewDB(conf *conf.Data, l log.Logger) (*Data, func(), error) {
 	log.NewHelper(l).Info("closing the data resources")
@@ -121,3 +123,4 @@ func NewDB(conf *conf.Data, l log.Logger) (*Data, func(), error) {
 		}
 	}, nil
 }
+*/
