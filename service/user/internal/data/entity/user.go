@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 	"time"
-	"user/internal/biz"
+	"user/internal/data"
 )
 
 // 链接数据库
@@ -33,5 +33,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	_ = db.AutoMigrate(&biz.User{})
+	_ = db.AutoMigrate(&data.User{})
 }

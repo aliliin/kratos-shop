@@ -16,7 +16,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewDB, NewRedis, NewUserRepo)
+var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewUserRepo)
 
 type Data struct {
 	db  *gorm.DB
@@ -45,9 +45,9 @@ func NewDB(c *conf.Data) *gorm.DB {
 	)
 
 	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
-		Logger: newLogger,
+		Logger:         newLogger,
 		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true, // 表名是否加 s
+			//SingularTable: true, // 表名是否加 s
 		},
 	})
 

@@ -8,21 +8,17 @@ import (
 )
 
 type User struct {
-	ID          int64      `gorm:"primarykey"`
-	Mobile      string     `gorm:"index:idx_mobile;unique;type:varchar(11) comment '手机号码，用户唯一标识';not null"`
-	Password    string     `gorm:"type:varchar(100);not null "` // 用户密码的保存需要注意是否加密
-	NickName    string     `gorm:"type:varchar(25) comment '用户昵称'"`
-	Birthday    *time.Time `gorm:"type:datetime comment '出生日日期'"`
-	Gender      string     `gorm:"column:gender;default:male;type:varchar(16) comment 'female:女,male:男'"`
-	Role        int        `gorm:"column:role;default:1;type:int comment '1:普通用户，2:管理员'"`
-	CreatedAt   time.Time  `gorm:"column:add_time"`
-	UpdatedAt   time.Time  `gorm:"column:update_time"`
+	ID          int64
+	Mobile      string
+	Password    string
+	NickName    string
+	Birthday    *time.Time
+	Gender      string
+	Role        int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
 	IsDeletedAt bool
-}
-
-func (User) TableName() string {
-	return "users"
 }
 
 //go:generate mockgen -destination=../mocks/mrepo/user.go -package=mrepo . UserRepo

@@ -10,8 +10,27 @@ import (
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 	"user/internal/biz"
 )
+
+type User struct {
+	ID          int64      `gorm:"primarykey"`
+	Mobile      string     `gorm:"index:idx_mobile;unique;type:varchar(11) comment '手机号码，用户唯一标识';not null"`
+	Password    string     `gorm:"type:varchar(100);not null "` // 用户密码的保存需要注意是否加密
+	NickName    string     `gorm:"type:varchar(25) comment '用户昵称'"`
+	Birthday    *time.Time `gorm:"type:datetime comment '出生日日期'"`
+	Gender      string     `gorm:"column:gender;default:male;type:varchar(16) comment 'female:女,male:男'"`
+	Role        int        `gorm:"column:role;default:1;type:int comment '1:普通用户，2:管理员'"`
+	CreatedAt   time.Time  `gorm:"column:add_time"`
+	UpdatedAt   time.Time  `gorm:"column:update_time"`
+	DeletedAt   gorm.DeletedAt
+	IsDeletedAt bool
+}
+
+func (User) TableName() string {
+	return "users"
+}
 
 type userRepo struct {
 	data *Data
@@ -29,8 +48,8 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 // CreateUser .
 func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, error) {
 	// 验证是否已经创建
-	var user biz.User
-	result := r.data.db.Where(&biz.User{Mobile: u.Mobile}).First(&user)
+	var user User
+	result := r.data.db.Where(&User{Mobile: u.Mobile}).First(&user)
 	if result.RowsAffected == 1 {
 		return nil, status.Errorf(codes.AlreadyExists, "用户已存在"+u.Mobile)
 	}
@@ -54,7 +73,7 @@ func encrypt(psd string) string {
 }
 
 // ModelToResponse 转换 user 表中所有字段的值
-func modelToResponse(user biz.User) biz.User {
+func modelToResponse(user User) biz.User {
 	userInfoRsp := biz.User{
 		ID:       user.ID,
 		Mobile:   user.Mobile,
@@ -69,7 +88,7 @@ func modelToResponse(user biz.User) biz.User {
 
 // ListUser .
 func (r *userRepo) ListUser(ctx context.Context, pageNum, pageSize int) ([]*biz.User, int, error) {
-	var users []biz.User
+	var users []User
 	result := r.data.db.Find(&users)
 	if result.Error != nil {
 		return nil, 0, result.Error
@@ -112,8 +131,8 @@ func paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 
 // UserByMobile .
 func (r *userRepo) UserByMobile(ctx context.Context, mobile string) (*biz.User, error) {
-	var user biz.User
-	result := r.data.db.Where(&biz.User{Mobile: mobile}).First(&user)
+	var user User
+	result := r.data.db.Where(&User{Mobile: mobile}).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -121,14 +140,14 @@ func (r *userRepo) UserByMobile(ctx context.Context, mobile string) (*biz.User, 
 	if result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "用户不存在")
 	}
-
-	return &user, nil
+	re := modelToResponse(user)
+	return &re, nil
 }
 
 // UpdateUser .
 func (r *userRepo) UpdateUser(ctx context.Context, user *biz.User) (bool, error) {
-	var userInfo biz.User
-	result := r.data.db.Where(&biz.User{ID: user.ID}).First(&userInfo)
+	var userInfo User
+	result := r.data.db.Where(&User{ID: user.ID}).First(&userInfo)
 	if result.RowsAffected == 0 {
 		return false, status.Errorf(codes.NotFound, "用户不存在")
 	}
