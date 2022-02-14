@@ -42,12 +42,13 @@ type UserUsecase struct {
 }
 
 func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
+	helper := log.NewHelper(log.With(logger, "module", "usecase/shop"))
+	return &UserUsecase{uRepo: repo, log: helper}
 }
 
 func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1.RegisterReply, error) {
 	// check mobile
-	_, err := uc.repo.UserByMobile(ctx, req.Mobile)
+	_, err := uc.uRepo.UserByMobile(ctx, req.Mobile)
 	if !errors.Is(err, ErrUserNotFound) {
 		return nil, status.Errorf(codes.AlreadyExists, "The phone number has been registered.")
 	}

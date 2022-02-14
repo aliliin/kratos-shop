@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
@@ -8,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	jwt2 "github.com/golang-jwt/jwt/v4"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
@@ -16,7 +18,9 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
+var ProviderSet = wire.NewSet(NewData,
+	NewUserServiceClient,
+	NewUserRepo)
 
 // Data .
 type Data struct {
@@ -31,7 +35,7 @@ func NewData(c *conf.Data, uc userV1.UserClient, logger log.Logger) (*Data, erro
 }
 
 // NewUserServiceClient 链接用户服务 grpc
-func NewUserServiceClient(ac *conf.Auth, r registry.Discovery, tp *tracesdk.TracerProvider) userv1.UserClient {
+func NewUserServiceClient(ac *conf.Auth, r registry.Discovery, tp *tracesdk.TracerProvider) userV1.UserClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint("discovery:///beer.user.service"),

@@ -2,24 +2,24 @@ package data
 
 import (
 	"context"
-	"shop/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
+	"shop/internal/biz"
 )
 
-type greeterRepo struct {
+type userRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-// NewGreeterRepo .
-func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {
-	return &greeterRepo{
+// NewUserRepo .
+func NewUserRepo(data *Data, logger log.Logger) *userRepo {
+	return &userRepo{
 		data: data,
-		log:  log.NewHelper(logger),
+		log:  log.NewHelper(log.With(logger, "module", "repo/user")),
 	}
 }
 
-func (r *greeterRepo) CreateGreeter(ctx context.Context, g *biz.Greeter) error {
+func (r *userRepo) CreateGreeter(ctx context.Context, g *biz.userRepo) error {
 	return nil
 }
 

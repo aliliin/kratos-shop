@@ -51,6 +51,14 @@ build:
 generate:
 	go generate ./...
 
+# wire
+wire:
+	cd cmd/shop/ && wire
+
+.PHONY: test # 快速测试，运行repo以外的所有测试
+test:
+	ginkgo -r -cover -v .
+
 .PHONY: all
 # generate all
 all:
