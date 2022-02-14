@@ -40,7 +40,6 @@ func (u *UserService) CreateUser(ctx context.Context, req *v1.CreateUserInfo) (*
 
 // GetUserList .
 func (u *UserService) GetUserList(ctx context.Context, req *v1.PageInfo) (*v1.UserListResponse, error) {
-
 	tr := otel.Tracer("service")
 	ctx, span := tr.Start(ctx, "get user list")
 	defer span.End()
@@ -80,7 +79,6 @@ func (u *UserService) GetUserByMobile(ctx context.Context, req *v1.MobileRequest
 	tr := otel.Tracer("service")
 	ctx, span := tr.Start(ctx, "get user list")
 	defer span.End()
-
 	user, err := u.uc.UserByMobile(ctx, req.Mobile)
 	if err != nil {
 		return nil, err

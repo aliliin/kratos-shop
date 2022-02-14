@@ -10,8 +10,8 @@ option go_package = "shop/api/shop/v1;v1";
 service Shop {
   rpc Register (RegisterReq) returns (RegisterReply) {
     option (google.api.http) = {
-      post: "/v1/register"
-      body: "*"
+      post: "/api/users",
+      body: "*",
     };
   }
 }

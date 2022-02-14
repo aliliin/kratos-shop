@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -50,25 +51,28 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 	// check mobile
 	_, err := uc.uRepo.UserByMobile(ctx, req.Mobile)
 	if !errors.Is(err, ErrUserNotFound) {
+		fmt.Println("err", err)
 		return nil, status.Errorf(codes.AlreadyExists, "The phone number has been registered.")
 	}
-
-	// create user
-	user, err := NewUser(req.Mobile, req.Username, req.Password)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "create user failed: %s", err.Error())
-	}
-
-	userId, err := uc.uRepo.CreateUser(ctx, &user)
-	if err != nil {
-		return nil, err
-	}
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "save user failed: %s", err.Error())
-	}
 	return &v1.RegisterReply{
-		Id: userId.ID,
+		Id: 1111,
 	}, nil
+	// create user
+	//user, err := NewUser(req.Mobile, req.Username, req.Password)
+	//if err != nil {
+	//	return nil, status.Errorf(codes.InvalidArgument, "create user failed: %s", err.Error())
+	//}
+	//
+	//userId, err := uc.uRepo.CreateUser(ctx, &user)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//if err != nil {
+	//	return nil, status.Errorf(codes.Internal, "save user failed: %s", err.Error())
+	//}
+	//return &v1.RegisterReply{
+	//	Id: userId.ID,
+	//}, nil
 }
 
 func NewUser(mobile, username, password string) (User, error) {

@@ -23,7 +23,7 @@ type ShopHTTPServer interface {
 
 func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
 	r := s.Route("/")
-	r.POST("/v1/register", _Shop_Register0_HTTP_Handler(srv))
+	r.POST("/api/users", _Shop_Register0_HTTP_Handler(srv))
 }
 
 func _Shop_Register0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
@@ -59,7 +59,7 @@ func NewShopHTTPClient(client *http.Client) ShopHTTPClient {
 
 func (c *ShopHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts ...http.CallOption) (*RegisterReply, error) {
 	var out RegisterReply
-	pattern := "/v1/register"
+	pattern := "/api/users"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/Register"))
 	opts = append(opts, http.PathTemplate(pattern))
