@@ -59,7 +59,7 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	user.Password = encrypt(u.Password) // 密码加密
 	res := r.data.db.Create(&user)
 	if res.Error != nil {
-		return nil, status.Errorf(codes.Internal, res.Error.Error())
+		return nil, res.Error
 	}
 	userInfoRes := modelToResponse(user)
 	return &userInfoRes, nil

@@ -20,5 +20,8 @@ type ShopService struct {
 
 // NewShopService new a greeter service.
 func NewShopService(uc *biz.UserUsecase, logger log.Logger) *ShopService {
-	return &ShopService{uc: uc, log: log.NewHelper(log.With(logger, "module", "service/shop"))}
+	return &ShopService{
+		uc:  uc,
+		log: log.NewHelper(log.With(logger, "module", "service/shop")),
+	}
 }

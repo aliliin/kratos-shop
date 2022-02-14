@@ -15,7 +15,7 @@ var (
 	ErrUsernameInvalid = errors.New("username invalid")
 	ErrMobileInvalid   = errors.New("mobile invalid")
 	ErrUserNotFound    = errors.New("user not found")
-	ErrLoginFailed     = errors.New("login failed")
+	//ErrLoginFailed     = errors.New("login failed")
 )
 
 type User struct {
@@ -29,11 +29,11 @@ type User struct {
 }
 
 type UserRepo interface {
-	CreateUser(context.Context, *User) (*User, error)
-	ListUser(ctx context.Context, pageNum, pageSize int) ([]*User, int, error)
+	CreateUser(c context.Context, u *User) (*User, error)
 	UserByMobile(ctx context.Context, mobile string) (*User, error)
-	UpdateUser(context.Context, *User) (bool, error)
-	CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
+	//ListUser(ctx context.Context, pageNum, pageSize int) ([]*User, int, error)
+	//UpdateUser(context.Context, *User) (bool, error)
+	//CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
 }
 
 type UserUsecase struct {
@@ -88,4 +88,8 @@ func NewUser(mobile, username, password string) (User, error) {
 		NickName: username,
 		Password: password,
 	}, nil
+}
+
+func (uc *UserUsecase) UserByMobile(ctx context.Context, mobile string) (*User, error) {
+	return uc.uRepo.UserByMobile(ctx, mobile)
 }

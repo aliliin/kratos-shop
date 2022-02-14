@@ -12,17 +12,17 @@ type userRepo struct {
 }
 
 // NewUserRepo .
-func NewUserRepo(data *Data, logger log.Logger) *userRepo {
+func NewUserRepo(data *Data, logger log.Logger) *biz.UserRepo {
 	return &userRepo{
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "repo/user")),
 	}
 }
 
-func (r *userRepo) CreateGreeter(ctx context.Context, g *biz.userRepo) error {
-	return nil
+func (u *userRepo) UserByMobile(c context.Context, user *biz.User) (*biz.User, error) {
+	return nil, nil
 }
 
-func (r *greeterRepo) UpdateGreeter(ctx context.Context, g *biz.Greeter) error {
-	return nil
+func (u *userRepo) CreateUser(c context.Context, mobile string) (*biz.User, error) {
+	return nil, nil
 }
