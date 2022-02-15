@@ -53,18 +53,13 @@ func NewUserUsecase(repo UserRepo, logger log.Logger, conf *conf.Auth) *UserUsec
 }
 
 func (uc *UserUsecase) UserDetailByID(ctx context.Context, req *v1.DetailReq) (*v1.UserDetailResponse, error) {
-	if user, err := uc.uRepo.UserById(ctx, req.Id); err == nil {
-		return &v1.UserDetailResponse{
-			Id:       user.ID,
-			Mobile:   user.Mobile,
-			NickName: user.NickName,
-			Birthday: user.Birthday,
-			Gender:   user.Gender,
-			Role:     int32(user.Role),
-		}, nil
-	} else {
-		return nil, ErrUserNotFound
+	user, err := uc.uRepo.UserById(ctx, req.Id)
+	if err != nil {
+		return nil, err
 	}
+	return &v1.UserDetailResponse{
+		Id: user.ID,
+	}, nil
 }
 
 func (uc *UserUsecase) PassWordLogin(ctx context.Context, req *v1.LoginReq) (*v1.RegisterReply, error) {
@@ -126,7 +121,7 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 }
 
 func NewToken(id int64, key string) (string, error) {
-	j := auth.NewJWT(key)
+	j := auth.NewJWT()
 	claims := auth.CustomClaims{
 		ID: uint(id),
 		StandardClaims: jwt.StandardClaims{
@@ -135,6 +130,7 @@ func NewToken(id int64, key string) (string, error) {
 			Issuer:    "Gyl",
 		},
 	}
+
 	token, err := j.CreateToken(claims)
 	if err != nil {
 		return "", err

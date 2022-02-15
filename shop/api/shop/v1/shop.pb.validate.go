@@ -70,7 +70,6 @@ func (m *RegisterReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReplyMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -204,7 +203,6 @@ func (m *RegisterReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReqMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -326,7 +324,6 @@ func (m *LoginReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return LoginReqMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -436,7 +433,6 @@ func (m *DetailReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return DetailReqMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -547,7 +543,6 @@ func (m *UserDetailResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserDetailResponseMultiError(errors)
 	}
-
 	return nil
 }
 

@@ -62,7 +62,6 @@ func (u *userRepo) UserById(c context.Context, id int64) (*biz.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &biz.User{
 		ID:       user.Id,
 		Mobile:   user.Mobile,

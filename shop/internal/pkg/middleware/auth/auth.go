@@ -10,6 +10,17 @@ import (
 	"time"
 )
 
+const (
+	// bearerWord the bearer key word for authorization
+	bearerWord string = "Bearer"
+
+	// bearerFormat authorization token format
+	bearerFormat string = "Bearer %s"
+
+	// authorizationKey holds the key used to store the JWT Token in the request header.
+	authorizationKey string = "Authorization"
+)
+
 var (
 	TokenExpired     = errors.New("token is expired")
 	TokenNotValidYet = errors.New("token not active yet")
@@ -22,16 +33,12 @@ type JWT struct {
 }
 
 type CustomClaims struct {
-	ID          uint
-	NickName    string
-	AuthorityId uint
+	ID uint
 	jwt.StandardClaims
 }
 
-func NewJWT(signingKey string) *JWT {
-	return &JWT{
-		[]byte(signingKey), // 可以设置过期时间
-	}
+func NewJWT() *JWT {
+	return &JWT{[]byte("signingKey")} // 可以设置过期时间
 }
 
 // CreateToken 创建一个token
@@ -42,9 +49,10 @@ func (j *JWT) CreateToken(claims CustomClaims) (string, error) {
 
 // ParseToken 解析 token
 func (j *JWT) ParseToken(tokenString string) (*CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
-		return j.SigningKey, nil
-	})
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{},
+		func(token *jwt.Token) (i interface{}, e error) {
+			return j.SigningKey, nil
+		})
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
@@ -96,19 +104,27 @@ func JWTAuth(secret string) middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			if tr, ok := transport.FromServerContext(ctx); ok {
 				token := tr.RequestHeader().Get("x-token")
-				j := NewJWT(secret)
-				c, err := j.ParseToken(token) // parseToken 解析token包含的信息
-				fmt.Println("ccc", c)
+				j := NewJWT()
+				claims, err := j.ParseToken(token) // parseToken 解析 token 包含的信息
+				type CustomClaims struct {
+					ID uint
+					jwt.StandardClaims
+				}
 				if err != nil {
 					if err == TokenExpired {
 						if err == TokenExpired {
 							return nil, errors.New("authorization expired")
 						}
 					}
-					return nil, errors.New("jwt token missing")
+					return nil, err
 				}
 
-				return []byte(secret), nil
+				if clientContext, ok := transport.FromClientContext(ctx); ok {
+					//clientContext.RequestHeader().Set("authorizationKey", claims)
+					clientContext.RequestHeader().Set("user_id", claims.Id)
+					return handler(ctx, req)
+				}
+				fmt.Println("claims", claims)
 			}
 			return handler(ctx, req)
 		}
