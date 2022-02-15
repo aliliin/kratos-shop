@@ -14,8 +14,8 @@ func main() {
 	Init()
 	TestGetUserList() // 获取用户列表
 	//TestCreateUser() // 创建用户
-	TestUpdateUser()      // 更新用户
-	TestGetUserByMobile() // 根据手机获取用户
+	//TestUpdateUser()      // 更新用户
+	//TestGetUserByMobile() // 根据手机获取用户
 	//TestGetUserById() // 根据ID 获取用户
 	conn.Close()
 }
@@ -80,7 +80,7 @@ func TestCreateUser() {
 func TestGetUserList() {
 	r, err := userClient.GetUserList(context.Background(), &v1.PageInfo{
 		Pn:    1,
-		PSize: 6,
+		PSize: 60,
 	})
 
 	if err != nil {
@@ -89,14 +89,27 @@ func TestGetUserList() {
 
 	for _, user := range r.Data {
 		fmt.Println(user.Mobile, user.NickName, user.Password)
-		//checkRsp, err := userClient.CheckPassword(context.Background(), &v1.PasswordCheckInfo{
-		//	Password:          "admin",
-		//	EncryptedPassword: user.Password,
-		//})
-		//if err != nil {
-		//	panic(" get check user  psw err" + err.Error())
-		//}
-		//fmt.Println(checkRsp.Success)
+
+		if user.Mobile == "13501167242" {
+			checkRsp, err := userClient.CheckPassword(context.Background(), &v1.PasswordCheckInfo{
+				Password:          "1234567890",
+				EncryptedPassword: user.Password,
+			})
+			if err != nil {
+				panic(" get check user  psw err" + err.Error())
+			}
+			fmt.Println(checkRsp.Success)
+		} else {
+			checkRsp, err := userClient.CheckPassword(context.Background(), &v1.PasswordCheckInfo{
+				Password:          "admin",
+				EncryptedPassword: user.Password,
+			})
+			if err != nil {
+				panic(" get check user  psw err" + err.Error())
+			}
+			fmt.Println(checkRsp.Success)
+		}
+
 	}
 	fmt.Println(r.Total)
 }

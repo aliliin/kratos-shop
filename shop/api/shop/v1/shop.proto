@@ -3,6 +3,7 @@ syntax = "proto3";
 package shop.shop.v1;
 
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 option go_package = "shop/api/shop/v1;v1";
 
@@ -10,18 +11,51 @@ option go_package = "shop/api/shop/v1;v1";
 service Shop {
   rpc Register (RegisterReq) returns (RegisterReply) {
     option (google.api.http) = {
-      post: "/api/users",
+      post: "/api/users/register",
       body: "*",
+    };
+  }
+  rpc Login (LoginReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/api/users/login",
+      body: "*",
+    };
+  }
+  rpc Detail (DetailReq) returns (UserDetailResponse) {
+    option (google.api.http) = {
+      get: "/api/users/detail/{id}",
     };
   }
 }
 
-message RegisterReq {
-  string mobile = 1;
-  string username = 2;
-  string password = 3;
-}
-
 message RegisterReply {
   int64 id = 1;
+  string mobile = 3;
+  string username = 4;
+  string token = 5;
+  int64 expiredAt = 6;
+}
+
+message RegisterReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string username = 2 [(validate.rules).string = {min_len: 3, max_len: 15}];
+  string password = 3 [(validate.rules).string = {min_len: 8}];
+}
+
+message LoginReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string password = 3 [(validate.rules).string = {min_len: 8}];
+}
+
+message  DetailReq{
+  int64 id = 1 [(validate.rules).int64 = {gt: 0}];
+}
+
+message UserDetailResponse{
+  int64 id = 1;
+  string mobile = 2;
+  string nickName = 3;
+  int64 birthday = 4;
+  string gender = 5;
+  int32 role = 6;
 }

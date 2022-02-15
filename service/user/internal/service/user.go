@@ -119,3 +119,16 @@ func (u *UserService) CheckPassword(ctx context.Context, req *v1.PasswordCheckIn
 	}
 	return &v1.CheckResponse{Success: check}, nil
 }
+
+// GetUserById .
+func (u *UserService) GetUserById(ctx context.Context, req *v1.IdRequest) (*v1.UserInfoResponse, error) {
+	tr := otel.Tracer("service")
+	ctx, span := tr.Start(ctx, "get user info by Id")
+	defer span.End()
+	user, err := u.uc.UserById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	rsp := UserResponse(user)
+	return &rsp, nil
+}

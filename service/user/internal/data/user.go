@@ -75,13 +75,14 @@ func encrypt(psd string) string {
 // ModelToResponse 转换 user 表中所有字段的值
 func modelToResponse(user User) biz.User {
 	userInfoRsp := biz.User{
-		ID:       user.ID,
-		Mobile:   user.Mobile,
-		Password: user.Password,
-		NickName: user.NickName,
-		Gender:   user.Gender,
-		Role:     user.Role,
-		Birthday: user.Birthday,
+		ID:        user.ID,
+		Mobile:    user.Mobile,
+		Password:  user.Password,
+		NickName:  user.NickName,
+		Gender:    user.Gender,
+		Role:      user.Role,
+		Birthday:  user.Birthday,
+		CreatedAt: user.CreatedAt,
 	}
 	return userInfoRsp
 }
@@ -170,4 +171,19 @@ func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPassword str
 	passwordInfo := strings.Split(encryptedPassword, "$")
 	check := password.Verify(psd, passwordInfo[2], passwordInfo[3], options)
 	return check, nil
+}
+
+// GetUserById .
+func (r *userRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error) {
+	var user User
+	result := r.data.db.Where(&User{ID: Id}).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "用户不存在")
+	}
+	re := modelToResponse(user)
+	return &re, nil
 }

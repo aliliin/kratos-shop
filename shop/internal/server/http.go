@@ -6,11 +6,13 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/handlers"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	v1 "shop/api/shop/v1"
 	"shop/internal/conf"
+	"shop/internal/pkg/middleware/auth"
 	"shop/internal/service"
 )
 
@@ -20,6 +22,8 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, tp *tracesdk.TracerProvider, s
 		http.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
+			validate.Validator(),
+			selector.Server(auth.JWTAuth(ac.ServiceKey)).Match(NewWhiteListMatcher()).Build(),
 		),
 		http.Filter(handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
@@ -43,8 +47,8 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, tp *tracesdk.TracerProvider, s
 
 func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
-	whiteList["/shop.v1.Shop/Login"] = struct{}{}
-	whiteList["/shop.v1.Shop/Register"] = struct{}{}
+	whiteList["/shop.shop.v1.Shop/Login"] = struct{}{}
+	whiteList["/shop.shop.v1.Shop/Register"] = struct{}{}
 	return func(ctx context.Context, operation string) bool {
 		if _, ok := whiteList[operation]; ok {
 			return false

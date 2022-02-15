@@ -26,6 +26,7 @@ type UserRepo interface {
 	CreateUser(context.Context, *User) (*User, error)
 	ListUser(ctx context.Context, pageNum, pageSize int) ([]*User, int, error)
 	UserByMobile(ctx context.Context, mobile string) (*User, error)
+	GetUserById(ctx context.Context, id int64) (*User, error)
 	UpdateUser(context.Context, *User) (bool, error)
 	CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
 }
@@ -58,4 +59,8 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, user *User) (bool, error)
 
 func (uc *UserUsecase) CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error) {
 	return uc.repo.CheckPassword(ctx, password, encryptedPassword)
+}
+
+func (uc *UserUsecase) UserById(ctx context.Context, id int64) (*User, error) {
+	return uc.repo.GetUserById(ctx, id)
 }
