@@ -3,8 +3,9 @@ package biz
 import (
 	"context"
 	"errors"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	jwt2 "github.com/golang-jwt/jwt/v4"
 	v1 "shop/api/shop/v1"
 	"shop/internal/conf"
 	"shop/internal/pkg/middleware/auth"
@@ -18,6 +19,7 @@ var (
 	ErrUserNotFound        = errors.New("user not found")
 	ErrLoginFailed         = errors.New("login failed")
 	ErrGenerateTokenFailed = errors.New("generate token failed")
+	ErrAuthFailed          = errors.New("authentication failed")
 )
 
 type User struct {
@@ -49,10 +51,18 @@ type UserUsecase struct {
 
 func NewUserUsecase(repo UserRepo, logger log.Logger, conf *conf.Auth) *UserUsecase {
 	helper := log.NewHelper(log.With(logger, "module", "usecase/shop"))
-	return &UserUsecase{uRepo: repo, log: helper, signingKey: conf.ApiKey}
+	return &UserUsecase{uRepo: repo, log: helper, signingKey: conf.JwtKey}
 }
 
 func (uc *UserUsecase) UserDetailByID(ctx context.Context, req *v1.DetailReq) (*v1.UserDetailResponse, error) {
+	// 在上下文 context 中取出 claims 对象
+	if claims, ok := jwt.FromContext(ctx); ok {
+		c := claims.(jwt2.MapClaims)
+		if c["ID"] != req.Id {
+			return nil, ErrAuthFailed
+		}
+	}
+
 	user, err := uc.uRepo.UserById(ctx, req.Id)
 	if err != nil {
 		return nil, err
@@ -78,7 +88,18 @@ func (uc *UserUsecase) PassWordLogin(ctx context.Context, req *v1.LoginReq) (*v1
 			return nil, ErrPasswordInvalid
 		} else {
 			if passRsp {
-				token, err := NewToken(user.ID, uc.signingKey)
+				claims := auth.CustomClaims{
+					ID:          uint(user.ID),
+					NickName:    user.NickName,
+					AuthorityId: uint(user.Role),
+					StandardClaims: jwt2.StandardClaims{
+						NotBefore: time.Now().Unix(),               // 签名的生效时间
+						ExpiresAt: time.Now().Unix() + 60*60*24*30, // 30天过期
+						Issuer:    "Gyl",
+					},
+				}
+
+				token, err := auth.CreateToken(claims, uc.signingKey)
 				if err != nil {
 					return nil, ErrGenerateTokenFailed
 				}
@@ -105,8 +126,17 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 	if err != nil {
 		return nil, err
 	}
-
-	token, err := NewToken(createUser.ID, uc.signingKey)
+	claims := auth.CustomClaims{
+		ID:          uint(createUser.ID),
+		NickName:    createUser.NickName,
+		AuthorityId: uint(createUser.Role),
+		StandardClaims: jwt2.StandardClaims{
+			NotBefore: time.Now().Unix(),               // 签名的生效时间
+			ExpiresAt: time.Now().Unix() + 60*60*24*30, // 30天过期
+			Issuer:    "Gyl",
+		},
+	}
+	token, err := auth.CreateToken(claims, uc.signingKey)
 	if err != nil {
 		return nil, ErrGenerateTokenFailed
 	}
@@ -118,24 +148,6 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 		Token:     token,
 		ExpiredAt: time.Now().Unix() + 60*60*24*30,
 	}, nil
-}
-
-func NewToken(id int64, key string) (string, error) {
-	j := auth.NewJWT()
-	claims := auth.CustomClaims{
-		ID: uint(id),
-		StandardClaims: jwt.StandardClaims{
-			NotBefore: time.Now().Unix(),               // 签名的生效时间
-			ExpiresAt: time.Now().Unix() + 60*60*24*30, // 30天过期
-			Issuer:    "Gyl",
-		},
-	}
-
-	token, err := j.CreateToken(claims)
-	if err != nil {
-		return "", err
-	}
-	return token, nil
 }
 
 func NewUser(mobile, username, password string) (User, error) {
@@ -157,7 +169,3 @@ func NewUser(mobile, username, password string) (User, error) {
 		Password: password,
 	}, nil
 }
-
-//func (uc *UserUsecase) UserByMobile(ctx context.Context, mobile string) (*User, error) {
-//	return uc.uRepo.UserByMobile(ctx, mobile)
-//}

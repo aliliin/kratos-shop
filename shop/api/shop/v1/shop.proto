@@ -6,8 +6,7 @@ import "google/api/annotations.proto";
 import "validate/validate.proto";
 
 option go_package = "shop/api/shop/v1;v1";
-
-// The greeting service definition.
+// The Shop service definition.
 service Shop {
   rpc Register (RegisterReq) returns (RegisterReply) {
     option (google.api.http) = {
@@ -28,6 +27,7 @@ service Shop {
   }
 }
 
+// Data returned by registration and login
 message RegisterReply {
   int64 id = 1;
   string mobile = 3;
@@ -47,10 +47,11 @@ message LoginReq {
   string password = 3 [(validate.rules).string = {min_len: 8}];
 }
 
+// select user details
 message  DetailReq{
   int64 id = 1 [(validate.rules).int64 = {gt: 0}];
 }
-
+// user Detail returned
 message UserDetailResponse{
   int64 id = 1;
   string mobile = 2;
@@ -59,3 +60,4 @@ message UserDetailResponse{
   string gender = 5;
   int32 role = 6;
 }
+

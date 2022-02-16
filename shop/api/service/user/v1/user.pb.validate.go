@@ -62,6 +62,7 @@ func (m *CheckResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return CheckResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -165,6 +166,7 @@ func (m *PageInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PageInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -277,6 +279,7 @@ func (m *UserInfoResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserInfoResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -412,6 +415,7 @@ func (m *UserListResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserListResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -513,6 +517,7 @@ func (m *MobileRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return MobileRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -614,6 +619,7 @@ func (m *IdRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return IdRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -718,6 +724,7 @@ func (m *CreateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -825,6 +832,7 @@ func (m *UpdateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -928,6 +936,7 @@ func (m *PasswordCheckInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PasswordCheckInfoMultiError(errors)
 	}
+
 	return nil
 }
 

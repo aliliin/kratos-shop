@@ -10,6 +10,7 @@ message Bootstrap {
   Data data = 2;
   Trace trace = 3;
   Auth auth = 4;
+  Service service = 5;
 }
 
 message Server {
@@ -42,9 +43,21 @@ message Data {
   Redis redis = 2;
 }
 
+message Service {
+  message User {
+    string endpoint = 1;
+  }
+  message Goods {
+    string endpoint = 1;
+  }
+  User user = 1;
+  Goods goods = 2;
+}
+
 message Trace {
   string endpoint = 1;
 }
+
 
 message Registry {
   message Consul {
@@ -55,6 +68,5 @@ message Registry {
 }
 
 message Auth {
-  string service_key = 1;
-  string api_key = 2;
+  string jwt_key = 1;
 }

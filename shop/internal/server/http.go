@@ -3,27 +3,33 @@ package server
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	jwt2 "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/handlers"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	v1 "shop/api/shop/v1"
 	"shop/internal/conf"
-	"shop/internal/pkg/middleware/auth"
 	"shop/internal/service"
 )
 
-// NewHTTPServer new a HTTP server.
-func NewHTTPServer(c *conf.Server, ac *conf.Auth, tp *tracesdk.TracerProvider, s *service.ShopService, logger log.Logger) *http.Server {
+// NewHTTPServer new an HTTP server.
+func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.ShopService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
 			validate.Validator(),
-			selector.Server(auth.JWTAuth(ac.ServiceKey)).Match(NewWhiteListMatcher()).Build(),
+			tracing.Server(),
+			selector.Server(
+				jwt.Server(func(token *jwt2.Token) (interface{}, error) {
+					return []byte(ac.JwtKey), nil
+				}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
+			).Match(NewWhiteListMatcher()).Build(),
 		),
 		http.Filter(handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
@@ -45,6 +51,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, tp *tracesdk.TracerProvider, s
 	return srv
 }
 
+// NewWhiteListMatcher 白名单不需要token验证的接口
 func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
 	whiteList["/shop.shop.v1.Shop/Login"] = struct{}{}

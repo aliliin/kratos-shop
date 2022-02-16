@@ -10,9 +10,10 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	grpcx "google.golang.org/grpc"
 	userV1 "shop/api/service/user/v1"
 	"shop/internal/conf"
+	"time"
 )
 
 // ProviderSet is data providers.
@@ -31,18 +32,17 @@ func NewData(c *conf.Data, uc userV1.UserClient, logger log.Logger) (*Data, erro
 }
 
 // NewUserServiceClient 链接用户服务 grpc
-func NewUserServiceClient(ac *conf.Auth, r registry.Discovery, tp *tracesdk.TracerProvider) userV1.UserClient {
+func NewUserServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) userV1.UserClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
-		grpc.WithEndpoint("discovery:///shop.user.service"),
-		grpc.WithDiscovery(r),
+		grpc.WithEndpoint(sr.User.Endpoint),
+		grpc.WithDiscovery(rr),
 		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
+			tracing.Client(),
 			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
 	)
 	if err != nil {
 		panic(err)
