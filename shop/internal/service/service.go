@@ -10,7 +10,7 @@ import (
 // ProviderSet is service providers.
 var ProviderSet = wire.NewSet(NewShopService)
 
-// ShopService is a greeter service.
+// ShopService is a shop service.
 type ShopService struct {
 	v1.UnimplementedShopServer
 
@@ -18,7 +18,7 @@ type ShopService struct {
 	log *log.Helper
 }
 
-// NewShopService new a greeter service.
+// NewShopService new a shop service.
 func NewShopService(uc *biz.UserUsecase, logger log.Logger) *ShopService {
 	return &ShopService{
 		uc:  uc,
