@@ -138,7 +138,7 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 	}
 	token, err := auth.CreateToken(claims, uc.signingKey)
 	if err != nil {
-		return nil, ErrGenerateTokenFailed
+		return nil, err
 	}
 
 	return &v1.RegisterReply{

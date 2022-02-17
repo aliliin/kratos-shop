@@ -70,5 +70,4 @@ func (u *userRepo) UserById(c context.Context, id int64) (*biz.User, error) {
 		Role:     int(user.Role),
 		Birthday: int64(user.Birthday),
 	}, nil
-
 }

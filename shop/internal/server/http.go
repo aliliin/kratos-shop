@@ -22,7 +22,6 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.ShopService, logger
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
-			logging.Server(logger),
 			validate.Validator(),
 			tracing.Server(),
 			selector.Server(
@@ -30,6 +29,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.ShopService, logger
 					return []byte(ac.JwtKey), nil
 				}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 			).Match(NewWhiteListMatcher()).Build(),
+			logging.Server(logger),
 		),
 		http.Filter(handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
