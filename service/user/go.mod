@@ -24,6 +24,7 @@ require (
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/ginkgo/v2 v2.1.3 // indirect
 	github.com/onsi/gomega v1.18.1
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1

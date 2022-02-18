@@ -3,6 +3,7 @@ syntax = "proto3";
 package shop.shop.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 option go_package = "shop/api/shop/v1;v1";
@@ -18,6 +19,11 @@ service Shop {
     option (google.api.http) = {
       post: "/api/users/login",
       body: "*",
+    };
+  }
+  rpc Captcha (google.protobuf.Empty) returns (CaptchaReply) {
+    option (google.api.http) = {
+      get: "/api/users/captcha",
     };
   }
   rpc Detail (DetailReq) returns (UserDetailResponse) {
@@ -44,7 +50,9 @@ message RegisterReq {
 
 message LoginReq {
   string mobile = 1 [(validate.rules).string.len = 11];
-  string password = 3 [(validate.rules).string = {min_len: 8}];
+  string password = 2 [(validate.rules).string = {min_len: 8}];
+  string captcha = 3 [(validate.rules).string = {min_len: 5,max_len:5}];
+  string captchaId = 4  [(validate.rules).string ={min_len: 1}];
 }
 
 // select user details
@@ -61,3 +69,7 @@ message UserDetailResponse{
   int32 role = 6;
 }
 
+message CaptchaReply{
+  string captchaId = 1;
+  string picPath = 2;
+}

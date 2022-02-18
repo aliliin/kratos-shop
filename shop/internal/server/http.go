@@ -54,6 +54,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.ShopService, logger
 // NewWhiteListMatcher 白名单不需要token验证的接口
 func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
+	whiteList["/shop.shop.v1.Shop/Captcha"] = struct{}{}
 	whiteList["/shop.shop.v1.Shop/Login"] = struct{}{}
 	whiteList["/shop.shop.v1.Shop/Register"] = struct{}{}
 	return func(ctx context.Context, operation string) bool {

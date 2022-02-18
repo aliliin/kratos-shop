@@ -323,6 +323,29 @@ func (m *LoginReq) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if utf8.RuneCountInString(m.GetCaptcha()) != 5 {
+		err := LoginReqValidationError{
+			field:  "Captcha",
+			reason: "value length must be 5 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+
+	}
+
+	if utf8.RuneCountInString(m.GetCaptchaId()) < 1 {
+		err := LoginReqValidationError{
+			field:  "CaptchaId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return LoginReqMultiError(errors)
 	}
@@ -623,3 +646,106 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UserDetailResponseValidationError{}
+
+// Validate checks the field values on CaptchaReply with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *CaptchaReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CaptchaReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in CaptchaReplyMultiError, or
+// nil if none found.
+func (m *CaptchaReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CaptchaReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for CaptchaId
+
+	// no validation rules for PicPath
+
+	if len(errors) > 0 {
+		return CaptchaReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// CaptchaReplyMultiError is an error wrapping multiple validation errors
+// returned by CaptchaReply.ValidateAll() if the designated constraints aren't met.
+type CaptchaReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CaptchaReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CaptchaReplyMultiError) AllErrors() []error { return m }
+
+// CaptchaReplyValidationError is the validation error returned by
+// CaptchaReply.Validate if the designated constraints aren't met.
+type CaptchaReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CaptchaReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CaptchaReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CaptchaReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CaptchaReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CaptchaReplyValidationError) ErrorName() string { return "CaptchaReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CaptchaReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCaptchaReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CaptchaReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CaptchaReplyValidationError{}

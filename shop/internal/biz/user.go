@@ -8,6 +8,7 @@ import (
 	jwt2 "github.com/golang-jwt/jwt/v4"
 	v1 "shop/api/shop/v1"
 	"shop/internal/conf"
+	"shop/internal/pkg/captcha"
 	"shop/internal/pkg/middleware/auth"
 	"time"
 )
@@ -15,6 +16,7 @@ import (
 var (
 	ErrPasswordInvalid     = errors.New("password invalid")
 	ErrUsernameInvalid     = errors.New("username invalid")
+	ErrCaptchaInvalid      = errors.New("verification code error")
 	ErrMobileInvalid       = errors.New("mobile invalid")
 	ErrUserNotFound        = errors.New("user not found")
 	ErrLoginFailed         = errors.New("login failed")
@@ -54,6 +56,19 @@ func NewUserUsecase(repo UserRepo, logger log.Logger, conf *conf.Auth) *UserUsec
 	return &UserUsecase{uRepo: repo, log: helper, signingKey: conf.JwtKey}
 }
 
+// GetCaptcha 验证码
+func (uc *UserUsecase) GetCaptcha(ctx context.Context) (*v1.CaptchaReply, error) {
+	captchaInfo, err := captcha.GetCaptcha(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.CaptchaReply{
+		CaptchaId: captchaInfo.CaptchaId,
+		PicPath:   captchaInfo.PicPath,
+	}, nil
+}
+
 func (uc *UserUsecase) UserDetailByID(ctx context.Context, req *v1.DetailReq) (*v1.UserDetailResponse, error) {
 	// 在上下文 context 中取出 claims 对象
 	if claims, ok := jwt.FromContext(ctx); ok {
@@ -80,6 +95,11 @@ func (uc *UserUsecase) PassWordLogin(ctx context.Context, req *v1.LoginReq) (*v1
 	if len(req.Password) <= 0 {
 		return nil, ErrUsernameInvalid
 	}
+	// 验证验证码是否正确
+	if !captcha.Store.Verify(req.CaptchaId, req.Captcha, true) {
+		return nil, ErrCaptchaInvalid
+	}
+
 	if user, err := uc.uRepo.UserByMobile(ctx, req.Mobile); err != nil {
 		return nil, ErrUserNotFound
 	} else {

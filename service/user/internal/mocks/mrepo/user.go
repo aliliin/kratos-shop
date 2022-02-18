@@ -65,6 +65,21 @@ func (mr *MockUserRepoMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserRepo)(nil).CreateUser), arg0, arg1)
 }
 
+// GetUserById mocks base method.
+func (m *MockUserRepo) GetUserById(arg0 context.Context, arg1 int64) (*biz.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserById", arg0, arg1)
+	ret0, _ := ret[0].(*biz.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserById indicates an expected call of GetUserById.
+func (mr *MockUserRepoMockRecorder) GetUserById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserById", reflect.TypeOf((*MockUserRepo)(nil).GetUserById), arg0, arg1)
+}
+
 // ListUser mocks base method.
 func (m *MockUserRepo) ListUser(arg0 context.Context, arg1, arg2 int) ([]*biz.User, int, error) {
 	m.ctrl.T.Helper()

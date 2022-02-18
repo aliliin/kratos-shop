@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ShopClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error)
+	Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error)
 	Detail(ctx context.Context, in *DetailReq, opts ...grpc.CallOption) (*UserDetailResponse, error)
 }
 
@@ -53,6 +55,15 @@ func (c *shopClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallO
 	return out, nil
 }
 
+func (c *shopClient) Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error) {
+	out := new(CaptchaReply)
+	err := c.cc.Invoke(ctx, "/shop.shop.v1.Shop/Captcha", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *shopClient) Detail(ctx context.Context, in *DetailReq, opts ...grpc.CallOption) (*UserDetailResponse, error) {
 	out := new(UserDetailResponse)
 	err := c.cc.Invoke(ctx, "/shop.shop.v1.Shop/Detail", in, out, opts...)
@@ -68,6 +79,7 @@ func (c *shopClient) Detail(ctx context.Context, in *DetailReq, opts ...grpc.Cal
 type ShopServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
+	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	Detail(context.Context, *DetailReq) (*UserDetailResponse, error)
 	mustEmbedUnimplementedShopServer()
 }
@@ -81,6 +93,9 @@ func (UnimplementedShopServer) Register(context.Context, *RegisterReq) (*Registe
 }
 func (UnimplementedShopServer) Login(context.Context, *LoginReq) (*RegisterReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedShopServer) Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Captcha not implemented")
 }
 func (UnimplementedShopServer) Detail(context.Context, *DetailReq) (*UserDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Detail not implemented")
@@ -134,6 +149,24 @@ func _Shop_Login_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Shop_Captcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServer).Captcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/shop.shop.v1.Shop/Captcha",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServer).Captcha(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Shop_Detail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DetailReq)
 	if err := dec(in); err != nil {
@@ -166,6 +199,10 @@ var Shop_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _Shop_Login_Handler,
+		},
+		{
+			MethodName: "Captcha",
+			Handler:    _Shop_Captcha_Handler,
 		},
 		{
 			MethodName: "Detail",
