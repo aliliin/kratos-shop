@@ -5,7 +5,6 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"testing"
-	"user/internal/biz"
 	"user/internal/conf"
 	"user/internal/data"
 
@@ -29,7 +28,8 @@ var ctx context.Context // 上下文
 // initialize  AutoMigrate gorm自动建表
 func initialize(db *gorm.DB) error {
 	err := db.AutoMigrate(
-		&biz.User{},
+		&data.User{},
+		&data.Address{},
 	)
 	return errors.WithStack(err)
 }
@@ -37,7 +37,8 @@ func initialize(db *gorm.DB) error {
 // ginkgo 使用 BeforeEach 为您的 Specs 设置状态
 var _ = BeforeSuite(func() {
 	// 执行测试数据库操作之前，链接之前 docker 容器创建的 mysql
-	con, f := data.DockerMysql("mysql", "latest")
+	//con, f := data.DockerMysql("mysql", "latest")
+	con, f := data.DockerMysql("mariadb", "latest")
 	cleaner = f // 测试完成，关闭容器的回调方法
 	config := &conf.Data{Database: &conf.Data_Database{Driver: "mysql", Source: con}}
 	db := data.NewDB(config)

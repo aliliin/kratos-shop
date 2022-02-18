@@ -26,12 +26,13 @@ func main() {
 	// 全局模式
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
+			//SingularTable: true,
 		},
 		Logger: newLogger,
 	})
 	if err != nil {
 		panic(err)
 	}
-	_ = db.AutoMigrate(&data.User{})
+	//_ = db.AutoMigrate(&data.User{})
+	_ = db.AutoMigrate(&data.Address{})
 }

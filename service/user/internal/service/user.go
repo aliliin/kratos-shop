@@ -15,12 +15,13 @@ type UserService struct {
 	v1.UnimplementedUserServer
 
 	uc  *biz.UserUsecase
+	ac  *biz.AddressUsecase
 	log *log.Helper
 }
 
 // NewUserService new a greeter service.
-func NewUserService(uc *biz.UserUsecase, logger log.Logger) *UserService {
-	return &UserService{uc: uc, log: log.NewHelper(logger)}
+func NewUserService(uc *biz.UserUsecase, ac *biz.AddressUsecase, logger log.Logger) *UserService {
+	return &UserService{uc: uc, ac: ac, log: log.NewHelper(logger)}
 }
 
 // CreateUser create a user
