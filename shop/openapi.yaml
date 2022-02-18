@@ -4,10 +4,59 @@
 openapi: 3.0.3
 info:
     title: Shop API
-    description: The greeting service definition.
+    description: The Shop service definition.
     version: 0.0.1
 paths:
-    /v1/register:
+    /api/users/captcha:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_Captcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CaptchaReply'
+    /api/users/detail/{id}:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_Detail
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserDetailResponse'
+    /api/users/login:
+        post:
+            tags:
+                - Shop
+            operationId: Shop_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RegisterReply'
+    /api/users/register:
         post:
             tags:
                 - Shop
@@ -27,12 +76,40 @@ paths:
                                 $ref: '#/components/schemas/RegisterReply'
 components:
     schemas:
+        CaptchaReply:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                picPath:
+                    type: string
+        LoginReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+                password:
+                    type: string
+                captcha:
+                    type: string
+                captchaId:
+                    type: string
         RegisterReply:
             type: object
             properties:
                 id:
                     type: integer
                     format: int64
+                mobile:
+                    type: string
+                username:
+                    type: string
+                token:
+                    type: string
+                expiredAt:
+                    type: integer
+                    format: int64
+            description: Data returned by registration and login
         RegisterReq:
             type: object
             properties:
@@ -42,5 +119,24 @@ components:
                     type: string
                 password:
                     type: string
+        UserDetailResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                mobile:
+                    type: string
+                nickName:
+                    type: string
+                birthday:
+                    type: integer
+                    format: int64
+                gender:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
+            description: user Detail returned
 tags:
     - name: Shop
