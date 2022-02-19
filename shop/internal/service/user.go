@@ -19,6 +19,6 @@ func (s *ShopService) Captcha(ctx context.Context, r *emptypb.Empty) (*v1.Captch
 	return s.uc.GetCaptcha(ctx)
 }
 
-func (s *ShopService) Detail(ctx context.Context, req *v1.DetailReq) (*v1.UserDetailResponse, error) {
-	return s.uc.UserDetailByID(ctx, req)
+func (s *ShopService) Detail(ctx context.Context, r *emptypb.Empty) (*v1.UserDetailResponse, error) {
+	return s.uc.UserDetailByID(ctx)
 }

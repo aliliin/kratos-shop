@@ -26,9 +26,9 @@ service Shop {
       get: "/api/users/captcha",
     };
   }
-  rpc Detail (DetailReq) returns (UserDetailResponse) {
+  rpc Detail (google.protobuf.Empty) returns (UserDetailResponse) {
     option (google.api.http) = {
-      get: "/api/users/detail/{id}",
+      get: "/api/users/detail",
     };
   }
 }
@@ -55,10 +55,6 @@ message LoginReq {
   string captchaId = 4  [(validate.rules).string ={min_len: 1}];
 }
 
-// select user details
-message  DetailReq{
-  int64 id = 1 [(validate.rules).int64 = {gt: 0}];
-}
 // user Detail returned
 message UserDetailResponse{
   int64 id = 1;

@@ -69,21 +69,25 @@ func (uc *UserUsecase) GetCaptcha(ctx context.Context) (*v1.CaptchaReply, error)
 	}, nil
 }
 
-func (uc *UserUsecase) UserDetailByID(ctx context.Context, req *v1.DetailReq) (*v1.UserDetailResponse, error) {
+func (uc *UserUsecase) UserDetailByID(ctx context.Context) (*v1.UserDetailResponse, error) {
 	// 在上下文 context 中取出 claims 对象
+	var uId int64
 	if claims, ok := jwt.FromContext(ctx); ok {
 		c := claims.(jwt2.MapClaims)
-		if c["ID"] != req.Id {
+		if c["ID"] == nil {
 			return nil, ErrAuthFailed
 		}
+		uId = int64(c["ID"].(float64))
 	}
 
-	user, err := uc.uRepo.UserById(ctx, req.Id)
+	user, err := uc.uRepo.UserById(ctx, uId)
 	if err != nil {
 		return nil, err
 	}
 	return &v1.UserDetailResponse{
-		Id: user.ID,
+		Id:       user.ID,
+		NickName: user.NickName,
+		Mobile:   user.Mobile,
 	}, nil
 }
 
