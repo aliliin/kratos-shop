@@ -6,6 +6,76 @@ import (
 	"user/internal/biz"
 )
 
+func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.DeleteAddressReq) (*v1.CheckResponse, error) {
+	err := ua.ac.DeleteAddress(ctx, &biz.Address{
+		ID:     req.Id,
+		UserID: req.Uid,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.CheckResponse{Success: true}, nil
+}
+
+func (ua *UserService) DefaultAddress(ctx context.Context, req *v1.DeleteAddressReq) (*v1.CheckResponse, error) {
+	err := ua.ac.DefaultAddress(ctx, &biz.Address{
+		ID:     req.Id,
+		UserID: req.Uid,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.CheckResponse{Success: true}, nil
+}
+
+func (ua *UserService) UpdateAddress(ctx context.Context, req *v1.UpdateAddressReq) (*v1.CheckResponse, error) {
+
+	err := ua.ac.UpdateAddress(ctx, &biz.Address{
+		ID:        req.Id,
+		UserID:    req.Uid,
+		IsDefault: int(req.IsDefault),
+		Mobile:    req.Mobile,
+		Name:      req.Name,
+		Province:  req.Province,
+		City:      req.City,
+		Districts: req.Districts,
+		Address:   req.Address,
+		PostCode:  req.PostCode,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.CheckResponse{Success: true}, nil
+}
+
+func (ua *UserService) ListAddress(ctx context.Context, req *v1.ListAddressReq) (*v1.ListAddressReply, error) {
+	rv, err := ua.ac.AddressListByUid(ctx, req.Uid)
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.ListAddressReply{}
+	for _, v := range rv {
+		address := v1.AddressInfo{
+			Id:        v.ID,
+			Name:      v.Name,
+			Mobile:    v.Mobile,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+			IsDefault: int32(v.IsDefault),
+		}
+		res.Results = append(res.Results, &address)
+	}
+	return res, nil
+}
 func (ua *UserService) CreateAddress(ctx context.Context, req *v1.CreateAddressReq) (*v1.AddressInfo, error) {
 	// user is existing
 

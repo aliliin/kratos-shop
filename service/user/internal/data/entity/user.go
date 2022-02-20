@@ -33,6 +33,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	//_ = db.AutoMigrate(&data.User{})
+	_ = db.AutoMigrate(&data.User{})
 	_ = db.AutoMigrate(&data.Address{})
 }
