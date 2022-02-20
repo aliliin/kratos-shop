@@ -8,6 +8,7 @@ import (
 
 func (ua *UserService) CreateAddress(ctx context.Context, req *v1.CreateAddressReq) (*v1.AddressInfo, error) {
 	// user is existing
+
 	_, err := ua.uc.UserById(ctx, req.Uid)
 	if err != nil {
 		return nil, err
