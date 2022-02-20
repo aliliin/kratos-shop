@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package shop.shop.v1;
-
+// 这里可以把 proto 文件下载下来，放到项目的 third_party 目录下
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
