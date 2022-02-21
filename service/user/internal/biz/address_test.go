@@ -27,4 +27,17 @@ var _ = Describe("AddressUsecase", func() {
 		Ω(l.Mobile).To(Equal("13509876789"))
 	})
 
+	It("List", func() {
+		mAddressRepo.EXPECT().AddressListByUid(ctx, gomock.Any()).Return(nil, nil)
+		_, err := addressCase.AddressListByUid(ctx, 1)
+		Ω(err).ShouldNot(HaveOccurred())
+		Ω(err).ToNot(HaveOccurred())
+	})
+
+	It("Update", func() {
+		mAddressRepo.EXPECT().UpdateAddress(ctx, gomock.Any()).Return(nil)
+		err := addressCase.UpdateAddress(ctx, nil)
+		Ω(err).ShouldNot(HaveOccurred())
+		Ω(err).ToNot(HaveOccurred())
+	})
 })
