@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package shop.shop.v1;
-
+// 这里可以把 proto 文件下载下来，放到项目的 third_party 目录下
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
@@ -26,9 +26,9 @@ service Shop {
       get: "/api/users/captcha",
     };
   }
-  rpc Detail (DetailReq) returns (UserDetailResponse) {
+  rpc Detail (google.protobuf.Empty) returns (UserDetailResponse) {
     option (google.api.http) = {
-      get: "/api/users/detail/{id}",
+      get: "/api/users/detail",
     };
   }
 }
@@ -55,10 +55,6 @@ message LoginReq {
   string captchaId = 4  [(validate.rules).string ={min_len: 1}];
 }
 
-// select user details
-message  DetailReq{
-  int64 id = 1 [(validate.rules).int64 = {gt: 0}];
-}
 // user Detail returned
 message UserDetailResponse{
   int64 id = 1;

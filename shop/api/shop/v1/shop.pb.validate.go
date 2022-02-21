@@ -70,7 +70,6 @@ func (m *RegisterReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReplyMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -204,7 +203,6 @@ func (m *RegisterReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReqMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -349,7 +347,6 @@ func (m *LoginReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return LoginReqMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -423,116 +420,6 @@ var _ interface {
 	ErrorName() string
 } = LoginReqValidationError{}
 
-// Validate checks the field values on DetailReq with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *DetailReq) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DetailReq with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in DetailReqMultiError, or nil
-// if none found.
-func (m *DetailReq) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DetailReq) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.GetId() <= 0 {
-		err := DetailReqValidationError{
-			field:  "Id",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return DetailReqMultiError(errors)
-	}
-
-	return nil
-}
-
-// DetailReqMultiError is an error wrapping multiple validation errors returned
-// by DetailReq.ValidateAll() if the designated constraints aren't met.
-type DetailReqMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DetailReqMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DetailReqMultiError) AllErrors() []error { return m }
-
-// DetailReqValidationError is the validation error returned by
-// DetailReq.Validate if the designated constraints aren't met.
-type DetailReqValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DetailReqValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DetailReqValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DetailReqValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DetailReqValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DetailReqValidationError) ErrorName() string { return "DetailReqValidationError" }
-
-// Error satisfies the builtin error interface
-func (e DetailReqValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDetailReq.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DetailReqValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DetailReqValidationError{}
-
 // Validate checks the field values on UserDetailResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -570,7 +457,6 @@ func (m *UserDetailResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserDetailResponseMultiError(errors)
 	}
-
 	return nil
 }
 
@@ -676,7 +562,6 @@ func (m *CaptchaReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return CaptchaReplyMultiError(errors)
 	}
-
 	return nil
 }
 
