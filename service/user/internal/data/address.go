@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"time"
@@ -39,6 +40,98 @@ func NewAddressRepo(data *Data, logger log.Logger) biz.AddressRepo {
 		data: data,
 		log:  log.NewHelper(logger),
 	}
+}
+
+func (a *adderessRepo) DeleteAddress(ctx context.Context, r *biz.Address) error {
+	var address Address
+	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if address.UserID != r.UserID {
+		return errors.New("用户ID参数有误")
+	}
+	//address.DeletedAt = time.Now()
+
+	return a.data.db.Delete(&address).Error
+}
+
+func (a *adderessRepo) DefaultAddress(ctx context.Context, r *biz.Address) error {
+	var address, addressOld Address
+	resCurrDefAdr := a.data.db.Where(&Address{UserID: r.UserID, IsDefault: 1}).First(&addressOld)
+	if resCurrDefAdr.Error == nil {
+		addressOld.IsDefault = 0
+		addressOld.UpdatedAt = time.Now()
+		a.data.db.Save(&addressOld)
+	}
+
+	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if address.UserID != r.UserID {
+		return errors.New("用户ID参数有误")
+	}
+
+	address.IsDefault = 1
+	address.UpdatedAt = time.Now()
+
+	return a.data.db.Save(&address).Error
+}
+
+func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error {
+	var address Address
+	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if address.UserID != r.UserID {
+		return errors.New("用户ID参数有误")
+	}
+
+	address.Address = r.Address
+	address.City = r.City
+	address.Mobile = r.Mobile
+	address.Name = r.Name
+	address.IsDefault = r.IsDefault
+	address.PostCode = r.PostCode
+	address.Districts = r.Districts
+	address.Province = r.Province
+	address.UpdatedAt = time.Now()
+
+	return a.data.db.Save(&address).Error
+}
+
+func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.Address, error) {
+	var address []Address
+	result := a.data.db.Where(&Address{UserID: uid}).Find(&address)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("地址列表为空")
+	}
+	var addressList []*biz.Address
+	for _, v := range address {
+		addressTmp := biz.Address{
+			ID:        v.ID,
+			UserID:    v.UserID,
+			IsDefault: v.IsDefault,
+			Mobile:    v.Mobile,
+			Name:      v.Name,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+		}
+		addressList = append(addressList, &addressTmp)
+	}
+	return addressList, nil
 }
 
 func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Address, error) {

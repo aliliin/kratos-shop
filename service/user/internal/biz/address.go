@@ -21,6 +21,10 @@ type Address struct {
 //go:generate mockgen -destination=../mocks/mrepo/address.go -package=mrepo . AddressRepo
 type AddressRepo interface {
 	CreateAddress(ctx context.Context, a *Address) (*Address, error)
+	AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
+	UpdateAddress(ctx context.Context, a *Address) error
+	DefaultAddress(ctx context.Context, a *Address) error
+	DeleteAddress(ctx context.Context, a *Address) error
 }
 
 type AddressUsecase struct {
@@ -34,4 +38,20 @@ func NewAddressUsecase(repo AddressRepo, logger log.Logger) *AddressUsecase {
 
 func (uc *AddressUsecase) AddAddress(ctx context.Context, a *Address) (*Address, error) {
 	return uc.repo.CreateAddress(ctx, a)
+}
+
+func (uc *AddressUsecase) AddressListByUid(ctx context.Context, uid int64) ([]*Address, error) {
+	return uc.repo.AddressListByUid(ctx, uid)
+}
+
+func (uc *AddressUsecase) UpdateAddress(ctx context.Context, a *Address) error {
+	return uc.repo.UpdateAddress(ctx, a)
+}
+
+func (uc *AddressUsecase) DefaultAddress(ctx context.Context, a *Address) error {
+	return uc.repo.DefaultAddress(ctx, a)
+}
+
+func (uc *AddressUsecase) DeleteAddress(ctx context.Context, a *Address) error {
+	return uc.repo.DeleteAddress(ctx, a)
 }
