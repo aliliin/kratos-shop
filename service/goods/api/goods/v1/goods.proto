@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package goods.v1;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "goods/api/goods/v1;v1";
+
+service Goods {
+  //商品分类
+  rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); //获取所有的分类
+  rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);// 获取子分类
+  rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); //新建分类信息
+  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); //删除分类
+  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); //修改分类信息
+}
+
+// 商品分类
+message CategoryInfoResponse {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message CategoryListResponse {
+  int32 total = 1;
+  repeated CategoryInfoResponse data = 2;
+  string jsonData = 3;
+}
+message CategoryListRequest {
+  int32 id = 1;
+  int32 level = 2;
+}
+message SubCategoryListResponse {
+  int32 total = 1;
+  CategoryInfoResponse info = 2;
+  repeated CategoryInfoResponse subCategory = 3;
+}
+message CategoryInfoRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+message BatchCategoryInfoRequest {
+  repeated int32 id = 1;
+  int32 goodsNums = 2;
+  int32 brandNums = 3;
+}
+
+message DeleteCategoryRequest {
+  int32 id = 1;
+}
