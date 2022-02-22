@@ -13,7 +13,65 @@ service User{
   rpc CreateUser(CreateUserInfo) returns (UserInfoResponse){}; // 创建用户
   rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty){}; // 更新用户
   rpc CheckPassword(PasswordCheckInfo) returns (CheckResponse){}; // 检查用户密码
+
+  // 收货地址
+  rpc ListAddress(ListAddressReq) returns (ListAddressReply) {} // 所有收货地址列表
+  rpc CreateAddress(CreateAddressReq) returns (AddressInfo) {} // 新增收货地址
+  rpc UpdateAddress(UpdateAddressReq) returns (CheckResponse) {} // 修改收货地址
+  rpc DefaultAddress(DeleteAddressReq) returns (CheckResponse) {} // 设置默认地址
+  rpc DeleteAddress(DeleteAddressReq) returns (CheckResponse) {} // 删除收货地址
+
 }
+
+message ListAddressReq {
+  int64 uid = 1;
+}
+
+message AddressInfo {
+  int64 id = 1;
+  string name = 2;
+  string mobile = 3;
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
+}
+message ListAddressReply {
+  repeated AddressInfo results = 1;
+}
+
+message CreateAddressReq {
+  int64 uid = 1;
+  string name = 2;
+  string mobile = 3;
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
+}
+
+message UpdateAddressReq {
+  int64 uid = 1;
+  string name = 2;
+  string mobile = 3;
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
+  int64 id = 10;
+}
+
+message DeleteAddressReq {
+  int64 id = 1;
+  int64 uid = 2;
+}
+
 message CheckResponse{
   bool success = 1;
 }

@@ -20,6 +20,7 @@ const _ = http.SupportPackageIsVersion1
 
 type ShopHTTPServer interface {
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
+	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
@@ -31,6 +32,7 @@ func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
 	r.POST("/api/users/login", _Shop_Login0_HTTP_Handler(srv))
 	r.GET("/api/users/captcha", _Shop_Captcha0_HTTP_Handler(srv))
 	r.GET("/api/users/detail", _Shop_Detail0_HTTP_Handler(srv))
+	r.POST("/api/create/address", _Shop_CreateAddress0_HTTP_Handler(srv))
 }
 
 func _Shop_Register0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
@@ -109,8 +111,28 @@ func _Shop_Detail0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error
 	}
 }
 
+func _Shop_CreateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateAddressReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/shop.shop.v1.Shop/CreateAddress")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateAddress(ctx, req.(*CreateAddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AddressInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ShopHTTPClient interface {
 	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
+	CreateAddress(ctx context.Context, req *CreateAddressReq, opts ...http.CallOption) (rsp *AddressInfo, err error)
 	Detail(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
 	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
@@ -131,6 +153,19 @@ func (c *ShopHTTPClientImpl) Captcha(ctx context.Context, in *emptypb.Empty, opt
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/Captcha"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ShopHTTPClientImpl) CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...http.CallOption) (*AddressInfo, error) {
+	var out AddressInfo
+	pattern := "/api/create/address"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/shop.shop.v1.Shop/CreateAddress"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

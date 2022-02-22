@@ -35,6 +35,695 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on ListAddressReq with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListAddressReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAddressReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ListAddressReqMultiError,
+// or nil if none found.
+func (m *ListAddressReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAddressReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if len(errors) > 0 {
+		return ListAddressReqMultiError(errors)
+	}
+	return nil
+}
+
+// ListAddressReqMultiError is an error wrapping multiple validation errors
+// returned by ListAddressReq.ValidateAll() if the designated constraints
+// aren't met.
+type ListAddressReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAddressReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAddressReqMultiError) AllErrors() []error { return m }
+
+// ListAddressReqValidationError is the validation error returned by
+// ListAddressReq.Validate if the designated constraints aren't met.
+type ListAddressReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAddressReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAddressReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAddressReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAddressReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAddressReqValidationError) ErrorName() string { return "ListAddressReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListAddressReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAddressReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAddressReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAddressReqValidationError{}
+
+// Validate checks the field values on AddressInfo with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *AddressInfo) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AddressInfo with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in AddressInfoMultiError, or
+// nil if none found.
+func (m *AddressInfo) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AddressInfo) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Mobile
+
+	// no validation rules for Province
+
+	// no validation rules for City
+
+	// no validation rules for Districts
+
+	// no validation rules for Address
+
+	// no validation rules for PostCode
+
+	// no validation rules for IsDefault
+
+	if len(errors) > 0 {
+		return AddressInfoMultiError(errors)
+	}
+	return nil
+}
+
+// AddressInfoMultiError is an error wrapping multiple validation errors
+// returned by AddressInfo.ValidateAll() if the designated constraints aren't met.
+type AddressInfoMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AddressInfoMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AddressInfoMultiError) AllErrors() []error { return m }
+
+// AddressInfoValidationError is the validation error returned by
+// AddressInfo.Validate if the designated constraints aren't met.
+type AddressInfoValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AddressInfoValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AddressInfoValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AddressInfoValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AddressInfoValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AddressInfoValidationError) ErrorName() string { return "AddressInfoValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AddressInfoValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddressInfo.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AddressInfoValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AddressInfoValidationError{}
+
+// Validate checks the field values on ListAddressReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ListAddressReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAddressReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListAddressReplyMultiError, or nil if none found.
+func (m *ListAddressReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAddressReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListAddressReplyValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListAddressReplyValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListAddressReplyValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ListAddressReplyMultiError(errors)
+	}
+	return nil
+}
+
+// ListAddressReplyMultiError is an error wrapping multiple validation errors
+// returned by ListAddressReply.ValidateAll() if the designated constraints
+// aren't met.
+type ListAddressReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAddressReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAddressReplyMultiError) AllErrors() []error { return m }
+
+// ListAddressReplyValidationError is the validation error returned by
+// ListAddressReply.Validate if the designated constraints aren't met.
+type ListAddressReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAddressReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAddressReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAddressReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAddressReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAddressReplyValidationError) ErrorName() string { return "ListAddressReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListAddressReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAddressReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAddressReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAddressReplyValidationError{}
+
+// Validate checks the field values on CreateAddressReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *CreateAddressReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateAddressReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateAddressReqMultiError, or nil if none found.
+func (m *CreateAddressReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateAddressReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	// no validation rules for Name
+
+	// no validation rules for Mobile
+
+	// no validation rules for Province
+
+	// no validation rules for City
+
+	// no validation rules for Districts
+
+	// no validation rules for Address
+
+	// no validation rules for PostCode
+
+	// no validation rules for IsDefault
+
+	if len(errors) > 0 {
+		return CreateAddressReqMultiError(errors)
+	}
+	return nil
+}
+
+// CreateAddressReqMultiError is an error wrapping multiple validation errors
+// returned by CreateAddressReq.ValidateAll() if the designated constraints
+// aren't met.
+type CreateAddressReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateAddressReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateAddressReqMultiError) AllErrors() []error { return m }
+
+// CreateAddressReqValidationError is the validation error returned by
+// CreateAddressReq.Validate if the designated constraints aren't met.
+type CreateAddressReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateAddressReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateAddressReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateAddressReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateAddressReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateAddressReqValidationError) ErrorName() string { return "CreateAddressReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CreateAddressReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateAddressReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateAddressReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateAddressReqValidationError{}
+
+// Validate checks the field values on UpdateAddressReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *UpdateAddressReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateAddressReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateAddressReqMultiError, or nil if none found.
+func (m *UpdateAddressReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateAddressReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	// no validation rules for Name
+
+	// no validation rules for Mobile
+
+	// no validation rules for Province
+
+	// no validation rules for City
+
+	// no validation rules for Districts
+
+	// no validation rules for Address
+
+	// no validation rules for PostCode
+
+	// no validation rules for IsDefault
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return UpdateAddressReqMultiError(errors)
+	}
+	return nil
+}
+
+// UpdateAddressReqMultiError is an error wrapping multiple validation errors
+// returned by UpdateAddressReq.ValidateAll() if the designated constraints
+// aren't met.
+type UpdateAddressReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateAddressReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateAddressReqMultiError) AllErrors() []error { return m }
+
+// UpdateAddressReqValidationError is the validation error returned by
+// UpdateAddressReq.Validate if the designated constraints aren't met.
+type UpdateAddressReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateAddressReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateAddressReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateAddressReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateAddressReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateAddressReqValidationError) ErrorName() string { return "UpdateAddressReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UpdateAddressReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateAddressReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateAddressReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateAddressReqValidationError{}
+
+// Validate checks the field values on DeleteAddressReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *DeleteAddressReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteAddressReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteAddressReqMultiError, or nil if none found.
+func (m *DeleteAddressReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteAddressReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Uid
+
+	if len(errors) > 0 {
+		return DeleteAddressReqMultiError(errors)
+	}
+	return nil
+}
+
+// DeleteAddressReqMultiError is an error wrapping multiple validation errors
+// returned by DeleteAddressReq.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteAddressReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteAddressReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteAddressReqMultiError) AllErrors() []error { return m }
+
+// DeleteAddressReqValidationError is the validation error returned by
+// DeleteAddressReq.Validate if the designated constraints aren't met.
+type DeleteAddressReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteAddressReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteAddressReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteAddressReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteAddressReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteAddressReqValidationError) ErrorName() string { return "DeleteAddressReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteAddressReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteAddressReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteAddressReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteAddressReqValidationError{}
+
 // Validate checks the field values on CheckResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.

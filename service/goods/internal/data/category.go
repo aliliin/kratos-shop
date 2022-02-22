@@ -3,12 +3,10 @@ package data
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"gorm.io/gorm"
 	"time"
-	"github.com/jinzhu/copier"
 )
 
 // Category 商品分类表
@@ -59,19 +57,20 @@ func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Categories, error) 
 	result := r.data.db.Where(&Category{Level: 1}).Preload("SubCategory.SubCategory").Find(&cate)
 	if result.Error != nil {
 		return nil, result.Error
-	}z
+	}
 	if result.RowsAffected == 0 {
 		return nil, errors.New("分类为空")
 	}
-	var res  []*biz.Categories
-	err := copier.Copy(res, &cate)
-	if err != nil {
-		return nil, err
-	}
+	//var res []*biz.Categories
+	//err := copier.Copy(res, &cate)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	return res, nil
+	return nil, nil
 
 }
+
 //
 //// buildData 数据的资源组装
 //func buildData(list []*Category) map[int32]map[int32]biz.Categories {

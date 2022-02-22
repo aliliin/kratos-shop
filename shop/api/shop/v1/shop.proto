@@ -31,6 +31,35 @@ service Shop {
       get: "/api/users/detail",
     };
   }
+  rpc CreateAddress (CreateAddressReq) returns (AddressInfo) {
+    option (google.api.http) = {
+      post: "/api/create/address",
+      body: "*",
+    };
+  }
+}
+
+message CreateAddressReq {
+  int64 uid = 1;
+  string name = 2;
+  string mobile = 3;
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
+}
+message AddressInfo {
+  int64 id = 1;
+  string name = 2;
+  string mobile = 3;
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
 }
 
 // Data returned by registration and login

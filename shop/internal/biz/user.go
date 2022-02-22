@@ -42,7 +42,6 @@ type UserRepo interface {
 	CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
 	//ListUser(ctx context.Context, pageNum, pageSize int) ([]*User, int, error)
 	//UpdateUser(context.Context, *User) (bool, error)
-
 }
 
 type UserUsecase struct {

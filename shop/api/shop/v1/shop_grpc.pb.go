@@ -27,6 +27,7 @@ type ShopClient interface {
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error)
 	Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error)
 	Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error)
+	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressInfo, error)
 }
 
 type shopClient struct {
@@ -73,6 +74,15 @@ func (c *shopClient) Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc
 	return out, nil
 }
 
+func (c *shopClient) CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressInfo, error) {
+	out := new(AddressInfo)
+	err := c.cc.Invoke(ctx, "/shop.shop.v1.Shop/CreateAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ShopServer is the server API for Shop service.
 // All implementations must embed UnimplementedShopServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type ShopServer interface {
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
+	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
 	mustEmbedUnimplementedShopServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedShopServer) Captcha(context.Context, *emptypb.Empty) (*Captch
 }
 func (UnimplementedShopServer) Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Detail not implemented")
+}
+func (UnimplementedShopServer) CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAddress not implemented")
 }
 func (UnimplementedShopServer) mustEmbedUnimplementedShopServer() {}
 
@@ -185,6 +199,24 @@ func _Shop_Detail_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Shop_CreateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAddressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServer).CreateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/shop.shop.v1.Shop/CreateAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServer).CreateAddress(ctx, req.(*CreateAddressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Shop_ServiceDesc is the grpc.ServiceDesc for Shop service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var Shop_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Detail",
 			Handler:    _Shop_Detail_Handler,
+		},
+		{
+			MethodName: "CreateAddress",
+			Handler:    _Shop_CreateAddress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
