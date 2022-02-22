@@ -8,6 +8,7 @@ import (
 	"goods/internal/biz"
 	"gorm.io/gorm"
 	"time"
+	"github.com/jinzhu/copier"
 )
 
 // Category 商品分类表
@@ -58,42 +59,42 @@ func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Categories, error) 
 	result := r.data.db.Where(&Category{Level: 1}).Preload("SubCategory.SubCategory").Find(&cate)
 	if result.Error != nil {
 		return nil, result.Error
-	}
+	}z
 	if result.RowsAffected == 0 {
 		return nil, errors.New("分类为空")
 	}
-
-	for _, v := range cate {
-		fmt.Println("cata", buildData(v.SubCategory))
-		fmt.Println("cavvvvta", v)
+	var res  []*biz.Categories
+	err := copier.Copy(res, &cate)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, nil
+	return res, nil
 
 }
-
-// buildData 数据的资源组装
-func buildData(list []*Category) map[int32]map[int32]biz.Categories {
-	var data map[int32]map[int32]biz.Categories = make(map[int32]map[int32]biz.Categories)
-	for _, v := range list {
-		id := v.ID
-		fid := v.ParentCategoryID
-		if _, ok := data[fid]; !ok {
-			data[fid] = make(map[int32]biz.Categories)
-		}
-		data[fid][id] = v.(biz.)
-	}
-	return data
-}
-
-// makeTreeCore 图形化
-func (myL *BusinessRelationLogic) makeTreeCore(index int, data map[int]map[int]models.BusinessRelationOther) []models.BusinessRelationOther {
-	tmp := make([]models.BusinessRelationOther)
-	for id, item := range data[index] {
-		if data[id] != nil {
-			item.List = myL.makeTreeCore(id, data)
-		}
-		tmp = append(tmp, item)
-	}
-	return tmp
-}
+//
+//// buildData 数据的资源组装
+//func buildData(list []*Category) map[int32]map[int32]biz.Categories {
+//	var data map[int32]map[int32]biz.Categories = make(map[int32]map[int32]biz.Categories)
+//	for _, v := range list {
+//		id := v.ID
+//		fid := v.ParentCategoryID
+//		if _, ok := data[fid]; !ok {
+//			data[fid] = make(map[int32]biz.Categories)
+//		}
+//		data[fid][id] = v.(biz.)
+//	}
+//	return data
+//}
+//
+//// makeTreeCore 图形化
+//func (myL *BusinessRelationLogic) makeTreeCore(index int, data map[int]map[int]models.BusinessRelationOther) []models.BusinessRelationOther {
+//	tmp := make([]models.BusinessRelationOther)
+//	for id, item := range data[index] {
+//		if data[id] != nil {
+//			item.List = myL.makeTreeCore(id, data)
+//		}
+//		tmp = append(tmp, item)
+//	}
+//	return tmp
+//}
