@@ -3,30 +3,32 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-kratos/kratos/v2/log"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// GoodsService is a goods service.
-type GoodsService struct {
-	v1.UnimplementedGoodsServer
-
-	gc  *biz.GoodsUsecase
-	cac *biz.CategoryUsecase
-	bc  *biz.BrandUsecase
-	gic *biz.GoodsImageUsecase
-	log *log.Helper
-}
-
-// NewGoodsService new a goods service.
-func NewGoodsService(gc *biz.GoodsUsecase, cac *biz.CategoryUsecase, logger log.Logger) *GoodsService {
-	return &GoodsService{
-		gc:  gc,
-		cac: cac,
-		log: log.NewHelper(logger),
+// CreateCategory 创建分类
+func (g *GoodsService) CreateCategory(ctx context.Context, r *v1.CategoryInfoRequest) (*v1.CategoryInfoResponse, error) {
+	result, err := g.cac.CreateCategory(ctx, &biz.CategoryInfo{
+		Name:           r.Name,
+		ParentCategory: r.ParentCategory,
+		Level:          r.Level,
+		IsTab:          r.IsTab,
+		Sort:           r.Sort,
+	})
+	if err != nil {
+		return nil, err
 	}
+
+	return &v1.CategoryInfoResponse{
+		Id:             result.ID,
+		Name:           result.Name,
+		ParentCategory: result.ParentCategory,
+		Level:          result.Level,
+		IsTab:          result.IsTab,
+		Sort:           result.Sort,
+	}, nil
 }
 
 func (g *GoodsService) GetAllCategoryList(ctx context.Context, r *emptypb.Empty) (*v1.CategoryListResponse, error) {
@@ -36,9 +38,38 @@ func (g *GoodsService) GetAllCategoryList(ctx context.Context, r *emptypb.Empty)
 	}
 	jsonData, _ := json.Marshal(cate)
 	res := &v1.CategoryListResponse{
-		Total:    0,
-		Data:     nil,
 		JsonData: string(jsonData),
 	}
 	return res, nil
+}
+
+// GetSubCategory 获取子分类
+func (g *GoodsService) GetSubCategory(ctx context.Context, r *v1.CategoryListRequest) (*v1.SubCategoryListResponse, error) {
+	list, err := g.cac.SubCategoryList(ctx, r.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	categoryListRes := v1.SubCategoryListResponse{}
+	categoryListRes.Info = &v1.CategoryInfoResponse{
+		Id:             list.Category.ID,
+		Name:           list.Category.Name,
+		ParentCategory: list.Category.ParentCategory,
+		Level:          list.Category.Level,
+		IsTab:          list.Category.IsTab,
+	}
+
+	var subCategoryResponse []*v1.CategoryInfoResponse
+	for _, subC := range list.SubCategory {
+		subCategoryResponse = append(subCategoryResponse, &v1.CategoryInfoResponse{
+			Id:             subC.ID,
+			Name:           subC.Name,
+			ParentCategory: subC.ParentCategory,
+			Level:          subC.Level,
+			IsTab:          subC.IsTab,
+		})
+	}
+
+	categoryListRes.SubCategory = subCategoryResponse
+	return &categoryListRes, nil
 }

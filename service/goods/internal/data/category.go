@@ -3,7 +3,9 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/jinzhu/copier"
 	"goods/internal/biz"
 	"gorm.io/gorm"
 	"time"
@@ -52,7 +54,42 @@ func NewCategoryRepo(data *Data, logger log.Logger) biz.CategoryRepo {
 	}
 }
 
-func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Categories, error) {
+func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
+
+	cMap := map[string]interface{}{}
+	cMap["name"] = req.Name
+	cMap["level"] = req.Level
+	cMap["is_tab"] = req.IsTab
+	cMap["sort"] = req.Sort
+	cMap["add_time"] = time.Now()
+	cMap["update_time"] = time.Now()
+
+	// 去查询父类目是否存在
+	if req.Level != 1 {
+		var categories Category
+		if res := r.data.db.First(&categories, req.ParentCategory); res.RowsAffected == 0 {
+			return nil, errors.New("商品分类不存在")
+		}
+		cMap["parent_category_id"] = req.ParentCategory
+	}
+
+	result := r.data.db.Model(&Category{}).Create(&cMap)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	res := &biz.CategoryInfo{
+		Name:           cMap["name"].(string),
+		ParentCategory: cMap["parent_category_id"].(int32),
+		Level:          cMap["level"].(int32),
+		IsTab:          cMap["is_tab"].(bool),
+		Sort:           cMap["sort"].(int32),
+	}
+	return res, nil
+
+}
+
+func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Category, error) {
 	var cate []*Category
 	result := r.data.db.Where(&Category{Level: 1}).Preload("SubCategory.SubCategory").Find(&cate)
 	if result.Error != nil {
@@ -61,14 +98,55 @@ func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Categories, error) 
 	if result.RowsAffected == 0 {
 		return nil, errors.New("分类为空")
 	}
-	//var res []*biz.Categories
-	//err := copier.Copy(res, &cate)
-	//if err != nil {
-	//	return nil, err
-	//}
+	var res []*biz.Category
+	err := copier.Copy(&res, &cate)
+	if err != nil {
+		fmt.Println("err", err)
+		return nil, err
+	}
 
-	return nil, nil
+	fmt.Println("dddd", res)
+	return res, nil
+}
 
+func (r *CategoryRepo) GetCategoryByID(ctx context.Context, id int32) (*biz.CategoryInfo, error) {
+	var categories Category
+	if res := r.data.db.First(&categories, id); res.RowsAffected == 0 {
+		return nil, errors.New("商品分类不存在")
+	}
+
+	info := &biz.CategoryInfo{
+		ID:             categories.ID,
+		Name:           categories.Name,
+		ParentCategory: categories.ParentCategoryID,
+		Level:          categories.Level,
+		IsTab:          categories.IsTab,
+		Sort:           categories.Sort,
+	}
+	return info, nil
+}
+
+func (r *CategoryRepo) SubCategory(ctx context.Context, req biz.CategoryInfo) ([]*biz.CategoryInfo, error) {
+	var subCategory []Category
+	var subCategoryInfo []*biz.CategoryInfo
+	preload := "SubCategory"
+	if req.Level == 1 {
+		preload = "SubCategory.SubCategory"
+	}
+
+	r.data.db.Where(&Category{ParentCategoryID: req.ID}).Preload(preload).Find(&subCategory)
+	for _, v := range subCategory {
+		subCategoryInfo = append(subCategoryInfo, &biz.CategoryInfo{
+			ID:             v.ID,
+			Name:           v.Name,
+			ParentCategory: v.ParentCategoryID,
+			Level:          v.Level,
+			IsTab:          v.IsTab,
+			Sort:           v.Sort,
+		})
+	}
+
+	return subCategoryInfo, nil
 }
 
 //

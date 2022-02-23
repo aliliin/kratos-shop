@@ -8,11 +8,11 @@ option go_package = "goods/api/goods/v1;v1";
 
 service Goods {
   //商品分类
-  rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); //获取所有的分类
+  rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); // 获取所有的分类
   rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);// 获取子分类
-  rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); //新建分类信息
-  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); //删除分类
-  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); //修改分类信息
+  rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); // 新建分类信息
+  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); // 删除分类
+  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); // 修改分类信息
 }
 
 // 商品分类
@@ -26,18 +26,15 @@ message CategoryInfoResponse {
 }
 
 message CategoryListResponse {
-  int32 total = 1;
-  repeated CategoryInfoResponse data = 2;
-  string jsonData = 3;
+  string jsonData = 1;
 }
 message CategoryListRequest {
   int32 id = 1;
   int32 level = 2;
 }
 message SubCategoryListResponse {
-  int32 total = 1;
-  CategoryInfoResponse info = 2;
-  repeated CategoryInfoResponse subCategory = 3;
+  CategoryInfoResponse info = 1;
+  repeated CategoryInfoResponse subCategory = 2;
 }
 message CategoryInfoRequest {
   int32 id = 1;
