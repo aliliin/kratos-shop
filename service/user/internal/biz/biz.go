@@ -10,5 +10,5 @@ import (
 var ProviderSet = wire.NewSet(NewUserUsecase, NewAddressUsecase)
 
 type Transaction interface {
-	ExecTx(context.Context, func(ctx context.Context) error) error
+	Transaction(context.Context, func(ctx context.Context) error) error
 }
