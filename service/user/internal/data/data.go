@@ -6,6 +6,7 @@ import (
 	slog "log"
 	"os"
 	"time"
+	"user/internal/biz"
 	"user/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -55,7 +56,6 @@ func (d *Data) ExecTx(ctx context.Context, fn func(ctx context.Context) error) e
 	//}
 	//fmt.Printf("进去开始 Commit\n")
 	//return tx.Commit().Error
-
 }
 
 // NewDB .
