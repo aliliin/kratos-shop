@@ -34,7 +34,7 @@ type CategoryRepo interface {
 	Category(context.Context) ([]*Category, error)
 	GetCategoryByID(ctx context.Context, id int32) (*CategoryInfo, error)
 	SubCategory(context.Context, CategoryInfo) ([]*CategoryInfo, error)
-	//CreateGreeter(context.Context, *Goods) error
+	DeleteCategory(context.Context, int32) error
 }
 
 type CategoryUsecase struct {
@@ -44,6 +44,15 @@ type CategoryUsecase struct {
 
 func NewCategoryUsecase(repo CategoryRepo, logger log.Logger) *CategoryUsecase {
 	return &CategoryUsecase{repo: repo, log: log.NewHelper(logger)}
+}
+
+func (c *CategoryUsecase) DeleteCategory(ctx context.Context, r *CategoryInfo) error {
+	// todo 需要验证是否是定级分类,定级分类下面还有没有二级分类
+	err := c.repo.DeleteCategory(ctx, r.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *CategoryUsecase) CreateCategory(ctx context.Context, r *CategoryInfo) (*CategoryInfo, error) {

@@ -8,6 +8,16 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (g *GoodsService) DeleteCategory(ctx context.Context, r *v1.DeleteCategoryRequest) (*emptypb.Empty, error) {
+	err := g.cac.DeleteCategory(ctx, &biz.CategoryInfo{
+		ID: r.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 // CreateCategory 创建分类
 func (g *GoodsService) CreateCategory(ctx context.Context, r *v1.CategoryInfoRequest) (*v1.CategoryInfoResponse, error) {
 	result, err := g.cac.CreateCategory(ctx, &biz.CategoryInfo{

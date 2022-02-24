@@ -54,6 +54,13 @@ func NewCategoryRepo(data *Data, logger log.Logger) biz.CategoryRepo {
 	}
 }
 
+func (r *CategoryRepo) DeleteCategory(ctx context.Context, id int32) error {
+	if res := r.data.db.Delete(&Category{}, id); res.RowsAffected == 0 {
+		return res.Error
+	}
+	return nil
+}
+
 func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
 
 	cMap := map[string]interface{}{}
