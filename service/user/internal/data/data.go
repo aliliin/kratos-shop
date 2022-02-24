@@ -1,6 +1,13 @@
 package data
 
 import (
+	"context"
+	"fmt"
+	slog "log"
+	"os"
+	"time"
+	"user/internal/conf"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"
@@ -9,14 +16,10 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	slog "log"
-	"os"
-	"time"
-	"user/internal/conf"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewUserRepo, NewAddressRepo)
+var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewUserRepo, NewAddressRepo)
 
 type Data struct {
 	db  *gorm.DB
@@ -29,6 +32,30 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*
 		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{db: db, rdb: rdb}, cleanup, nil
+}
+
+type contextTxKey struct{}
+
+func NewTransaction(d *Data) biz.Transaction {
+	return d
+}
+
+func (d *Data) ExecTx(ctx context.Context, fn func(ctx context.Context) error) error {
+	fmt.Printf("进去开始 ExecTx\n")
+	return d.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		ctx = context.WithValue(ctx, contextTxKey{}, tx)
+		return fn(ctx)
+	})
+	//tx := d.db.Begin()
+	//ctx = context.WithValue(ctx, contextTxKey{}, tx)
+	//if err := fn(ctx); err != nil {
+	//    tx.Rollback()
+	//    fmt.Printf("进去开始 Rollback\n")
+	//    return err
+	//}
+	//fmt.Printf("进去开始 Commit\n")
+	//return tx.Commit().Error
+
 }
 
 // NewDB .
