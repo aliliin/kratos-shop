@@ -62,7 +62,6 @@ func (r *CategoryRepo) DeleteCategory(ctx context.Context, id int32) error {
 }
 
 func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
-
 	cMap := map[string]interface{}{}
 	cMap["name"] = req.Name
 	cMap["level"] = req.Level
@@ -84,10 +83,16 @@ func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (
 	if result.Error != nil {
 		return nil, result.Error
 	}
-
+	var value int32
+	_, ok := cMap["parent_category_id"]
+	if !ok {
+		value = 0
+	} else {
+		value = cMap["parent_category_id"].(int32)
+	}
 	res := &biz.CategoryInfo{
 		Name:           cMap["name"].(string),
-		ParentCategory: cMap["parent_category_id"].(int32),
+		ParentCategory: value,
 		Level:          cMap["level"].(int32),
 		IsTab:          cMap["is_tab"].(bool),
 		Sort:           cMap["sort"].(int32),
