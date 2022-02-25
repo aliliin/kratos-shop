@@ -18,6 +18,18 @@ func (g *GoodsService) DeleteCategory(ctx context.Context, r *v1.DeleteCategoryR
 	return &emptypb.Empty{}, nil
 }
 
+func (g *GoodsService) UpdateCategory(ctx context.Context, r *v1.CategoryInfoRequest) (*emptypb.Empty, error) {
+	err := g.cac.UpdateCategory(ctx, &biz.CategoryInfo{
+		ID:             r.Id,
+		Name:           r.Name,
+		ParentCategory: r.ParentCategory,
+		Level:          r.Level,
+		IsTab:          r.IsTab,
+		Sort:           r.Sort,
+	})
+	return &emptypb.Empty{}, err
+}
+
 // CreateCategory 创建分类
 func (g *GoodsService) CreateCategory(ctx context.Context, r *v1.CategoryInfoRequest) (*v1.CategoryInfoResponse, error) {
 	result, err := g.cac.CreateCategory(ctx, &biz.CategoryInfo{
