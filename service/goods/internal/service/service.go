@@ -22,10 +22,11 @@ type GoodsService struct {
 }
 
 // NewGoodsService new a goods service.
-func NewGoodsService(gc *biz.GoodsUsecase, cac *biz.CategoryUsecase, logger log.Logger) *GoodsService {
+func NewGoodsService(gc *biz.GoodsUsecase, cac *biz.CategoryUsecase, bc *biz.BrandUsecase, logger log.Logger) *GoodsService {
 	return &GoodsService{
 		gc:  gc,
 		cac: cac,
+		bc:  bc,
 		log: log.NewHelper(logger),
 	}
 }

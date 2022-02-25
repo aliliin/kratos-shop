@@ -7,12 +7,18 @@ import "google/protobuf/empty.proto";
 option go_package = "goods/api/goods/v1;v1";
 
 service Goods {
-  //商品分类
+  // 商品分类
   rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); // 获取所有的分类
   rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);// 获取子分类
   rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); // 新建分类信息
   rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); // 删除分类
   rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); // 修改分类信息
+
+  // 商品品牌
+  rpc BrandList(BrandListRequest) returns(BrandListResponse);
+  rpc CreateBrand(BrandRequest) returns(BrandInfoResponse);
+  rpc DeleteBrand(BrandRequest) returns(google.protobuf.Empty);
+  rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty);
 }
 
 // 商品分类
@@ -52,4 +58,32 @@ message BatchCategoryInfoRequest {
 
 message DeleteCategoryRequest {
   int32 id = 1;
+}
+
+message BrandListRequest {
+  int32 pages = 1;
+  int32 pagePerNums = 2;
+}
+
+message BrandRequest {
+  int32 id = 1;
+  string name = 2;
+  string logo = 3;
+  string desc = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message BrandInfoResponse {
+  int32 id = 1;
+  string name = 2;
+  string logo = 3;
+  string desc = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message BrandListResponse {
+  int32 total = 1;
+  repeated BrandInfoResponse data = 2;
 }
