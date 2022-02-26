@@ -14,6 +14,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/wire v0.5.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.3 // indirect
 	github.com/hashicorp/consul/api v1.12.0
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.0.0 // indirect
@@ -29,6 +30,7 @@ require (
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/zchee/protoc-gen-openapi v0.0.0-20190907174311-9aa6a9e55f10 // indirect
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.3.0
 	go.opentelemetry.io/otel/sdk v1.3.0

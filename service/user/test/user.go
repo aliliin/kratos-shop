@@ -25,7 +25,7 @@ func main() {
 	conn.Close()
 }
 func TestDeleteAddress() {
-	rsp, err := userClient.DeleteAddress(context.Background(), &v1.DeleteAddressReq{
+	rsp, err := userClient.DeleteAddress(context.Background(), &v1.AddressReq{
 		Id:  4,
 		Uid: 2,
 	})
@@ -35,7 +35,7 @@ func TestDeleteAddress() {
 	fmt.Println(rsp)
 }
 func TestDefaultAddress() {
-	rsp, err := userClient.DefaultAddress(context.Background(), &v1.DeleteAddressReq{
+	rsp, err := userClient.DefaultAddress(context.Background(), &v1.AddressReq{
 		Id:  2,
 		Uid: 1,
 	})
