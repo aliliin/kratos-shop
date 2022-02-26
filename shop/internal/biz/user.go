@@ -77,6 +77,7 @@ func (uc *UserUsecase) UserDetailByID(ctx context.Context) (*v1.UserDetailRespon
 			return nil, ErrAuthFailed
 		}
 		uId = int64(c["ID"].(float64))
+
 	}
 
 	user, err := uc.uRepo.UserById(ctx, uId)
