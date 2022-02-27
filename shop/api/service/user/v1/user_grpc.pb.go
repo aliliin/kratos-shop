@@ -33,8 +33,8 @@ type UserClient interface {
 	ListAddress(ctx context.Context, in *ListAddressReq, opts ...grpc.CallOption) (*ListAddressReply, error)
 	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressInfo, error)
 	UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
-	DefaultAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
-	DeleteAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
+	DefaultAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
+	DeleteAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
 }
 
 type userClient struct {
@@ -126,7 +126,7 @@ func (c *userClient) UpdateAddress(ctx context.Context, in *UpdateAddressReq, op
 	return out, nil
 }
 
-func (c *userClient) DefaultAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*CheckResponse, error) {
+func (c *userClient) DefaultAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error) {
 	out := new(CheckResponse)
 	err := c.cc.Invoke(ctx, "/user.v1.User/DefaultAddress", in, out, opts...)
 	if err != nil {
@@ -135,7 +135,7 @@ func (c *userClient) DefaultAddress(ctx context.Context, in *DeleteAddressReq, o
 	return out, nil
 }
 
-func (c *userClient) DeleteAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*CheckResponse, error) {
+func (c *userClient) DeleteAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error) {
 	out := new(CheckResponse)
 	err := c.cc.Invoke(ctx, "/user.v1.User/DeleteAddress", in, out, opts...)
 	if err != nil {
@@ -158,8 +158,8 @@ type UserServer interface {
 	ListAddress(context.Context, *ListAddressReq) (*ListAddressReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
 	UpdateAddress(context.Context, *UpdateAddressReq) (*CheckResponse, error)
-	DefaultAddress(context.Context, *DeleteAddressReq) (*CheckResponse, error)
-	DeleteAddress(context.Context, *DeleteAddressReq) (*CheckResponse, error)
+	DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error)
+	DeleteAddress(context.Context, *AddressReq) (*CheckResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -194,10 +194,10 @@ func (UnimplementedUserServer) CreateAddress(context.Context, *CreateAddressReq)
 func (UnimplementedUserServer) UpdateAddress(context.Context, *UpdateAddressReq) (*CheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAddress not implemented")
 }
-func (UnimplementedUserServer) DefaultAddress(context.Context, *DeleteAddressReq) (*CheckResponse, error) {
+func (UnimplementedUserServer) DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DefaultAddress not implemented")
 }
-func (UnimplementedUserServer) DeleteAddress(context.Context, *DeleteAddressReq) (*CheckResponse, error) {
+func (UnimplementedUserServer) DeleteAddress(context.Context, *AddressReq) (*CheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAddress not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
@@ -376,7 +376,7 @@ func _User_UpdateAddress_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _User_DefaultAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAddressReq)
+	in := new(AddressReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -388,13 +388,13 @@ func _User_DefaultAddress_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/user.v1.User/DefaultAddress",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).DefaultAddress(ctx, req.(*DeleteAddressReq))
+		return srv.(UserServer).DefaultAddress(ctx, req.(*AddressReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_DeleteAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAddressReq)
+	in := new(AddressReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -406,7 +406,7 @@ func _User_DeleteAddress_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/user.v1.User/DeleteAddress",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).DeleteAddress(ctx, req.(*DeleteAddressReq))
+		return srv.(UserServer).DeleteAddress(ctx, req.(*AddressReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }

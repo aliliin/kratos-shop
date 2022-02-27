@@ -18,8 +18,8 @@ service User{
   rpc ListAddress(ListAddressReq) returns (ListAddressReply) {} // 所有收货地址列表
   rpc CreateAddress(CreateAddressReq) returns (AddressInfo) {} // 新增收货地址
   rpc UpdateAddress(UpdateAddressReq) returns (CheckResponse) {} // 修改收货地址
-  rpc DefaultAddress(DeleteAddressReq) returns (CheckResponse) {} // 设置默认地址
-  rpc DeleteAddress(DeleteAddressReq) returns (CheckResponse) {} // 删除收货地址
+  rpc DefaultAddress(AddressReq) returns (CheckResponse) {} // 设置默认地址
+  rpc DeleteAddress(AddressReq) returns (CheckResponse) {} // 删除收货地址
 
 }
 
@@ -67,7 +67,7 @@ message UpdateAddressReq {
   int64 id = 10;
 }
 
-message DeleteAddressReq {
+message AddressReq {
   int64 id = 1;
   int64 uid = 2;
 }

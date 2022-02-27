@@ -47,3 +47,76 @@ func (a *addressRepo) CreateAddress(c context.Context, address *biz.Address) (*b
 	}
 	return res, nil
 }
+
+func (a *addressRepo) DeleteAddress(ctx context.Context, address *biz.Address) error {
+	_, err := a.data.uc.DeleteAddress(ctx, &addressService.AddressReq{
+		Id:  address.ID,
+		Uid: address.UserID,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *addressRepo) DefaultAddress(ctx context.Context, address *biz.Address) error {
+	_, err := a.data.uc.DefaultAddress(ctx, &addressService.AddressReq{
+		Id:  address.ID,
+		Uid: address.UserID,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *addressRepo) UpdateAddress(c context.Context, address *biz.Address) error {
+	_, err := a.data.uc.UpdateAddress(c, &addressService.UpdateAddressReq{
+		Id:        address.ID,
+		Uid:       address.UserID,
+		Name:      address.Name,
+		Mobile:    address.Mobile,
+		Province:  address.Province,
+		City:      address.City,
+		Districts: address.Districts,
+		Address:   address.Address,
+		PostCode:  address.PostCode,
+		IsDefault: int32(address.IsDefault),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *addressRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.Address, error) {
+	//var address []Address
+	//result := a.data.db.Where(&Address{UserID: uid}).Find(&address)
+	//if result.Error != nil {
+	//	return nil, result.Error
+	//}
+	//
+	//if result.RowsAffected == 0 {
+	//	return nil, errors.New("地址列表为空")
+	//}
+	var addressList []*biz.Address
+	//for _, v := range address {
+	//	addressTmp := biz.Address{
+	//		ID:        v.ID,
+	//		UserID:    v.UserID,
+	//		IsDefault: v.IsDefault,
+	//		Mobile:    v.Mobile,
+	//		Name:      v.Name,
+	//		Province:  v.Province,
+	//		City:      v.City,
+	//		Districts: v.Districts,
+	//		Address:   v.Address,
+	//		PostCode:  v.PostCode,
+	//	}
+	//	addressList = append(addressList, &addressTmp)
+	//}
+	return addressList, nil
+}
