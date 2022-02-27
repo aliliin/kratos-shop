@@ -6,7 +6,7 @@ import (
 	"user/internal/biz"
 )
 
-func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.DeleteAddressReq) (*v1.CheckResponse, error) {
+func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.AddressReq) (*v1.CheckResponse, error) {
 	err := ua.ac.DeleteAddress(ctx, &biz.Address{
 		ID:     req.Id,
 		UserID: req.Uid,
@@ -19,7 +19,7 @@ func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.DeleteAddressR
 	return &v1.CheckResponse{Success: true}, nil
 }
 
-func (ua *UserService) DefaultAddress(ctx context.Context, req *v1.DeleteAddressReq) (*v1.CheckResponse, error) {
+func (ua *UserService) DefaultAddress(ctx context.Context, req *v1.AddressReq) (*v1.CheckResponse, error) {
 	err := ua.ac.DefaultAddress(ctx, &biz.Address{
 		ID:     req.Id,
 		UserID: req.Uid,
