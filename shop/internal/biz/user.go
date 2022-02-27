@@ -73,11 +73,11 @@ func (uc *UserUsecase) UserDetailByID(ctx context.Context) (*v1.UserDetailRespon
 	var uId int64
 	if claims, ok := jwt.FromContext(ctx); ok {
 		c := claims.(jwt2.MapClaims)
-		if c["ID"] == nil {
+		i, ok := c["ID"].(float64)
+		if !ok {
 			return nil, ErrAuthFailed
 		}
-		uId = int64(c["ID"].(float64))
-
+		uId = int64(i)
 	}
 
 	user, err := uc.uRepo.UserById(ctx, uId)
