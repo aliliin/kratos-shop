@@ -15,28 +15,36 @@ type GoodsProperty struct {
 type GoodsPropertyName struct {
 	BaseFields
 
-	CategoryID int32 `gorm:"index:category_id;type:int;comment:分类ID;not null"`
-	Category   Category
+	GoodsTypeID int32 `gorm:"index:goods_type_id;type:int;comment:商品类型ID;not null"`
+	GoodsType   GoodsType
 
-	Title        string `gorm:"type:varchar(100);comment:属性名;not null"`
-	IsAllowAlias bool   `gorm:"default:false;not null;comment:是否允许别名1是0否"`
-	IsColor      bool   `gorm:"comment:是否颜色属性;default:false;not null"`
-	IsInput      bool   `gorm:"comment:是否输入属性: 1是0否;default:false;not null"`
-	IsKey        bool   `gorm:"comment:是否关键属性: 1是0否;default:false;not null"`
-	IsSale       bool   `gorm:"comment:是否销售属性:1是0否;default:false;not null"`
-	IsSearch     bool   `gorm:"comment:是否搜索字段: 1是0否;default:false;not null"`
-	IsMust       bool   `gorm:"comment:是否必须属性: 1是0否;default:false;not null"`
-	IsMulti      bool   `gorm:"comment:是否多选: 1是0否;default:false;not null"`
-	OnSale       bool   `gorm:"comment:是否上架;default:false;not null"`
-	sort         int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
+	Title  string `gorm:"type:varchar(100);comment:属性名;not null"`
+	Desc   string `gorm:"type:varchar(200);comment:属性描述;default:false;not null"`
+	Status bool   `gorm:"comment:状态;default:false;not null"`
+	sort   int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
 }
 
-// GoodsPropertyValue 商品属性值字表
 type GoodsPropertyValue struct {
 	BaseFields
 	NameID int64 `gorm:"index:property_name_id;type:int;comment:属性名称表ID;not null"`
 	Name   GoodsPropertyName
-	Title  string `gorm:"type:varchar(100);comment:属性名;not null"`
-	Status bool   `gorm:"comment:是否上架;default:false;not null"`
-	sort   int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
+
+	value string `gorm:"type:varchar(100);comment:属性值;not null"`
+}
+
+// GoodsPropertySku 商品属性和商品Sku关联表
+type GoodsPropertySku struct {
+	BaseFields
+
+	PropertyID    int64 `gorm:"index:property_id;type:int;comment:商品属性ID;not null"`
+	GoodsProperty GoodsProperty
+
+	NameID int64 `gorm:"index:property_name_id;type:int;comment:属性名称表ID;not null"`
+	Name   GoodsPropertyName
+
+	SkuID   int64  `gorm:"index:sku_id;type:int;comment:商品SKU_ID;not null"`
+	SkuCode string `gorm:"type:varchar(100);comment:商品SKU_Code;not null"`
+
+	Status bool  `gorm:"comment:是否上架;default:false;not null"`
+	sort   int32 `gorm:"type:int;comment:商品属性排序字段;not null"`
 }

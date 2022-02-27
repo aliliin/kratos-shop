@@ -19,7 +19,85 @@ service Goods {
   rpc CreateBrand(BrandRequest) returns(BrandInfoResponse);
   rpc DeleteBrand(BrandRequest) returns(google.protobuf.Empty);
   rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty);
+
+  // 商品类型 goods_property_names
+  // 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合
+  // 手机类型都有屏幕尺寸、网络制式等共同的属性
+
+
+  // 商品接口
+  rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
+  rpc UpdateGoods(CreateGoodsInfo) returns (google.protobuf.Empty);
+//  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
+//  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
+//  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
+//  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
 }
+
+message CreateGoodsInfo {
+  int64 id = 1;
+  string name = 2;
+  string goodsSn = 3;
+  int64 stocks = 7; // 库存会有独自的微服务
+  float marketPrice = 8;
+  float shopPrice = 9;
+  string goodsBrief = 10;
+  string goodsDesc = 11;
+  bool shipFree = 12;
+  repeated string images = 13;
+  repeated string descImages = 14;
+  string goodsFrontImage = 15;
+  bool isNew = 16;
+  bool isHot = 17;
+  bool onSale = 18;
+  int64 categoryId = 19;
+  int64 brandId = 20;
+}
+
+
+message GoodsInfoResponse {
+  int64 id = 1;
+  int64 categoryId = 2;
+  string name = 3;
+  string goodsSn = 4;
+  int64 clickNum = 5;
+  int64 soldNum = 6;
+  int64 favNum = 7;
+  float marketPrice = 9;
+  float shopPrice = 10;
+  string goodsBrief = 11;
+  string goodsDesc = 12;
+  bool shipFree = 13;
+  repeated string images = 14;
+  repeated string descImages = 15;
+  string goodsFrontImage = 16;
+  bool isNew = 17;
+  bool isHot = 18;
+  bool onSale = 19;
+  int64 addTime = 20;
+  CategoryBriefInfoResponse category = 21;
+  BrandInfoResponse brand = 22;
+}
+
+
+message GoodsFilterRequest  {
+  int32 priceMin = 1;
+  int32 priceMax = 2;
+  bool  isHot = 3;
+  bool  isNew = 4;
+  bool  isTab = 5;
+  int32 topCategory = 6;
+  int32 pages = 7;
+  int32 pagePerNums = 8;
+  string keyWords = 9;
+  int32 brand = 10;
+}
+
+message GoodsListResponse {
+  int32 total = 1;
+  repeated GoodsInfoResponse data = 2;
+}
+
 
 // 商品分类
 message CategoryInfoResponse {
