@@ -15,10 +15,16 @@ type Brand struct {
 	Sort  int32
 }
 
+type Pagination struct {
+	PageNum  int
+	PageSize int
+}
+
 type BrandRepo interface {
 	Create(context.Context, *Brand) (*Brand, error)
 	GetBradByName(context.Context, string) (*Brand, error)
 	Update(context.Context, *Brand) error
+	List(context.Context, *Pagination) ([]*Brand, int64, error)
 }
 
 type BrandUsecase struct {
@@ -45,4 +51,13 @@ func (uc *BrandUsecase) UpdateBrand(ctx context.Context, b *Brand) error {
 		return err
 	}
 	return nil
+}
+
+func (uc *BrandUsecase) BrandList(ctx context.Context, b *Pagination) ([]*Brand, int64, error) {
+	list, total, err := uc.repo.List(ctx, b)
+	if err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
+
 }

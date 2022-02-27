@@ -39,6 +39,7 @@ func (r *brandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error
 	brand := &Brand{
 		Name:  b.Name,
 		Logo:  b.Logo,
+		Desc:  b.Desc,
 		IsTab: b.IsTab,
 		Sort:  b.Sort,
 	}
@@ -94,4 +95,29 @@ func (r *brandRepo) Update(ctx context.Context, b *biz.Brand) error {
 	}
 	result := r.data.db.Save(&brands)
 	return result.Error
+}
+func (r *brandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, int64, error) {
+	var brands []Brand
+	result := r.data.db.Scopes(Paginate(b.PageNum, b.PageSize)).Find(&brands)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	var rsp []*biz.Brand
+	var total int64
+	result = r.data.db.Table("brands").Model(&Brand{}).Count(&total)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+	for _, v := range brands {
+		br := &biz.Brand{
+			ID:    v.ID,
+			Name:  v.Name,
+			Logo:  v.Logo,
+			IsTab: v.IsTab,
+			Sort:  v.Sort,
+		}
+		rsp = append(rsp, br)
+	}
+	return rsp, total, nil
 }
