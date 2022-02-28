@@ -51,8 +51,7 @@ service Shop {
   }
   rpc DeleteAddress (AddressReq) returns (CheckResponse) {
     option (google.api.http) = {
-      post: "/api/delete/address",
-      body: "*",
+      delete: "/api/delete/address",
     };
   }
 }

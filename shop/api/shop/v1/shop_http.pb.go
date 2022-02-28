@@ -38,7 +38,7 @@ func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
 	r.POST("/api/create/address", _Shop_CreateAddress0_HTTP_Handler(srv))
 	r.PUT("/api/update/address", _Shop_UpdateAddress0_HTTP_Handler(srv))
 	r.PUT("/api/default/address", _Shop_DefaultAddress0_HTTP_Handler(srv))
-	r.POST("/api/delete/address", _Shop_DeleteAddress0_HTTP_Handler(srv))
+	r.DELETE("/api/delete/address", _Shop_DeleteAddress0_HTTP_Handler(srv))
 }
 
 func _Shop_Register0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
@@ -177,7 +177,7 @@ func _Shop_DefaultAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Contex
 func _Shop_DeleteAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in AddressReq
-		if err := ctx.Bind(&in); err != nil {
+		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, "/shop.shop.v1.Shop/DeleteAddress")
@@ -254,10 +254,10 @@ func (c *ShopHTTPClientImpl) DefaultAddress(ctx context.Context, in *AddressReq,
 func (c *ShopHTTPClientImpl) DeleteAddress(ctx context.Context, in *AddressReq, opts ...http.CallOption) (*CheckResponse, error) {
 	var out CheckResponse
 	pattern := "/api/delete/address"
-	path := binding.EncodeURL(pattern, in, false)
+	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/DeleteAddress"))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
