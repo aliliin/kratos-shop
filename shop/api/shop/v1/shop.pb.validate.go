@@ -133,6 +133,7 @@ func (m *CreateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -307,6 +308,7 @@ func (m *UpdateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -443,6 +445,7 @@ func (m *AddressInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return AddressInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -543,6 +546,7 @@ func (m *ListAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -676,6 +680,7 @@ func (m *ListAddressReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReplyMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -788,6 +793,7 @@ func (m *AddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return AddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -888,6 +894,7 @@ func (m *CheckResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return CheckResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -997,6 +1004,7 @@ func (m *RegisterReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReplyMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1130,6 +1138,7 @@ func (m *RegisterReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return RegisterReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1274,6 +1283,7 @@ func (m *LoginReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return LoginReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1384,6 +1394,7 @@ func (m *UserDetailResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserDetailResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1489,6 +1500,7 @@ func (m *CaptchaReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return CaptchaReplyMultiError(errors)
 	}
+
 	return nil
 }
 
