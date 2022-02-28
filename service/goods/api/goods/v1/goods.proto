@@ -27,7 +27,6 @@ service Goods {
   // 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
   rpc CreateGoodsSpecification(SpecificationRequest) returns(SpecificationResponse); // 商品规格或属性的信息
   // 创建商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g
-  rpc CreateSpecificationValue(SpecificationValueRequest) returns(SpecificationValueResponse); // 商品规格或属性的信息
 
   // 商品接口
   rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
@@ -38,17 +37,17 @@ service Goods {
   //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
 }
 
-message SpecificationValueRequest {
+message SpecificationValue {
   int32 id = 1;
   int32 attrId = 2;
-  int32 value =3;
+  string value = 3;
   int32 sort = 4;
 }
 
 message SpecificationValueResponse {
   int32 id = 1;
   int32 attrId = 2;
-  int32 value =3;
+  int32 value = 3;
   int32 sort = 4;
 }
 
@@ -60,6 +59,7 @@ message SpecificationRequest {
   bool status = 5;
   bool isSku = 6;
   bool IsSelect = 7;
+  repeated SpecificationValue SpecificationValue = 8;
 }
 
 message SpecificationResponse {

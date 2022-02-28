@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"golang.org/x/net/context"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
@@ -8,6 +9,8 @@ import (
 
 // CreateGoodsSpecification 创建商品规格版本
 func (g *GoodsService) CreateGoodsSpecification(ctx context.Context, r *v1.SpecificationRequest) (*v1.SpecificationResponse, error) {
+
+	fmt.Println("r.SpecificationRequest", r.SpecificationValue)
 	id, err := g.s.CreateSpecification(ctx, &biz.Specification{
 		TypeID:   r.TypeId,
 		Name:     r.Name,
