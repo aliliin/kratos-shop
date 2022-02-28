@@ -44,16 +44,21 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/CheckResponse'
     /api/delete/address:
-        post:
+        delete:
             tags:
                 - Shop
             operationId: Shop_DeleteAddress
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/AddressReq'
-                required: true
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: uid
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
             responses:
                 "200":
                     description: OK

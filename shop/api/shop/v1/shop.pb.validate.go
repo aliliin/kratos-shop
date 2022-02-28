@@ -59,17 +59,72 @@ func (m *CreateAddressReq) validate(all bool) error {
 
 	// no validation rules for Uid
 
-	// no validation rules for Name
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		err := CreateAddressReqValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Mobile
+	if utf8.RuneCountInString(m.GetMobile()) != 11 {
+		err := CreateAddressReqValidationError{
+			field:  "Mobile",
+			reason: "value length must be 11 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
-	// no validation rules for Province
+	}
 
-	// no validation rules for City
+	if utf8.RuneCountInString(m.GetProvince()) < 1 {
+		err := CreateAddressReqValidationError{
+			field:  "Province",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Districts
+	if utf8.RuneCountInString(m.GetCity()) < 1 {
+		err := CreateAddressReqValidationError{
+			field:  "City",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Address
+	if utf8.RuneCountInString(m.GetDistricts()) < 1 {
+		err := CreateAddressReqValidationError{
+			field:  "Districts",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetAddress()) < 1 {
+		err := CreateAddressReqValidationError{
+			field:  "Address",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for PostCode
 
@@ -178,21 +233,76 @@ func (m *UpdateAddressReq) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for Mobile
+	if utf8.RuneCountInString(m.GetMobile()) != 11 {
+		err := UpdateAddressReqValidationError{
+			field:  "Mobile",
+			reason: "value length must be 11 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
-	// no validation rules for Province
+	}
 
-	// no validation rules for City
+	if utf8.RuneCountInString(m.GetProvince()) < 1 {
+		err := UpdateAddressReqValidationError{
+			field:  "Province",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Districts
+	if utf8.RuneCountInString(m.GetCity()) < 1 {
+		err := UpdateAddressReqValidationError{
+			field:  "City",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Address
+	if utf8.RuneCountInString(m.GetDistricts()) < 1 {
+		err := UpdateAddressReqValidationError{
+			field:  "Districts",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetAddress()) < 1 {
+		err := UpdateAddressReqValidationError{
+			field:  "Address",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for PostCode
 
 	// no validation rules for IsDefault
 
-	// no validation rules for Id
+	if m.GetId() < 1 {
+		err := UpdateAddressReqValidationError{
+			field:  "Id",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return UpdateAddressReqMultiError(errors)
@@ -295,9 +405,28 @@ func (m *AddressInfo) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Name
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		err := AddressInfoValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Mobile
+	if utf8.RuneCountInString(m.GetMobile()) != 11 {
+		err := AddressInfoValidationError{
+			field:  "Mobile",
+			reason: "value length must be 11 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+
+	}
 
 	// no validation rules for Province
 
@@ -643,7 +772,16 @@ func (m *AddressReq) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() < 1 {
+		err := AddressReqValidationError{
+			field:  "Id",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Uid
 

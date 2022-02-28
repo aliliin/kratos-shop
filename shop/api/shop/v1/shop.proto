@@ -51,20 +51,19 @@ service Shop {
   }
   rpc DeleteAddress (AddressReq) returns (CheckResponse) {
     option (google.api.http) = {
-      post: "/api/delete/address",
-      body: "*",
+      delete: "/api/delete/address",
     };
   }
 }
 
 message CreateAddressReq {
   int64 uid = 1;
-  string name = 2;
-  string mobile = 3;
-  string Province = 4;
-  string City = 5;
-  string Districts = 6;
-  string address = 7;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
   string post_code = 8;
   int32 is_default = 9;
 }
@@ -72,20 +71,20 @@ message CreateAddressReq {
 message UpdateAddressReq {
   int64 uid = 1;
   string name = 2;
-  string mobile = 3;
-  string Province = 4;
-  string City = 5;
-  string Districts = 6;
-  string address = 7;
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
   string post_code = 8;
   int32 is_default = 9;
-  int64 id = 10;
+  int64 id = 10 [(validate.rules).int64.gte = 1];
 }
 
 message AddressInfo {
   int64 id = 1;
-  string name = 2;
-  string mobile = 3;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
   string Province = 4;
   string City = 5;
   string Districts = 6;
@@ -103,7 +102,7 @@ message ListAddressReply {
 }
 
 message AddressReq {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64.gte = 1];
   int64 uid = 2;
 }
 
