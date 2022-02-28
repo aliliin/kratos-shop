@@ -32,7 +32,12 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	categoryUsecase := biz.NewCategoryUsecase(categoryRepo, logger)
 	brandRepo := data.NewBrandRepo(dataData, logger)
 	brandUsecase := biz.NewBrandUsecase(brandRepo, logger)
-	goodsService := service.NewGoodsService(goodsUsecase, categoryUsecase, brandUsecase, logger)
+	goodsTypeRepo := data.NewGoodsTypeRepo(dataData, logger)
+	transaction := data.NewTransaction(dataData)
+	goodsTypeUsecase := biz.NewGoodsTypeUsecase(goodsTypeRepo, transaction, brandUsecase, logger)
+	specificationRepo := data.NewSpecificationRepo(dataData, logger)
+	specificationUsecase := biz.NewSpecificationUsecase(specificationRepo, goodsTypeUsecase, transaction, brandUsecase, logger)
+	goodsService := service.NewGoodsService(goodsUsecase, categoryUsecase, brandUsecase, goodsTypeUsecase, specificationUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	app := newApp(logger, grpcServer)
 	return app, func() {

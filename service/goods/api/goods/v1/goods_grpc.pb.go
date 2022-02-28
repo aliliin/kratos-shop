@@ -34,6 +34,16 @@ type GoodsClient interface {
 	CreateBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*BrandInfoResponse, error)
 	DeleteBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 商品类型 goods_property_names
+	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
+	CreateGoodsType(ctx context.Context, in *GoodsTypeRequest, opts ...grpc.CallOption) (*GoodsTypeResponse, error)
+	// 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+	CreateGoodsSpecification(ctx context.Context, in *SpecificationRequest, opts ...grpc.CallOption) (*SpecificationResponse, error)
+	// 创建商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g
+	CreateSpecificationValue(ctx context.Context, in *SpecificationValueRequest, opts ...grpc.CallOption) (*SpecificationValueResponse, error)
+	// 商品接口
+	CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
+	UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type goodsClient struct {
@@ -125,6 +135,51 @@ func (c *goodsClient) UpdateBrand(ctx context.Context, in *BrandRequest, opts ..
 	return out, nil
 }
 
+func (c *goodsClient) CreateGoodsType(ctx context.Context, in *GoodsTypeRequest, opts ...grpc.CallOption) (*GoodsTypeResponse, error) {
+	out := new(GoodsTypeResponse)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoodsType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateGoodsSpecification(ctx context.Context, in *SpecificationRequest, opts ...grpc.CallOption) (*SpecificationResponse, error) {
+	out := new(SpecificationResponse)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoodsSpecification", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateSpecificationValue(ctx context.Context, in *SpecificationValueRequest, opts ...grpc.CallOption) (*SpecificationValueResponse, error) {
+	out := new(SpecificationValueResponse)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateSpecificationValue", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
+	out := new(GoodsInfoResponse)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/UpdateGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GoodsServer is the server API for Goods service.
 // All implementations must embed UnimplementedGoodsServer
 // for forward compatibility
@@ -140,6 +195,16 @@ type GoodsServer interface {
 	CreateBrand(context.Context, *BrandRequest) (*BrandInfoResponse, error)
 	DeleteBrand(context.Context, *BrandRequest) (*emptypb.Empty, error)
 	UpdateBrand(context.Context, *BrandRequest) (*emptypb.Empty, error)
+	// 商品类型 goods_property_names
+	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
+	CreateGoodsType(context.Context, *GoodsTypeRequest) (*GoodsTypeResponse, error)
+	// 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+	CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error)
+	// 创建商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g
+	CreateSpecificationValue(context.Context, *SpecificationValueRequest) (*SpecificationValueResponse, error)
+	// 商品接口
+	CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error)
+	UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error)
 	mustEmbedUnimplementedGoodsServer()
 }
 
@@ -173,6 +238,21 @@ func (UnimplementedGoodsServer) DeleteBrand(context.Context, *BrandRequest) (*em
 }
 func (UnimplementedGoodsServer) UpdateBrand(context.Context, *BrandRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBrand not implemented")
+}
+func (UnimplementedGoodsServer) CreateGoodsType(context.Context, *GoodsTypeRequest) (*GoodsTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoodsType not implemented")
+}
+func (UnimplementedGoodsServer) CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoodsSpecification not implemented")
+}
+func (UnimplementedGoodsServer) CreateSpecificationValue(context.Context, *SpecificationValueRequest) (*SpecificationValueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSpecificationValue not implemented")
+}
+func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
+}
+func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGoods not implemented")
 }
 func (UnimplementedGoodsServer) mustEmbedUnimplementedGoodsServer() {}
 
@@ -349,6 +429,96 @@ func _Goods_UpdateBrand_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Goods_CreateGoodsType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateGoodsType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateGoodsType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateGoodsType(ctx, req.(*GoodsTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateGoodsSpecification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SpecificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateGoodsSpecification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateGoodsSpecification",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateGoodsSpecification(ctx, req.(*SpecificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateSpecificationValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SpecificationValueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateSpecificationValue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateSpecificationValue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateSpecificationValue(ctx, req.(*SpecificationValueRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoodsInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateGoods(ctx, req.(*CreateGoodsInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoodsInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).UpdateGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/UpdateGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).UpdateGoods(ctx, req.(*CreateGoodsInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Goods_ServiceDesc is the grpc.ServiceDesc for Goods service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -391,6 +561,26 @@ var Goods_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateBrand",
 			Handler:    _Goods_UpdateBrand_Handler,
+		},
+		{
+			MethodName: "CreateGoodsType",
+			Handler:    _Goods_CreateGoodsType_Handler,
+		},
+		{
+			MethodName: "CreateGoodsSpecification",
+			Handler:    _Goods_CreateGoodsSpecification_Handler,
+		},
+		{
+			MethodName: "CreateSpecificationValue",
+			Handler:    _Goods_CreateSpecificationValue_Handler,
+		},
+		{
+			MethodName: "CreateGoods",
+			Handler:    _Goods_CreateGoods_Handler,
+		},
+		{
+			MethodName: "UpdateGoods",
+			Handler:    _Goods_UpdateGoods_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

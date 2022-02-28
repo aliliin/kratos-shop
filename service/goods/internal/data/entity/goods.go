@@ -43,5 +43,8 @@ func main() {
 		&data.GoodsPropertyName{},
 		&data.GoodsPropertyValue{},
 		&data.GoodsProperty{},
+		&data.GoodsType{},
+		&data.GoodsTypeBrand{},
+		&data.SpecificationsAttr{},
 	)
 }

@@ -21,17 +21,68 @@ service Goods {
   rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty);
 
   // 商品类型 goods_property_names
-  // 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合
-  // 手机类型都有屏幕尺寸、网络制式等共同的属性
+  // 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
+  rpc CreateGoodsType(GoodsTypeRequest) returns(GoodsTypeResponse); // 商品类型基本信息创建
 
+  // 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+  rpc CreateGoodsSpecification(SpecificationRequest) returns(SpecificationResponse); // 商品规格或属性的信息
+  // 创建商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g
+  rpc CreateSpecificationValue(SpecificationValueRequest) returns(SpecificationValueResponse); // 商品规格或属性的信息
 
   // 商品接口
   rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
   rpc UpdateGoods(CreateGoodsInfo) returns (google.protobuf.Empty);
-//  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
-//  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
-//  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
-//  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+  //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
+  //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
+  //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
+  //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+}
+
+message SpecificationValueRequest {
+  int32 id = 1;
+  int32 attrId = 2;
+  int32 value =3;
+  int32 sort = 4;
+}
+
+message SpecificationValueResponse {
+  int32 id = 1;
+  int32 attrId = 2;
+  int32 value =3;
+  int32 sort = 4;
+}
+
+message SpecificationRequest {
+  int32 id = 1;
+  int32 typeId = 2;
+  string name = 3;
+  int32 sort = 4;
+  bool status = 5;
+  bool isSku = 6;
+  bool IsSelect = 7;
+}
+
+message SpecificationResponse {
+  int32 id = 1;
+  int32 typeId = 2;
+  string name = 3;
+  int32 sort = 4;
+  bool status = 5;
+  bool isSku = 6;
+  bool IsSelect = 7;
+}
+message GoodsTypeRequest {
+  int32 id = 1;
+  string name = 2;
+  string typeCode = 3;
+  string nameAlias = 4;
+  bool isVirtual = 5;
+  string desc = 6;
+  int32 sort = 7;
+  string brandIds = 8;
+}
+message GoodsTypeResponse {
+  int32 id = 1;
 }
 
 message CreateGoodsInfo {
@@ -75,8 +126,8 @@ message GoodsInfoResponse {
   bool isHot = 18;
   bool onSale = 19;
   int64 addTime = 20;
-  CategoryBriefInfoResponse category = 21;
-  BrandInfoResponse brand = 22;
+  //  CategoryBriefInfoResponse category = 21;
+  //  BrandInfoResponse brand = 22;
 }
 
 

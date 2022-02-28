@@ -121,3 +121,19 @@ func (r *brandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, 
 	}
 	return rsp, total, nil
 }
+
+func (r *brandRepo) IsBrand(ctx context.Context, ids []int32) error {
+	idCount := len(ids)
+	if idCount == 0 {
+		return errors.New("请选择品牌")
+	}
+	var count int64
+	result := r.data.db.Table("brands").Where("id IN (?)", ids).Count(&count)
+	if result.Error != nil {
+		return result.Error
+	}
+	if int64(idCount) != count {
+		return errors.New("品牌不存在")
+	}
+	return nil
+}
