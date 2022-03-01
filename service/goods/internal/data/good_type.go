@@ -57,7 +57,7 @@ func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *biz.GoodsType)
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	result := g.data.db.Save(goodsType)
+	result := g.data.DB(ctx).Save(goodsType)
 	return goodsType.ID, result.Error
 }
 
@@ -72,7 +72,7 @@ func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int32, 
 		}
 		gtb = append(gtb, v)
 	}
-	result := g.data.db.Create(&gtb)
+	result := g.data.DB(ctx).Create(&gtb)
 	return result.Error
 
 }

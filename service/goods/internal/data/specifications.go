@@ -47,7 +47,6 @@ func NewSpecificationRepo(data *Data, logger log.Logger) biz.SpecificationRepo {
 }
 
 func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Specification) (int32, error) {
-
 	s := &SpecificationsAttr{
 		TypeID:    req.TypeID,
 		Name:      req.Name,
@@ -60,4 +59,20 @@ func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Sp
 	}
 	result := g.data.db.Save(s)
 	return s.ID, result.Error
+}
+
+func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int32, req []*biz.SpecificationValue) error {
+	var value []*SpecificationsAttrValue
+	for _, v := range req {
+		res := &SpecificationsAttrValue{
+			AttrId:    AttrId,
+			Value:     v.Value,
+			Sort:      v.Sort,
+			CreatedAt: time.Time{},
+			UpdatedAt: time.Time{},
+		}
+		value = append(value, res)
+	}
+	result := g.data.DB(ctx).Create(&value)
+	return result.Error
 }

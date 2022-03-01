@@ -46,5 +46,6 @@ func main() {
 		&data.GoodsType{},
 		&data.GoodsTypeBrand{},
 		&data.SpecificationsAttr{},
+		&data.SpecificationsAttrValue{},
 	)
 }

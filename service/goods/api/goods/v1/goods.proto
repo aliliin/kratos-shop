@@ -58,8 +58,8 @@ message SpecificationRequest {
   int32 sort = 4;
   bool status = 5;
   bool isSku = 6;
-  bool IsSelect = 7;
-  repeated SpecificationValue SpecificationValue = 8;
+  bool isSelect = 7;
+  repeated SpecificationValue specificationValue = 8;
 }
 
 message SpecificationResponse {
