@@ -28,3 +28,17 @@ type GoodsInventory struct {
 	SKU       GoodsSku
 	Inventory int64 `gorm:"type:int;comment:商品库存;not null"`
 }
+
+// GoodsAttrSku 商品属性和商品Sku关联表
+type GoodsAttrSku struct {
+	BaseFields
+
+	AttrId    int64 `gorm:"index:attr_id;type:int;comment:商品属性ID;not null"`
+	GoodsAttr GoodsAttr
+
+	ValueId        int64 `gorm:"index:attr_value_id;type:int;comment:属性值表ID;not null"`
+	GoodsAttrValue GoodsAttrValue
+
+	SkuID   int64  `gorm:"index:sku_id;type:int;comment:商品SKU_ID;not null"`
+	SkuCode string `gorm:"type:varchar(100);comment:商品SKU_Code;not null"`
+}

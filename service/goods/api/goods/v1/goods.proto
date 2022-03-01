@@ -25,8 +25,11 @@ service Goods {
   rpc CreateGoodsType(GoodsTypeRequest) returns(GoodsTypeResponse); // 商品类型基本信息创建
 
   // 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+  // 商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g, 也一起创建了
   rpc CreateGoodsSpecification(SpecificationRequest) returns(SpecificationResponse); // 商品规格或属性的信息
-  // 创建商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g
+
+  // 商品参数属性 ,手机:上市年份 产品名称 入网型号 操作系统之类的
+  //
 
   // 商品接口
   rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
