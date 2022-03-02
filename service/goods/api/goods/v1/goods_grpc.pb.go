@@ -38,7 +38,12 @@ type GoodsClient interface {
 	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
 	CreateGoodsType(ctx context.Context, in *GoodsTypeRequest, opts ...grpc.CallOption) (*GoodsTypeResponse, error)
 	// 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+	// 商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g, 也一起创建了
 	CreateGoodsSpecification(ctx context.Context, in *SpecificationRequest, opts ...grpc.CallOption) (*SpecificationResponse, error)
+	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
+	CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error)
+	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
+	CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 商品接口
 	CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
 	UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -151,6 +156,24 @@ func (c *goodsClient) CreateGoodsSpecification(ctx context.Context, in *Specific
 	return out, nil
 }
 
+func (c *goodsClient) CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error) {
+	out := new(AttrGroupResponse)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateAttrGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateAttrValue", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
 	out := new(GoodsInfoResponse)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoods", in, out, opts...)
@@ -188,7 +211,12 @@ type GoodsServer interface {
 	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
 	CreateGoodsType(context.Context, *GoodsTypeRequest) (*GoodsTypeResponse, error)
 	// 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+	// 商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g, 也一起创建了
 	CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error)
+	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
+	CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error)
+	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
+	CreateAttrValue(context.Context, *AttrValueRequest) (*emptypb.Empty, error)
 	// 商品接口
 	CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error)
 	UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error)
@@ -231,6 +259,12 @@ func (UnimplementedGoodsServer) CreateGoodsType(context.Context, *GoodsTypeReque
 }
 func (UnimplementedGoodsServer) CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGoodsSpecification not implemented")
+}
+func (UnimplementedGoodsServer) CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrGroup not implemented")
+}
+func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrValueRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrValue not implemented")
 }
 func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
@@ -449,6 +483,42 @@ func _Goods_CreateGoodsSpecification_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Goods_CreateAttrGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttrGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateAttrGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateAttrGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateAttrGroup(ctx, req.(*AttrGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateAttrValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttrValueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateAttrValue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/goods.v1.Goods/CreateAttrValue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateAttrValue(ctx, req.(*AttrValueRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateGoodsInfo)
 	if err := dec(in); err != nil {
@@ -535,6 +605,14 @@ var Goods_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateGoodsSpecification",
 			Handler:    _Goods_CreateGoodsSpecification_Handler,
+		},
+		{
+			MethodName: "CreateAttrGroup",
+			Handler:    _Goods_CreateAttrGroup_Handler,
+		},
+		{
+			MethodName: "CreateAttrValue",
+			Handler:    _Goods_CreateAttrValue_Handler,
 		},
 		{
 			MethodName: "CreateGoods",

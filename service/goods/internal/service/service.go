@@ -20,18 +20,20 @@ type GoodsService struct {
 	gic *biz.GoodsImageUsecase
 	gt  *biz.GoodsTypeUsecase
 	s   *biz.SpecificationUsecase
+	ga  *biz.GoodsAttrUsecase
 	log *log.Helper
 }
 
 // NewGoodsService new a goods service.
 func NewGoodsService(gc *biz.GoodsUsecase, cac *biz.CategoryUsecase, bc *biz.BrandUsecase, gt *biz.GoodsTypeUsecase,
-	s *biz.SpecificationUsecase, logger log.Logger) *GoodsService {
+	s *biz.SpecificationUsecase, ga *biz.GoodsAttrUsecase, logger log.Logger) *GoodsService {
 	return &GoodsService{
 		gc:  gc,
 		cac: cac,
 		bc:  bc,
 		gt:  gt,
 		s:   s,
+		ga:  ga,
 		log: log.NewHelper(logger),
 	}
 }

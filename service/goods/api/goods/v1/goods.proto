@@ -28,8 +28,11 @@ service Goods {
   // 商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g, 也一起创建了
   rpc CreateGoodsSpecification(SpecificationRequest) returns(SpecificationResponse); // 商品规格或属性的信息
 
-  // 商品参数属性 ,手机:上市年份 产品名称 入网型号 操作系统之类的
-  //
+  // 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
+  rpc CreateAttrGroup(AttrGroupRequest) returns(AttrGroupResponse);
+
+  // 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
+  rpc CreateAttrValue(AttrValueRequest) returns(google.protobuf.Empty);
 
   // 商品接口
   rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
@@ -38,6 +41,44 @@ service Goods {
   //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
   //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
   //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+}
+
+message AttrValueRequest {
+  int64 id = 1;
+  int32 typeId = 2;
+  int64 groupId = 3;
+  string title = 4;
+  string  desc = 5;
+  bool status = 6;
+  int32 sort = 7;
+  message Value {
+    int64 id = 1;
+    int64 attrId = 2;
+    int64 groupId = 3;
+    string value = 4;
+  }
+  repeated Value attrValue = 8;
+}
+
+message AttrValueResponse {
+
+}
+
+message AttrGroupRequest {
+  int64 id = 1;
+  int32 typeId = 2;
+  string title = 3;
+  string  desc = 4;
+  bool status = 5;
+  int32 sort = 6;
+}
+message AttrGroupResponse {
+  int64 id = 1;
+  int32 typeId = 2;
+  string title = 3;
+  string  desc = 4;
+  bool status = 5;
+  int32 sort = 6;
 }
 
 message SpecificationValue {

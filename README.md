@@ -31,3 +31,6 @@ kratos 框架写商品微服务
 ```
 
 
+![扫码提建议](https://gitee.com/aliliin/picture/raw/master/2022-3-2/1646202139081-WechatIMG7.jpeg)
+
+
