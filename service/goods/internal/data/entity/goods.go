@@ -36,16 +36,16 @@ func main() {
 	_ = db.AutoMigrate(
 		&data.Brand{},
 		&data.Category{},
-		&data.Goods{},
 		&data.GoodsCategoryBrand{},
-		&data.GoodsSku{},
-		&data.GoodsImages{},
-		&data.GoodsAttrGroup{},
-		&data.GoodsAttr{},
-		&data.GoodsAttrValue{},
 		&data.GoodsType{},
 		&data.GoodsTypeBrand{},
 		&data.SpecificationsAttr{},
 		&data.SpecificationsAttrValue{},
+		&data.GoodsAttrGroup{},
+		&data.GoodsAttr{},
+		&data.GoodsAttrValue{},
+		&data.Goods{},
+		&data.GoodsSku{},
+		&data.GoodsImages{},
 	)
 }

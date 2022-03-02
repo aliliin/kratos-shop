@@ -158,7 +158,7 @@ message CreateGoodsRequest {
   bool onSale = 19;
   // 根据商品类型 选择商品规格信息并选择
   // 商品 sku 属性值 里面有规格的ID和属性的ID，分别是几组信息
-  message GoodsSku {
+  message goodsSku {
     int64 id = 1;
     int64 goodsId = 2;
     string name = 3;
@@ -170,15 +170,19 @@ message CreateGoodsRequest {
     int32 sort = 9;
     int64 inventory = 10; // sku 库存
     // 规格
-    int64 sId = 11;
-    int64 vId = 12;
+    message specification {
+      int64 sId = 1;
+      int64 vId = 2;
+    }
+    repeated specification specificationInfo = 13;
     // 属性组
     message attr {
       int64 attrId = 1;
       int64 attrValueId = 2;
     }
-    repeated attr attrInfo = 13;
+    repeated attr attrInfo = 14;
   }
+  repeated goodsSku sku = 20;
 }
 
 

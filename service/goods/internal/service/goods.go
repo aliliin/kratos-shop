@@ -1,12 +1,14 @@
 package service
 
 import (
+	"fmt"
 	"golang.org/x/net/context"
 	v1 "goods/api/goods/v1"
 )
 
 // CreateGoods 创建商品
 func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest) (*v1.CreateGoodsRequest, error) {
+	fmt.Println(r)
 	//result, err := g.g.CreateAttrGroup(ctx, &biz.AttrGroup{
 	//    TypeID: r.TypeId,
 	//    Title:  r.Title,
@@ -26,5 +28,5 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 	//    Status: result.Status,
 	//    Sort:   result.Sort,
 	//}, nil
-	return nil, nil
+	return r, nil
 }
