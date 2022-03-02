@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -32,9 +33,7 @@ func (g *GoodsService) CreateAttrGroup(ctx context.Context, r *v1.AttrGroupReque
 
 // CreateAttrValue 创建属性名称和值
 func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueRequest) (*emptypb.Empty, error) {
-
 	var value []*biz.GoodsAttrValue
-
 	for _, v := range r.AttrValue {
 		res := &biz.GoodsAttrValue{
 			GroupID: v.GroupId,
@@ -43,7 +42,7 @@ func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueReque
 		value = append(value, res)
 	}
 
-	_, err := g.ga.CreateAttrValue(ctx, &biz.GoodsAttr{
+	info, err := g.ga.CreateAttrValue(ctx, &biz.GoodsAttr{
 		TypeID:         r.TypeId,
 		GroupID:        r.GroupId,
 		Title:          r.Title,
@@ -55,6 +54,7 @@ func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueReque
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("info", info)
 
 	return &emptypb.Empty{}, nil
 }

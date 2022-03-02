@@ -31,7 +31,7 @@ type GoodsAttr struct {
 	Title  string `gorm:"type:varchar(100);comment:属性名;not null"`
 	Desc   string `gorm:"type:varchar(200);comment:属性描述;default:false;not null"`
 	Status bool   `gorm:"comment:状态;default:false;not null"`
-	sort   int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
+	Sort   int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
 }
 
 type GoodsAttrValue struct {
@@ -39,7 +39,7 @@ type GoodsAttrValue struct {
 	AttrId  int64 `gorm:"index:property_name_id;type:int;comment:属性表ID;not null"`
 	Attr    GoodsAttr
 	GroupID int64  `gorm:"index:attr_group_id;type:int;comment:商品属性分组ID;not null"`
-	value   string `gorm:"type:varchar(100);comment:属性值;not null"`
+	Value   string `gorm:"type:varchar(100);comment:属性值;not null"`
 }
 
 type goodsAttrRepo struct {
@@ -56,11 +56,61 @@ func NewGoodsAttrRepo(data *Data, logger log.Logger) biz.GoodsAttrRepo {
 }
 
 func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *biz.GoodsAttr) (*biz.GoodsAttr, error) {
-	return nil, nil
+	attr := &GoodsAttr{
+		GoodsTypeID: a.TypeID,
+		GroupID:     a.GroupID,
+		Title:       a.Title,
+		Desc:        a.Desc,
+		Status:      a.Status,
+		Sort:        a.Sort,
+	}
+
+	var res biz.GoodsAttr
+	result := g.data.DB(ctx).Save(attr)
+	if result.Error != nil {
+		return &res, nil
+	}
+	res = biz.GoodsAttr{
+		ID:             attr.ID,
+		TypeID:         attr.GoodsTypeID,
+		GroupID:        attr.GroupID,
+		Title:          attr.Title,
+		Sort:           attr.Sort,
+		Status:         attr.Status,
+		Desc:           attr.Desc,
+		GoodsAttrValue: nil,
+	}
+
+	return &res, nil
 }
 
-func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, a []*biz.GoodsAttrValue) error {
-	return nil
+func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, a []*biz.GoodsAttrValue) ([]*biz.GoodsAttrValue, error) {
+
+	var value []*GoodsAttrValue
+	for _, v := range a {
+		r := &GoodsAttrValue{
+			AttrId:  v.AttrId,
+			GroupID: v.GroupID,
+			Value:   v.Value,
+		}
+		value = append(value, r)
+	}
+	var res []*biz.GoodsAttrValue
+	result := g.data.DB(ctx).Create(&value)
+	if result.Error != nil {
+		return res, nil
+	}
+	for _, v := range value {
+		r := &biz.GoodsAttrValue{
+			ID:      v.ID,
+			AttrId:  v.AttrId,
+			GroupID: v.GroupID,
+			Value:   v.Value,
+		}
+
+		res = append(res, r)
+	}
+	return res, nil
 }
 
 func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *biz.AttrGroup) (*biz.AttrGroup, error) {

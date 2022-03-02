@@ -36,7 +36,7 @@ type GoodsAttr struct {
 type GoodsAttrRepo interface {
 	CreateGoodsGroupAttr(context.Context, *AttrGroup) (*AttrGroup, error)
 	CreateGoodsAttr(context.Context, *GoodsAttr) (*GoodsAttr, error)
-	CreateGoodsAttrValue(context.Context, []*GoodsAttrValue) error
+	CreateGoodsAttrValue(context.Context, []*GoodsAttrValue) ([]*GoodsAttrValue, error)
 }
 
 type GoodsAttrUsecase struct {
@@ -72,23 +72,25 @@ func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *AttrGroup) (
 	return attr, nil
 }
 
-func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *GoodsAttr) error {
+func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *GoodsAttr) (*GoodsAttr, error) {
+	var (
+		attrInfo *GoodsAttr
+		err      error
+	)
 	if r.TypeID == 0 {
-		return errors.New("请选择商品类型进行绑定")
+		return attrInfo, errors.New("请选择商品类型进行绑定")
 	}
 	// 去查询有没有这个类型
-	_, err := ga.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
+	_, err = ga.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
 	if err != nil {
-		return errors.New("请选择商品类型进行绑定")
+		return attrInfo, errors.New("请选择商品类型进行绑定")
 	}
 
-	var id int64
 	err = ga.tx.ExecTx(ctx, func(ctx context.Context) error {
 		attr, err := ga.repo.CreateGoodsAttr(ctx, r)
 		if err != nil {
 			return err
 		}
-		id = attr.ID
 		var value []*GoodsAttrValue
 		for _, attrValue := range r.GoodsAttrValue {
 			res := &GoodsAttrValue{
@@ -98,11 +100,21 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *GoodsAttr) e
 			}
 			value = append(value, res)
 		}
-		err = ga.repo.CreateGoodsAttrValue(ctx, value)
+		attrValue, err := ga.repo.CreateGoodsAttrValue(ctx, value)
 		if err != nil {
 			return err
 		}
+		attrInfo = &GoodsAttr{
+			ID:             attr.ID,
+			TypeID:         attr.TypeID,
+			GroupID:        attr.GroupID,
+			Title:          attr.Title,
+			Sort:           attr.Sort,
+			Status:         attr.Status,
+			Desc:           attr.Desc,
+			GoodsAttrValue: attrValue,
+		}
 		return nil
 	})
-	return err
+	return attrInfo, nil
 }
