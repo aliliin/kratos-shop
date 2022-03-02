@@ -19,14 +19,6 @@ type GoodsImageUsecase struct {
 	log  *log.Helper
 }
 
-func NewGoodsImagesUsecase(repo GoodsRepo, logger log.Logger) *GoodsImageUsecase {
+func NewGoodsImagesUsecase(repo GoodsImagesRepo, logger log.Logger) *GoodsImageUsecase {
 	return &GoodsImageUsecase{repo: repo, log: log.NewHelper(logger)}
-}
-
-func (uc *GoodsImageUsecase) Create(ctx context.Context, g *Goods) error {
-	return uc.repo.CreateGreeter(ctx, g)
-}
-
-func (uc *GoodsImageUsecase) Update(ctx context.Context, g *Goods) error {
-	return uc.repo.UpdateGreeter(ctx, g)
 }

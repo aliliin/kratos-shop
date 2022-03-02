@@ -43,10 +43,10 @@ type GoodsClient interface {
 	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
 	CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error)
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-	CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*AttrResponse, error)
 	// 商品接口
-	CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
-	UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsRequest, error)
+	UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type goodsClient struct {
@@ -165,8 +165,8 @@ func (c *goodsClient) CreateAttrGroup(ctx context.Context, in *AttrGroupRequest,
 	return out, nil
 }
 
-func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*AttrResponse, error) {
+	out := new(AttrResponse)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateAttrValue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -174,8 +174,8 @@ func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrValueRequest,
 	return out, nil
 }
 
-func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
-	out := new(GoodsInfoResponse)
+func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsRequest, error) {
+	out := new(CreateGoodsRequest)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoods", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -183,7 +183,7 @@ func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts
 	return out, nil
 }
 
-func (c *goodsClient) UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *goodsClient) UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/UpdateGoods", in, out, opts...)
 	if err != nil {
@@ -216,10 +216,10 @@ type GoodsServer interface {
 	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
 	CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error)
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-	CreateAttrValue(context.Context, *AttrValueRequest) (*emptypb.Empty, error)
+	CreateAttrValue(context.Context, *AttrValueRequest) (*AttrResponse, error)
 	// 商品接口
-	CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error)
-	UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error)
+	CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error)
+	UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedGoodsServer()
 }
 
@@ -263,13 +263,13 @@ func (UnimplementedGoodsServer) CreateGoodsSpecification(context.Context, *Speci
 func (UnimplementedGoodsServer) CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrGroup not implemented")
 }
-func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrValueRequest) (*emptypb.Empty, error) {
+func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrValueRequest) (*AttrResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrValue not implemented")
 }
-func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error) {
+func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
 }
-func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error) {
+func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGoods not implemented")
 }
 func (UnimplementedGoodsServer) mustEmbedUnimplementedGoodsServer() {}
@@ -520,7 +520,7 @@ func _Goods_CreateAttrValue_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGoodsInfo)
+	in := new(CreateGoodsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -532,13 +532,13 @@ func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/goods.v1.Goods/CreateGoods",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateGoods(ctx, req.(*CreateGoodsInfo))
+		return srv.(GoodsServer).CreateGoods(ctx, req.(*CreateGoodsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Goods_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGoodsInfo)
+	in := new(CreateGoodsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -550,7 +550,7 @@ func _Goods_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/goods.v1.Goods/UpdateGoods",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).UpdateGoods(ctx, req.(*CreateGoodsInfo))
+		return srv.(GoodsServer).UpdateGoods(ctx, req.(*CreateGoodsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

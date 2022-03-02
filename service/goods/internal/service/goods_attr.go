@@ -2,10 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // CreateAttrGroup 创建属性组
@@ -32,7 +30,7 @@ func (g *GoodsService) CreateAttrGroup(ctx context.Context, r *v1.AttrGroupReque
 }
 
 // CreateAttrValue 创建属性名称和值
-func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueRequest) (*emptypb.Empty, error) {
+func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueRequest) (*v1.AttrResponse, error) {
 	var value []*biz.GoodsAttrValue
 	for _, v := range r.AttrValue {
 		res := &biz.GoodsAttrValue{
@@ -54,7 +52,26 @@ func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueReque
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("info", info)
+	var AttrValue []*v1.AttrValueResponse
+	for _, v := range info.GoodsAttrValue {
+		result := &v1.AttrValueResponse{
+			Id:      v.ID,
+			AttrId:  v.AttrId,
+			GroupId: v.GroupID,
+			Value:   v.Value,
+		}
 
-	return &emptypb.Empty{}, nil
+		AttrValue = append(AttrValue, result)
+	}
+
+	return &v1.AttrResponse{
+		Id:        info.ID,
+		TypeId:    info.TypeID,
+		GroupId:   info.GroupID,
+		Title:     info.Title,
+		Desc:      info.Desc,
+		Status:    info.Status,
+		Sort:      info.Sort,
+		AttrValue: AttrValue,
+	}, nil
 }

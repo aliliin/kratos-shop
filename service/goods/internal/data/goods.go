@@ -1,7 +1,6 @@
 package data
 
 import (
-	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 )
@@ -11,8 +10,10 @@ type Goods struct {
 	BaseFields
 	CategoryID int32 `gorm:"type:int;comment:分类ID;not null"`
 	Category   Category
-	BrandsID   int32 `gorm:"type:int;comment:商品ID ;not null"`
+	BrandsID   int32 `gorm:"type:int;comment:品牌ID ;not null"`
 	Brands     Brand
+
+	TypeID int32 `gorm:"type:int;comment:商品类型ID ;not null"`
 
 	Name            string   `gorm:"type:varchar(100);not null;comment:商品名称"`
 	NameAlias       string   `gorm:"type:varchar(100);not null;comment:商品别名"`
@@ -33,7 +34,7 @@ type Goods struct {
 	SoldNum  int64 `gorm:"default:0;type:int; comment 商品销售数"`
 	FavNum   int64 `gorm:"default:0;type:int; comment 商品收藏数"`
 
-	// 售前服务、售后服务、商品促销活动、商品评论
+	// 售前服务信息、售后服务信息、商品促销活动信息
 }
 
 type goodsRepo struct {
@@ -47,12 +48,4 @@ func NewGoodsRepo(data *Data, logger log.Logger) biz.GoodsRepo {
 		data: data,
 		log:  log.NewHelper(logger),
 	}
-}
-
-func (r *goodsRepo) CreateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
-}
-
-func (r *goodsRepo) UpdateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
 }

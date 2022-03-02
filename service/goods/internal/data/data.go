@@ -21,13 +21,12 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewDB, NewTransaction, NewRedis,
-	NewGoodsRepo,
-	NewCategoryRepo,
 	NewBrandRepo,
-	NewGoodsImagesRepo,
+	NewCategoryRepo,
 	NewGoodsTypeRepo,
 	NewSpecificationRepo,
 	NewGoodsAttrRepo,
+	NewGoodsRepo,
 )
 
 type Data struct {

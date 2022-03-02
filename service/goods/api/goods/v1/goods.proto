@@ -32,11 +32,11 @@ service Goods {
   rpc CreateAttrGroup(AttrGroupRequest) returns(AttrGroupResponse);
 
   // 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-  rpc CreateAttrValue(AttrValueRequest) returns(google.protobuf.Empty);
+  rpc CreateAttrValue(AttrValueRequest) returns(AttrResponse);
 
   // 商品接口
-  rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
-  rpc UpdateGoods(CreateGoodsInfo) returns (google.protobuf.Empty);
+  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsRequest);
+  rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
   //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
   //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
   //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
@@ -51,17 +51,24 @@ message AttrValueRequest {
   string  desc = 5;
   bool status = 6;
   int32 sort = 7;
-  message Value {
-    int64 id = 1;
-    int64 attrId = 2;
-    int64 groupId = 3;
-    string value = 4;
-  }
-  repeated Value attrValue = 8;
+  repeated AttrValueResponse attrValue = 8;
 }
 
 message AttrValueResponse {
-
+  int64 id = 1;
+  int64 attrId = 2;
+  int64 groupId = 3;
+  string value = 4;
+}
+message AttrResponse {
+  int64 id = 1;
+  int32 typeId = 2;
+  int64 groupId = 3;
+  string title = 4;
+  string  desc = 5;
+  bool status = 6;
+  int32 sort = 7;
+  repeated AttrValueResponse attrValue = 8;
 }
 
 message AttrGroupRequest {
@@ -129,24 +136,49 @@ message GoodsTypeResponse {
   int32 id = 1;
 }
 
-message CreateGoodsInfo {
+message CreateGoodsRequest {
   int64 id = 1;
-  string name = 2;
-  string goodsSn = 3;
-  int64 stocks = 7; // 库存会有独自的微服务
-  float marketPrice = 8;
-  float shopPrice = 9;
-  string goodsBrief = 10;
-  string goodsDesc = 11;
-  bool shipFree = 12;
-  repeated string images = 13;
-  repeated string descImages = 14;
-  string goodsFrontImage = 15;
-  bool isNew = 16;
-  bool isHot = 17;
-  bool onSale = 18;
-  int64 categoryId = 19;
-  int64 brandId = 20;
+  int64 categoryId = 2;
+  int64 brandId = 3;
+  int64 typeId = 4;
+  string name = 5;
+  string nameAlias = 6;
+  string goodsTags = 7;
+  string goodsSn = 8;
+  int64 shopPrice = 9;
+  int64 marketPrice = 10;
+  int64 inventory = 11;
+  string goodsBrief = 12;
+  string goodsFrontImage = 13;
+  repeated string goodsImages = 14;
+  bool shipFree = 15;
+  int64 shipId = 16;
+  bool isNew = 17;
+  bool isHot = 18;
+  bool onSale = 19;
+  // 根据商品类型 选择商品规格信息并选择
+  // 商品 sku 属性值 里面有规格的ID和属性的ID，分别是几组信息
+  message GoodsSku {
+    int64 id = 1;
+    int64 goodsId = 2;
+    string name = 3;
+    string code = 4;
+    string barCode = 5;
+    int64 price = 6;
+    int64 promotionPrice = 7;
+    int64 points = 8;
+    int32 sort = 9;
+    int64 inventory = 10; // sku 库存
+    // 规格
+    int64 sId = 11;
+    int64 vId = 12;
+    // 属性组
+    message attr {
+      int64 attrId = 1;
+      int64 attrValueId = 2;
+    }
+    repeated attr attrInfo = 13;
+  }
 }
 
 
