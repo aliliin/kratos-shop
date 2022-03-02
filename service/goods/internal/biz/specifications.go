@@ -31,18 +31,18 @@ type SpecificationRepo interface {
 
 type SpecificationUsecase struct {
 	repo    SpecificationRepo
-	TypeUc  *GoodsTypeUsecase
+	gRepo   GoodsTypeRepo
 	tx      Transaction
 	BrandUc *BrandUsecase
 	log     *log.Helper
 }
 
-func NewSpecificationUsecase(repo SpecificationRepo, TypeUc *GoodsTypeUsecase, tx Transaction, BrandUc *BrandUsecase,
+func NewSpecificationUsecase(repo SpecificationRepo, TypeUc GoodsTypeRepo, tx Transaction, BrandUc *BrandUsecase,
 	logger log.Logger) *SpecificationUsecase {
 
 	return &SpecificationUsecase{
 		repo:    repo,
-		TypeUc:  TypeUc,
+		gRepo:   TypeUc,
 		tx:      tx,
 		BrandUc: BrandUc,
 		log:     log.NewHelper(logger),
@@ -63,9 +63,9 @@ func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Speci
 		return id, errors.New("请填写商品规格下的参数")
 	}
 	// 去查询有没有这个类型
-	err = s.TypeUc.IsTypeByID(ctx, r.TypeID)
+	typeInfo, err := s.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
 	if err != nil {
-		return id, err
+		return typeInfo.ID, err
 	}
 
 	// 使用事务

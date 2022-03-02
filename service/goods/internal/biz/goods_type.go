@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"strconv"
+	"strings"
 )
 
 type GoodsType struct {
@@ -24,18 +26,18 @@ type GoodsTypeRepo interface {
 }
 
 type GoodsTypeUsecase struct {
-	repo    GoodsTypeRepo
-	tx      Transaction
-	BrandUc *BrandUsecase
-	log     *log.Helper
+	repo  GoodsTypeRepo
+	bRepo BrandRepo
+	tx    Transaction
+	log   *log.Helper
 }
 
-func NewGoodsTypeUsecase(repo GoodsTypeRepo, tx Transaction, BrandUc *BrandUsecase, logger log.Logger) *GoodsTypeUsecase {
+func NewGoodsTypeUsecase(repo GoodsTypeRepo, tx Transaction, BrandUc BrandRepo, logger log.Logger) *GoodsTypeUsecase {
 	return &GoodsTypeUsecase{
-		repo:    repo,
-		tx:      tx,
-		BrandUc: BrandUc,
-		log:     log.NewHelper(logger),
+		repo:  repo,
+		tx:    tx,
+		bRepo: BrandUc,
+		log:   log.NewHelper(logger),
 	}
 }
 
@@ -48,7 +50,16 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *GoodsType) (i
 	if r.BrandIds == "" {
 		return id, errors.New("请选择品牌进行绑定")
 	}
-	err = gt.BrandUc.IsBrand(ctx, r.BrandIds)
+	ids := strings.Replace(r.BrandIds, "，", ",", -1)
+	Ids := strings.Split(ids, ",")
+
+	var i []int32
+	for _, id := range Ids {
+		j, _ := strconv.ParseInt(id, 10, 32)
+		i = append(i, int32(j))
+	}
+
+	err = gt.bRepo.IsBrand(ctx, i)
 	if err != nil {
 		return id, err
 	}
@@ -66,12 +77,4 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *GoodsType) (i
 		return nil
 	})
 	return id, err
-}
-
-func (gt *GoodsTypeUsecase) IsTypeByID(ctx context.Context, id int32) error {
-	_, err := gt.repo.GetGoodsTypeByID(ctx, id)
-	if err != nil {
-		return err
-	}
-	return nil
 }

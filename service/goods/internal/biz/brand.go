@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"strconv"
-	"strings"
 )
 
 type Brand struct {
@@ -63,20 +61,4 @@ func (uc *BrandUsecase) BrandList(ctx context.Context, b *Pagination) ([]*Brand,
 	}
 	return list, total, nil
 
-}
-
-func (uc *BrandUsecase) IsBrand(ctx context.Context, ids string) error {
-	ids = strings.Replace(ids, "，", ",", -1)
-	Ids := strings.Split(ids, ",")
-	idCount := len(Ids)
-	if idCount == 0 {
-		return errors.New("请选择品牌")
-	}
-
-	var i []int32
-	for _, id := range Ids {
-		j, _ := strconv.ParseInt(id, 10, 32)
-		i = append(i, int32(j))
-	}
-	return uc.repo.IsBrand(ctx, i)
 }
