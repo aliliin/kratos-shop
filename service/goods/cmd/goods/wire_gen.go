@@ -38,7 +38,7 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	goodsAttrRepo := data.NewGoodsAttrRepo(dataData, logger)
 	goodsAttrUsecase := biz.NewGoodsAttrUsecase(goodsAttrRepo, transaction, goodsTypeRepo, logger)
 	goodsRepo := data.NewGoodsRepo(dataData, logger)
-	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, logger)
+	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, transaction, goodsTypeRepo, categoryRepo, brandRepo, logger)
 	goodsService := service.NewGoodsService(brandUsecase, categoryUsecase, goodsTypeUsecase, specificationUsecase, goodsAttrUsecase, goodsUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	app := newApp(logger, grpcServer)

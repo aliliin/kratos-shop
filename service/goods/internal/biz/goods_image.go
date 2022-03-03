@@ -10,8 +10,8 @@ type GoodsImages struct {
 }
 
 type GoodsImagesRepo interface {
-	CreateGreeter(context.Context, *Goods) error
-	UpdateGreeter(context.Context, *Goods) error
+	CreateGreeter(context.Context, *GoodsInfo) error
+	UpdateGreeter(context.Context, *GoodsInfo) error
 }
 
 type GoodsImageUsecase struct {

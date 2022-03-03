@@ -47,5 +47,7 @@ func main() {
 		&data.Goods{},
 		&data.GoodsSku{},
 		&data.GoodsImages{},
+		&data.GoodsAttrSku{},
+		&data.GoodsSpecificationSku{},
 	)
 }

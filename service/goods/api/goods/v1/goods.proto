@@ -161,7 +161,7 @@ message CreateGoodsRequest {
   message goodsSku {
     int64 id = 1;
     int64 goodsId = 2;
-    string name = 3;
+    string skuName = 3;
     string code = 4;
     string barCode = 5;
     int64 price = 6;
@@ -174,13 +174,13 @@ message CreateGoodsRequest {
       int64 sId = 1;
       int64 vId = 2;
     }
-    repeated specification specificationInfo = 13;
+    repeated specification specificationInfo = 11;
     // 属性组
     message attr {
       int64 attrId = 1;
       int64 attrValueId = 2;
     }
-    repeated attr attrInfo = 14;
+    repeated attr attrInfo = 12;
   }
   repeated goodsSku sku = 20;
 }

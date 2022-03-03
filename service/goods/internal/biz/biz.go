@@ -13,6 +13,7 @@ var ProviderSet = wire.NewSet(
 	NewSpecificationUsecase,
 	NewGoodsAttrUsecase,
 	NewGoodsUsecase,
+	NewGoodsSkuUsecase,
 )
 
 // Transaction 新增事务接口方法

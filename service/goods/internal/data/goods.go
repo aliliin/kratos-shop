@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
+	"golang.org/x/net/context"
 	"goods/internal/biz"
 )
 
@@ -48,4 +49,50 @@ func NewGoodsRepo(data *Data, logger log.Logger) biz.GoodsRepo {
 		data: data,
 		log:  log.NewHelper(logger),
 	}
+}
+
+func (g goodsRepo) CreateGoods(c context.Context, goods *biz.Goods) (*biz.Goods, error) {
+	d := &Goods{
+		CategoryID:      goods.CategoryID,
+		BrandsID:        goods.BrandsID,
+		TypeID:          goods.BrandsID,
+		Name:            goods.Name,
+		NameAlias:       goods.NameAlias,
+		GoodsSn:         goods.GoodsSn,
+		GoodsTags:       goods.GoodsTags,
+		MarketPrice:     goods.MarketPrice,
+		GoodsBrief:      goods.GoodsBrief,
+		GoodsFrontImage: goods.GoodsFrontImage,
+		GoodsImages:     goods.GoodsImages,
+		OnSale:          goods.OnSale,
+		ShipFree:        goods.ShipFree,
+		ShipID:          goods.ShipID,
+		IsNew:           goods.IsNew,
+		IsHot:           goods.IsHot,
+	}
+
+	result := g.data.DB(c).Save(d)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	res := &biz.Goods{
+		ID:              d.ID,
+		CategoryID:      d.CategoryID,
+		BrandsID:        d.BrandsID,
+		TypeID:          d.TypeID,
+		Name:            d.Name,
+		NameAlias:       d.NameAlias,
+		GoodsSn:         d.GoodsSn,
+		GoodsTags:       d.GoodsTags,
+		MarketPrice:     d.MarketPrice,
+		GoodsBrief:      d.GoodsBrief,
+		GoodsFrontImage: d.GoodsFrontImage,
+		GoodsImages:     d.GoodsImages,
+		OnSale:          d.OnSale,
+		ShipFree:        d.ShipFree,
+		ShipID:          d.ShipID,
+		IsNew:           d.IsNew,
+		IsHot:           d.IsHot,
+	}
+	return res, nil
 }

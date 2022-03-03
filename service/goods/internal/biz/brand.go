@@ -25,6 +25,7 @@ type BrandRepo interface {
 	GetBradByName(context.Context, string) (*Brand, error)
 	Update(context.Context, *Brand) error
 	List(context.Context, *Pagination) ([]*Brand, int64, error)
+	IsBrandByID(context.Context, int32) (*Brand, error)
 	IsBrand(context.Context, []int32) error
 }
 

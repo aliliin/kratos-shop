@@ -30,10 +30,10 @@ func NewGoodsImagesRepo(data *Data, logger log.Logger) biz.GoodsImagesRepo {
 	}
 }
 
-func (r *goodsImagesRepo) CreateGreeter(ctx context.Context, g *biz.Goods) error {
+func (r *goodsImagesRepo) CreateGreeter(ctx context.Context, g *biz.GoodsInfo) error {
 	return nil
 }
 
-func (r *goodsImagesRepo) UpdateGreeter(ctx context.Context, g *biz.Goods) error {
+func (r *goodsImagesRepo) UpdateGreeter(ctx context.Context, g *biz.GoodsInfo) error {
 	return nil
 }
