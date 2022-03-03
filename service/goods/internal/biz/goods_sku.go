@@ -22,7 +22,7 @@ type Sku struct {
 }
 
 type GoodsSkuRepo interface {
-	Create(context.Context, []*Sku) ([]*Sku, error)
+	Create(context.Context, *Sku) (*Sku, error)
 }
 
 type GoodsSkuUsecase struct {

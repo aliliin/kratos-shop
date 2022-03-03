@@ -168,14 +168,18 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 				Num:            0,
 				OnSale:         false,
 			}
-			sku = append(sku, res)
+			create, err := g.skuRepo.Create(ctx, res)
+			if err != nil {
+				return err
+			}
+			// 更新 sku 关联关系表
+			fmt.Println(create)
 		}
 		// 更新 sku 表
-		create, err := g.skuRepo.Create(ctx, sku)
 		if err != nil {
 			return err
 		}
-		fmt.Println(create)
+		fmt.Println(sku)
 		return nil
 	})
 

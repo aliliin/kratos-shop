@@ -70,7 +70,7 @@ func NewGoodsSkuRepoRepo(data *Data, logger log.Logger) biz.GoodsSkuRepo {
 	}
 }
 
-func (g *goodsSkuRepo) Create(ctx context.Context, req []*biz.Sku) ([]*biz.Sku, error) {
+func (g *goodsSkuRepo) Create(ctx context.Context, req *biz.Sku) (*biz.Sku, error) {
 
 	return nil, nil
 }
