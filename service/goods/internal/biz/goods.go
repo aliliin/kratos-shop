@@ -89,20 +89,22 @@ type GoodsUsecase struct {
 	cRepo   CategoryRepo
 	bRepo   BrandRepo
 	tRepo   GoodsTypeRepo
+	sRepo   SpecificationRepo
 	log     *log.Helper
 }
 
 func NewGoodsUsecase(repo GoodsRepo, skuRepo GoodsSkuRepo, tx Transaction, gRepo GoodsTypeRepo, cRepo CategoryRepo, bRepo BrandRepo,
-	logger log.Logger) *GoodsUsecase {
+	sRepo SpecificationRepo, logger log.Logger) *GoodsUsecase {
 
 	return &GoodsUsecase{
-		repo: repo,
-		//skuRepo: skuRepo,
-		tr:    tx,
-		tRepo: gRepo,
-		cRepo: cRepo,
-		bRepo: bRepo,
-		log:   log.NewHelper(logger),
+		repo:    repo,
+		skuRepo: skuRepo,
+		tr:      tx,
+		tRepo:   gRepo,
+		cRepo:   cRepo,
+		bRepo:   bRepo,
+		sRepo:   sRepo,
+		log:     log.NewHelper(logger),
 	}
 }
 
@@ -158,21 +160,56 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 				GoodsSn:        goods.GoodsSn,
 				GoodsName:      goods.Name,
 				SkuName:        v.SkuName,
-				SkuCode:        "",
-				BarCode:        "",
-				Price:          0,
-				PromotionPrice: 0,
-				Points:         0,
-				RemarksInfo:    "",
-				Pic:            "",
-				Num:            0,
-				OnSale:         false,
+				SkuCode:        v.SkuCode,
+				BarCode:        v.BarCode,
+				Price:          v.Price,
+				PromotionPrice: v.PromotionPrice,
+				Points:         v.Points,
+				RemarksInfo:    v.RemarksInfo,
+				Pic:            v.Pic,
+				Inventory:      v.Num,
+				OnSale:         v.OnSale,
 			}
+			// 验证属性值是否存在
+			var AttrID []*int64
+			for _, id := range v.Attr {
+				AttrID = append(AttrID, &id.AttrID)
+			}
+			fmt.Println(AttrID)
+			// 插入 sku 表
 			create, err := g.skuRepo.Create(ctx, res)
 			if err != nil {
 				return err
 			}
-			// 更新 sku 关联关系表
+			// 更新 sku 规格关联关系表
+			var sInfoIDs []*Specification
+			var sInfos []*GoodsSpecificationSku
+			for _, info := range v.Specification {
+				s := &Specification{
+					ID: info.SpecificationID,
+				}
+
+				si := &GoodsSpecificationSku{
+					SkuID:   create.ID,
+					SkuCode: create.SkuCode,
+					//Sort:            info.Sort,
+					SpecificationId: info.SpecificationID,
+					ValueId:         info.SpecificationValueID,
+				}
+
+				sInfoIDs = append(sInfoIDs, s)
+				sInfos = append(sInfos, si)
+			}
+			// 查询规格是否存在
+			err = g.sRepo.GetSpecificationByIDs(ctx, sInfoIDs)
+			if err != nil {
+				return err
+			}
+			// 插入商品规格关联关系表
+			err = g.skuRepo.CreateSkuRelation(ctx, sInfos)
+			if err != nil {
+				return err
+			}
 			fmt.Println(create)
 		}
 		// 更新 sku 表

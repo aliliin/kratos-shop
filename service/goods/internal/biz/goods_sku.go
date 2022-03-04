@@ -6,6 +6,7 @@ import (
 )
 
 type Sku struct {
+	ID             int64
 	GoodsID        int64
 	GoodsSn        string
 	GoodsName      string
@@ -17,12 +18,23 @@ type Sku struct {
 	Points         int64
 	RemarksInfo    string
 	Pic            string
-	Num            int64
+	Inventory      int64
 	OnSale         bool
+	AttrInfo       string
+}
+
+type GoodsSpecificationSku struct {
+	ID              int64
+	SkuID           int64
+	SkuCode         string
+	Sort            int32
+	SpecificationId int64
+	ValueId         int64
 }
 
 type GoodsSkuRepo interface {
 	Create(context.Context, *Sku) (*Sku, error)
+	CreateSkuRelation(context.Context, []*GoodsSpecificationSku) error
 }
 
 type GoodsSkuUsecase struct {

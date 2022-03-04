@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"goods/internal/biz"
@@ -10,7 +11,7 @@ import (
 
 // SpecificationsAttr 规格参数信息表
 type SpecificationsAttr struct {
-	ID        int32          `gorm:"primarykey;type:int" json:"id"`
+	ID        int64          `gorm:"primarykey;type:int" json:"id"`
 	TypeID    int32          `gorm:"index:type_id;type:int;comment:商品类型ID;not null"`
 	Name      string         `gorm:"type:varchar(250);not null;comment:规格参数名称" json:"name"`
 	Sort      int32          `gorm:"comment:规格排序;default:99;not null;type:int" json:"sort"`
@@ -24,8 +25,8 @@ type SpecificationsAttr struct {
 
 // SpecificationsAttrValue 规格参数信息选项表
 type SpecificationsAttrValue struct {
-	ID        int32          `gorm:"primarykey;type:int" json:"id"`
-	AttrId    int32          `gorm:"index:attr_id;type:int;comment:规格ID;not null"`
+	ID        int64          `gorm:"primarykey;type:int" json:"id"`
+	AttrId    int64          `gorm:"index:attr_id;type:int;comment:规格ID;not null"`
 	Value     string         `gorm:"type:varchar(250);not null;comment:规格参数信息值" json:"value"`
 	Sort      int32          `gorm:"comment:规格参数值排序;default:99;not null;type:int" json:"sort"`
 	CreatedAt time.Time      `gorm:"column:add_time" json:"created_at"`
@@ -46,7 +47,7 @@ func NewSpecificationRepo(data *Data, logger log.Logger) biz.SpecificationRepo {
 	}
 }
 
-func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Specification) (int32, error) {
+func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Specification) (int64, error) {
 	s := &SpecificationsAttr{
 		TypeID:    req.TypeID,
 		Name:      req.Name,
@@ -61,7 +62,7 @@ func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Sp
 	return s.ID, result.Error
 }
 
-func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int32, req []*biz.SpecificationValue) error {
+func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int64, req []*biz.SpecificationValue) error {
 	var value []*SpecificationsAttrValue
 	for _, v := range req {
 		res := &SpecificationsAttrValue{
@@ -75,4 +76,22 @@ func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId
 	}
 	result := g.data.DB(ctx).Create(&value)
 	return result.Error
+}
+
+func (g *specificationRepo) GetSpecificationByIDs(ctx context.Context, AttrIds []*biz.Specification) error {
+	var attrIDs []*int64
+	for _, id := range AttrIds {
+		attrIDs = append(attrIDs, &id.ID)
+	}
+	total := len(AttrIds)
+	var count int64
+	result := g.data.DB(ctx).Where("id IN (?)", attrIDs).Count(&count)
+	if result.Error != nil {
+		return result.Error
+	}
+	if int64(total) != count {
+		return errors.New("部分规格不存在")
+	}
+	return nil
+
 }

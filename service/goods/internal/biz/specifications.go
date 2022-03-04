@@ -7,14 +7,14 @@ import (
 )
 
 type SpecificationValue struct {
-	ID     int32
-	AttrId int32
+	ID     int64
+	AttrId int64
 	Value  string
 	Sort   int32
 }
 
 type Specification struct {
-	ID                 int32
+	ID                 int64
 	TypeID             int32
 	Name               string
 	Sort               int32
@@ -25,34 +25,33 @@ type Specification struct {
 }
 
 type SpecificationRepo interface {
-	CreateSpecification(context.Context, *Specification) (int32, error)
-	CreateSpecificationValue(context.Context, int32, []*SpecificationValue) error
+	CreateSpecification(context.Context, *Specification) (int64, error)
+	CreateSpecificationValue(context.Context, int64, []*SpecificationValue) error
+	GetSpecificationByIDs(context.Context, []*Specification) error
 }
 
 type SpecificationUsecase struct {
-	repo    SpecificationRepo
-	gRepo   GoodsTypeRepo
-	tx      Transaction
-	BrandUc *BrandUsecase
-	log     *log.Helper
+	repo  SpecificationRepo
+	gRepo GoodsTypeRepo
+	tx    Transaction
+	log   *log.Helper
 }
 
-func NewSpecificationUsecase(repo SpecificationRepo, TypeUc GoodsTypeRepo, tx Transaction, BrandUc *BrandUsecase,
+func NewSpecificationUsecase(repo SpecificationRepo, TypeUc GoodsTypeRepo, tx Transaction,
 	logger log.Logger) *SpecificationUsecase {
 
 	return &SpecificationUsecase{
-		repo:    repo,
-		gRepo:   TypeUc,
-		tx:      tx,
-		BrandUc: BrandUc,
-		log:     log.NewHelper(logger),
+		repo:  repo,
+		gRepo: TypeUc,
+		tx:    tx,
+		log:   log.NewHelper(logger),
 	}
 }
 
 // CreateSpecification 创建商品规格
-func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Specification) (int32, error) {
+func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Specification) (int64, error) {
 	var (
-		id  int32
+		id  int64
 		err error
 	)
 	if r.TypeID == 0 {
@@ -65,7 +64,7 @@ func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Speci
 	// 去查询有没有这个类型
 	typeInfo, err := s.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
 	if err != nil {
-		return typeInfo.ID, err
+		return int64(typeInfo.ID), err
 	}
 
 	// 使用事务

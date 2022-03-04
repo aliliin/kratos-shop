@@ -14,8 +14,8 @@ func (g *GoodsService) CreateGoodsSpecification(ctx context.Context, r *v1.Speci
 	if r.SpecificationValue != nil {
 		for _, v := range r.SpecificationValue {
 			res := &biz.SpecificationValue{
-				ID:     v.Id,
-				AttrId: v.AttrId,
+				ID:     int64(v.Id),
+				AttrId: int64(v.AttrId),
 				Value:  v.Value,
 				Sort:   v.Sort,
 			}
@@ -36,6 +36,6 @@ func (g *GoodsService) CreateGoodsSpecification(ctx context.Context, r *v1.Speci
 		return nil, err
 	}
 	return &v1.SpecificationResponse{
-		Id: id,
+		Id: int32(id),
 	}, nil
 }
