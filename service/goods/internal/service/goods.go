@@ -4,13 +4,14 @@ import (
 	"golang.org/x/net/context"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // CreateGoods 创建商品
 func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest) (*v1.CreateGoodsRequest, error) {
-	var goodsSku []*biz.GoodsSku
+	var goodsSku []*domain.GoodsSku
 	for _, sku := range r.Sku {
-		res := &biz.GoodsSku{
+		res := &domain.GoodsSku{
 			GoodsName:      r.Name,
 			GoodsSn:        r.GoodsSn,
 			SkuName:        sku.SkuName,
