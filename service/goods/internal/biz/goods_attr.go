@@ -1,9 +1,10 @@
 package biz
 
 import (
+	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
+	"goods/internal/domain"
 )
 
 type AttrGroup struct {
@@ -22,22 +23,12 @@ type GoodsAttrValue struct {
 	Value   string
 }
 
-type GoodsAttr struct {
-	ID             int64
-	TypeID         int32
-	GroupID        int64
-	Title          string
-	Sort           int32
-	Status         bool
-	Desc           string
-	GoodsAttrValue []*GoodsAttrValue
-}
-
 type GoodsAttrRepo interface {
 	CreateGoodsGroupAttr(context.Context, *AttrGroup) (*AttrGroup, error)
-	CreateGoodsAttr(context.Context, *GoodsAttr) (*GoodsAttr, error)
+	CreateGoodsAttr(context.Context, *domain.GoodsAttr) (*domain.GoodsAttr, error)
 	CreateGoodsAttrValue(context.Context, []*GoodsAttrValue) ([]*GoodsAttrValue, error)
 	GetAttrByIDs(ctx context.Context, id []*int64) error
+	ListByIds(ctx context.Context, id ...*int64) (domain.GoodsAttrList, error)
 }
 
 type GoodsAttrUsecase struct {
@@ -73,9 +64,9 @@ func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *AttrGroup) (
 	return attr, nil
 }
 
-func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *GoodsAttr) (*GoodsAttr, error) {
+func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.GoodsAttr) (*domain.GoodsAttr, error) {
 	var (
-		attrInfo *GoodsAttr
+		attrInfo *domain.GoodsAttr
 		err      error
 	)
 	if r.TypeID == 0 {
@@ -105,7 +96,7 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *GoodsAttr) (
 		if err != nil {
 			return err
 		}
-		attrInfo = &GoodsAttr{
+		attrInfo = &domain.GoodsAttr{
 			ID:             attr.ID,
 			TypeID:         attr.TypeID,
 			GroupID:        attr.GroupID,

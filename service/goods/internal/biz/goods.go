@@ -1,10 +1,11 @@
 package biz
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
 )
 
 type SpecificationInfo struct {
@@ -12,12 +13,12 @@ type SpecificationInfo struct {
 	SpecificationValueID int64
 }
 type GroupAttr struct {
-	GroupId int64
-	Attr    []*Attr
+	GroupId int64   `json:"group_id"`
+	Attr    []*Attr `json:"attr"`
 }
 type Attr struct {
-	AttrID      int64
-	AttrValueID int64
+	AttrID      int64 `json:"attr_id"`
+	AttrValueID int64 `json:"attr_value_id"`
 }
 
 type GoodsSku struct {
@@ -185,10 +186,19 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 				}
 			}
 			fmt.Println("AttrID", AttrID)
-			err := g.aRepo.GetAttrByIDs(ctx, AttrID)
+			goodsAttrList, err := g.aRepo.ListByIds(ctx, AttrID...)
 			if err != nil {
 				return err
 			}
+			for _, attr := range v.GroupAttr {
+				for _, id := range attr.Attr {
+					if goodsAttrList.IsNotExist(attr.GroupId, id.AttrID) {
+						return errors.New("xxxxx")
+					}
+				}
+			}
+			gjson, err := json.Marshal(v.GroupAttr)
+			res.AttrInfo = string(gjson)
 			// 插入 sku 表
 			create, err := g.skuRepo.Create(ctx, res)
 			if err != nil {

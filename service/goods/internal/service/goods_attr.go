@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // CreateAttrGroup 创建属性组
@@ -40,7 +41,7 @@ func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueReque
 		value = append(value, res)
 	}
 
-	info, err := g.ga.CreateAttrValue(ctx, &biz.GoodsAttr{
+	info, err := g.ga.CreateAttrValue(ctx, &domain.GoodsAttr{
 		TypeID:         r.TypeId,
 		GroupID:        r.GroupId,
 		Title:          r.Title,

@@ -1,10 +1,11 @@
 package data
 
 import (
+	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
 	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // GoodsAttrGroup  商品属性分组表  手机 -> 主体,屏幕,操作系统,网络支持,基本信息
@@ -35,6 +36,22 @@ type GoodsAttr struct {
 	Sort   int32  `gorm:"type:int;comment:商品属性排序字段;not null"`
 }
 
+func (p *GoodsAttr) ToDomain() *domain.GoodsAttr {
+	attr := p
+	res := &domain.GoodsAttr{
+		ID:             attr.ID,
+		TypeID:         attr.GoodsTypeID,
+		GroupID:        attr.GroupID,
+		Title:          attr.Title,
+		Sort:           attr.Sort,
+		Status:         attr.Status,
+		Desc:           attr.Desc,
+		GoodsAttrValue: nil,
+	}
+
+	return res
+}
+
 type GoodsAttrValue struct {
 	BaseFields
 	AttrId  int64 `gorm:"index:property_name_id;type:int;comment:属性表ID;not null"`
@@ -56,7 +73,7 @@ func NewGoodsAttrRepo(data *Data, logger log.Logger) biz.GoodsAttrRepo {
 	}
 }
 
-func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *biz.GoodsAttr) (*biz.GoodsAttr, error) {
+func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *domain.GoodsAttr) (*domain.GoodsAttr, error) {
 	attr := &GoodsAttr{
 		GoodsTypeID: a.TypeID,
 		GroupID:     a.GroupID,
@@ -66,12 +83,12 @@ func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *biz.GoodsAttr) (
 		Sort:        a.Sort,
 	}
 
-	var res biz.GoodsAttr
+	var res domain.GoodsAttr
 	result := g.data.DB(ctx).Save(attr)
 	if result.Error != nil {
 		return &res, nil
 	}
-	res = biz.GoodsAttr{
+	res = domain.GoodsAttr{
 		ID:             attr.ID,
 		TypeID:         attr.GoodsTypeID,
 		GroupID:        attr.GroupID,
@@ -153,5 +170,20 @@ func (g *goodsAttrRepo) GetAttrByIDs(ctx context.Context, ids []*int64) error {
 		return errors.New("部分属性不存在")
 	}
 	return nil
+
+}
+
+func (g *goodsAttrRepo) ListByIds(ctx context.Context, ids ...*int64) (domain.GoodsAttrList, error) {
+	var l []*GoodsAttr
+	if err := g.data.DB(ctx).Where("id IN (?)", ids).Take(&l).Error; err != nil {
+		return nil, err
+	}
+	var res domain.GoodsAttrList
+
+	for _, item := range l {
+		res = append(res, item.ToDomain())
+	}
+
+	return res, nil
 
 }
