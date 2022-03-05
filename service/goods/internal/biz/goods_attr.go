@@ -37,6 +37,7 @@ type GoodsAttrRepo interface {
 	CreateGoodsGroupAttr(context.Context, *AttrGroup) (*AttrGroup, error)
 	CreateGoodsAttr(context.Context, *GoodsAttr) (*GoodsAttr, error)
 	CreateGoodsAttrValue(context.Context, []*GoodsAttrValue) ([]*GoodsAttrValue, error)
+	GetAttrByIDs(ctx context.Context, id []*int64) error
 }
 
 type GoodsAttrUsecase struct {

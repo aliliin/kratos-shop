@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"goods/internal/biz"
@@ -135,4 +136,22 @@ func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *biz.AttrGro
 		Sort:   group.Sort,
 	}
 	return &res, nil
+}
+
+func (g *goodsAttrRepo) GetAttrByIDs(ctx context.Context, ids []*int64) error {
+	var attrIDs []*int64
+	for _, id := range ids {
+		attrIDs = append(attrIDs, id)
+	}
+	total := len(ids)
+	var count int64
+	result := g.data.DB(ctx).Where("id IN (?)", attrIDs).Count(&count)
+	if result.Error != nil {
+		return result.Error
+	}
+	if int64(total) != count {
+		return errors.New("部分属性不存在")
+	}
+	return nil
+
 }

@@ -176,11 +176,15 @@ message CreateGoodsRequest {
     }
     repeated specification specificationInfo = 11;
     // 属性组
-    message attr {
-      int64 attrId = 1;
-      int64 attrValueId = 2;
+    message groupAttr {
+      int64 groupId = 1;
+      message attr {
+        int64 attrId = 1;
+        int64 attrValueId = 2;
+      }
+      repeated attr attrInfo = 2;
     }
-    repeated attr attrInfo = 12;
+    repeated groupAttr groupAttrInfo = 12;
   }
   repeated goodsSku sku = 20;
 }

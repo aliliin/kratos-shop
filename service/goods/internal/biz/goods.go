@@ -11,10 +11,15 @@ type SpecificationInfo struct {
 	SpecificationID      int64
 	SpecificationValueID int64
 }
-type AttrInfo struct {
+type GroupAttr struct {
+	GroupId int64
+	Attr    []*Attr
+}
+type Attr struct {
 	AttrID      int64
 	AttrValueID int64
 }
+
 type GoodsSku struct {
 	GoodsID        int64
 	GoodsSn        string
@@ -31,7 +36,7 @@ type GoodsSku struct {
 	OnSale         bool
 
 	Specification []*SpecificationInfo
-	Attr          []*AttrInfo
+	GroupAttr     []*GroupAttr
 }
 
 type GoodsInfo struct {
@@ -90,11 +95,12 @@ type GoodsUsecase struct {
 	bRepo   BrandRepo
 	tRepo   GoodsTypeRepo
 	sRepo   SpecificationRepo
+	aRepo   GoodsAttrRepo
 	log     *log.Helper
 }
 
 func NewGoodsUsecase(repo GoodsRepo, skuRepo GoodsSkuRepo, tx Transaction, gRepo GoodsTypeRepo, cRepo CategoryRepo, bRepo BrandRepo,
-	sRepo SpecificationRepo, logger log.Logger) *GoodsUsecase {
+	sRepo SpecificationRepo, aRepo GoodsAttrRepo, logger log.Logger) *GoodsUsecase {
 
 	return &GoodsUsecase{
 		repo:    repo,
@@ -104,6 +110,7 @@ func NewGoodsUsecase(repo GoodsRepo, skuRepo GoodsSkuRepo, tx Transaction, gRepo
 		cRepo:   cRepo,
 		bRepo:   bRepo,
 		sRepo:   sRepo,
+		aRepo:   aRepo,
 		log:     log.NewHelper(logger),
 	}
 }
@@ -172,10 +179,16 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 			}
 			// 验证属性值是否存在
 			var AttrID []*int64
-			for _, id := range v.Attr {
-				AttrID = append(AttrID, &id.AttrID)
+			for _, attr := range v.GroupAttr {
+				for _, id := range attr.Attr {
+					AttrID = append(AttrID, &id.AttrID)
+				}
 			}
-			fmt.Println(AttrID)
+			fmt.Println("AttrID", AttrID)
+			err := g.aRepo.GetAttrByIDs(ctx, AttrID)
+			if err != nil {
+				return err
+			}
 			// 插入 sku 表
 			create, err := g.skuRepo.Create(ctx, res)
 			if err != nil {
