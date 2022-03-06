@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"gorm.io/gorm"
@@ -21,23 +22,102 @@ type Brand struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
-type BrandRepo struct {
+type brandRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
 // NewBrandRepo .
 func NewBrandRepo(data *Data, logger log.Logger) biz.BrandRepo {
-	return &BrandRepo{
+	return &brandRepo{
 		data: data,
 		log:  log.NewHelper(logger),
 	}
 }
 
-func (r *BrandRepo) CreateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
+func (r *brandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error) {
+	brand := &Brand{
+		Name:  b.Name,
+		Logo:  b.Logo,
+		Desc:  b.Desc,
+		IsTab: b.IsTab,
+		Sort:  b.Sort,
+	}
+	result := r.data.db.Save(brand)
+	res := &biz.Brand{
+		ID:    brand.ID,
+		Name:  brand.Name,
+		Logo:  brand.Logo,
+		Desc:  brand.Desc,
+		IsTab: brand.IsTab,
+		Sort:  brand.Sort,
+	}
+	return res, result.Error
 }
 
-func (r *BrandRepo) UpdateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
+func (r *brandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand, error) {
+	var brand Brand
+	result := r.data.db.Where("name=?", name).First(&brand)
+	if result.RowsAffected == 1 {
+		return &biz.Brand{
+			ID:    brand.ID,
+			Name:  brand.Name,
+			Logo:  brand.Logo,
+			Desc:  brand.Desc,
+			IsTab: brand.IsTab,
+			Sort:  brand.Sort,
+		}, nil
+	} else {
+		return nil, errors.New("品牌不存在")
+	}
+}
+
+func (r *brandRepo) Update(ctx context.Context, b *biz.Brand) error {
+	brands := Brand{}
+	if result := r.data.db.Where("id=?", b.ID).First(&brands); result.RowsAffected == 0 {
+		return errors.New("品牌不存在")
+	}
+
+	if b.Name != "" {
+		brands.Name = b.Name
+	}
+	if b.Logo != "" {
+		brands.Logo = b.Logo
+	}
+	if b.IsTab {
+		brands.IsTab = b.IsTab
+	}
+	if b.Sort != 0 {
+		brands.Sort = b.Sort
+	}
+	if b.Desc != "" {
+		brands.Desc = b.Desc
+	}
+	result := r.data.db.Save(&brands)
+	return result.Error
+}
+func (r *brandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, int64, error) {
+	var brands []Brand
+	result := r.data.db.Scopes(Paginate(b.PageNum, b.PageSize)).Find(&brands)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	var rsp []*biz.Brand
+	var total int64
+	result = r.data.db.Table("brands").Model(&Brand{}).Count(&total)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+	for _, v := range brands {
+		br := &biz.Brand{
+			ID:    v.ID,
+			Name:  v.Name,
+			Logo:  v.Logo,
+			IsTab: v.IsTab,
+			Sort:  v.Sort,
+		}
+		rsp = append(rsp, br)
+	}
+	return rsp, total, nil
 }

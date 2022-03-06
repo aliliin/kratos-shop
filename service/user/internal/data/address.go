@@ -120,19 +120,8 @@ func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.
 	}
 	var addressList []*biz.Address
 	for _, v := range address {
-		addressTmp := biz.Address{
-			ID:        v.ID,
-			UserID:    v.UserID,
-			IsDefault: v.IsDefault,
-			Mobile:    v.Mobile,
-			Name:      v.Name,
-			Province:  v.Province,
-			City:      v.City,
-			Districts: v.Districts,
-			Address:   v.Address,
-			PostCode:  v.PostCode,
-		}
-		addressList = append(addressList, &addressTmp)
+		addressTmp := modelToBizResponse(v)
+		addressList = append(addressList, addressTmp)
 	}
 	return addressList, nil
 }
@@ -155,6 +144,10 @@ func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Ad
 		return nil, result.Error
 	}
 
+	return modelToBizResponse(addInfo), nil
+}
+
+func modelToBizResponse(addInfo Address) *biz.Address {
 	return &biz.Address{
 		ID:        addInfo.ID,
 		UserID:    addInfo.UserID,
@@ -166,5 +159,5 @@ func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Ad
 		Districts: addInfo.Districts,
 		Address:   addInfo.Address,
 		PostCode:  addInfo.PostCode,
-	}, nil
+	}
 }

@@ -54,8 +54,36 @@ func NewCategoryRepo(data *Data, logger log.Logger) biz.CategoryRepo {
 	}
 }
 
-func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
+func (r *CategoryRepo) DeleteCategory(ctx context.Context, id int32) error {
+	if res := r.data.db.Delete(&Category{}, id); res.RowsAffected == 0 {
+		return res.Error
+	}
+	return nil
+}
 
+func (r *CategoryRepo) UpdateCategory(ctx context.Context, req *biz.CategoryInfo) error {
+	var category Category
+	if result := r.data.db.First(&category, req.ID); result.RowsAffected == 0 {
+		return errors.New("商品分类不存在")
+	}
+
+	if req.Name != "" {
+		category.Name = req.Name
+	}
+	if req.ParentCategory != 0 {
+		category.ParentCategoryID = req.ParentCategory
+	}
+	if req.Level != 0 {
+		category.Level = req.Level
+	}
+	if req.IsTab {
+		category.IsTab = req.IsTab
+	}
+	result := r.data.db.Save(&category)
+	return result.Error
+}
+
+func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
 	cMap := map[string]interface{}{}
 	cMap["name"] = req.Name
 	cMap["level"] = req.Level
@@ -77,10 +105,14 @@ func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (
 	if result.Error != nil {
 		return nil, result.Error
 	}
-
+	var value int32
+	value, ok := cMap["parent_category_id"].(int32)
+	if !ok {
+		value = 0
+	}
 	res := &biz.CategoryInfo{
 		Name:           cMap["name"].(string),
-		ParentCategory: cMap["parent_category_id"].(int32),
+		ParentCategory: value,
 		Level:          cMap["level"].(int32),
 		IsTab:          cMap["is_tab"].(bool),
 		Sort:           cMap["sort"].(int32),

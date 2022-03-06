@@ -30,7 +30,9 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, logger)
 	categoryRepo := data.NewCategoryRepo(dataData, logger)
 	categoryUsecase := biz.NewCategoryUsecase(categoryRepo, logger)
-	goodsService := service.NewGoodsService(goodsUsecase, categoryUsecase, logger)
+	brandRepo := data.NewBrandRepo(dataData, logger)
+	brandUsecase := biz.NewBrandUsecase(brandRepo, logger)
+	goodsService := service.NewGoodsService(goodsUsecase, categoryUsecase, brandUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	app := newApp(logger, grpcServer)
 	return app, func() {
