@@ -32,9 +32,9 @@ func (g *GoodsService) CreateAttrGroup(ctx context.Context, r *v1.AttrGroupReque
 
 // CreateAttrValue 创建属性名称和值
 func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueRequest) (*v1.AttrResponse, error) {
-	var value []*biz.GoodsAttrValue
+	var value []*domain.GoodsAttrValue
 	for _, v := range r.AttrValue {
-		res := &biz.GoodsAttrValue{
+		res := &domain.GoodsAttrValue{
 			GroupID: v.GroupId,
 			Value:   v.Value,
 		}

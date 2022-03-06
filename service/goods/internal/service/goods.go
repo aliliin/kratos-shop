@@ -26,7 +26,7 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 		}
 
 		for _, specification := range sku.SpecificationInfo {
-			s := &biz.SpecificationInfo{
+			s := &domain.SpecificationInfo{
 				SpecificationID:      specification.SId,
 				SpecificationValueID: specification.VId,
 			}

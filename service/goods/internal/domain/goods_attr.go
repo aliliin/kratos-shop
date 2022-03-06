@@ -1,7 +1,5 @@
 package domain
 
-import "goods/internal/biz"
-
 type GoodsAttr struct {
 	ID             int64
 	TypeID         int32
@@ -10,7 +8,14 @@ type GoodsAttr struct {
 	Sort           int32
 	Status         bool
 	Desc           string
-	GoodsAttrValue []*biz.GoodsAttrValue
+	GoodsAttrValue []*GoodsAttrValue
+}
+
+type GoodsAttrValue struct {
+	ID      int64
+	AttrId  int64
+	GroupID int64
+	Value   string
 }
 
 type GoodsAttrList []*GoodsAttr

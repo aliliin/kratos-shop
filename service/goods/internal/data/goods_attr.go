@@ -102,7 +102,7 @@ func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *domain.GoodsAttr
 	return &res, nil
 }
 
-func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, a []*biz.GoodsAttrValue) ([]*biz.GoodsAttrValue, error) {
+func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, a []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error) {
 
 	var value []*GoodsAttrValue
 	for _, v := range a {
@@ -113,13 +113,13 @@ func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, a []*biz.Goods
 		}
 		value = append(value, r)
 	}
-	var res []*biz.GoodsAttrValue
+	var res []*domain.GoodsAttrValue
 	result := g.data.DB(ctx).Create(&value)
 	if result.Error != nil {
 		return res, nil
 	}
 	for _, v := range value {
-		r := &biz.GoodsAttrValue{
+		r := &domain.GoodsAttrValue{
 			ID:      v.ID,
 			AttrId:  v.AttrId,
 			GroupID: v.GroupID,

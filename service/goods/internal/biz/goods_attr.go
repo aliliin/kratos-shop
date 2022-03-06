@@ -16,17 +16,10 @@ type AttrGroup struct {
 	Sort   int32
 }
 
-type GoodsAttrValue struct {
-	ID      int64
-	AttrId  int64
-	GroupID int64
-	Value   string
-}
-
 type GoodsAttrRepo interface {
 	CreateGoodsGroupAttr(context.Context, *AttrGroup) (*AttrGroup, error)
 	CreateGoodsAttr(context.Context, *domain.GoodsAttr) (*domain.GoodsAttr, error)
-	CreateGoodsAttrValue(context.Context, []*GoodsAttrValue) ([]*GoodsAttrValue, error)
+	CreateGoodsAttrValue(context.Context, []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error)
 	GetAttrByIDs(ctx context.Context, id []*int64) error
 	ListByIds(ctx context.Context, id ...*int64) (domain.GoodsAttrList, error)
 }
@@ -83,9 +76,9 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.Goods
 		if err != nil {
 			return err
 		}
-		var value []*GoodsAttrValue
+		var value []*domain.GoodsAttrValue
 		for _, attrValue := range r.GoodsAttrValue {
-			res := &GoodsAttrValue{
+			res := &domain.GoodsAttrValue{
 				AttrId:  attr.ID,
 				GroupID: attrValue.GroupID,
 				Value:   attrValue.Value,

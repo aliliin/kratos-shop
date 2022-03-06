@@ -8,10 +8,6 @@ import (
 	"goods/internal/domain"
 )
 
-type SpecificationInfo struct {
-	SpecificationID      int64
-	SpecificationValueID int64
-}
 type GroupAttr struct {
 	GroupId int64   `json:"group_id"`
 	Attr    []*Attr `json:"attr"`

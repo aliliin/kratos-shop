@@ -17,6 +17,6 @@ type GoodsSku struct {
 	Num            int64
 	OnSale         bool
 
-	Specification []*biz.SpecificationInfo
+	Specification []*SpecificationInfo
 	GroupAttr     []*biz.GroupAttr
 }
