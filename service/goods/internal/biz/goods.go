@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
@@ -186,19 +185,10 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 				}
 			}
 			fmt.Println("AttrID", AttrID)
-			goodsAttrList, err := g.aRepo.ListByIds(ctx, AttrID...)
+			err := g.aRepo.GetAttrByIDs(ctx, AttrID)
 			if err != nil {
 				return err
 			}
-			for _, attr := range v.GroupAttr {
-				for _, id := range attr.Attr {
-					if goodsAttrList.IsNotExist(attr.GroupId, id.AttrID) {
-						return errors.New("xxxxx")
-					}
-				}
-			}
-			gjson, err := json.Marshal(v.GroupAttr)
-			res.AttrInfo = string(gjson)
 			// 插入 sku 表
 			create, err := g.skuRepo.Create(ctx, res)
 			if err != nil {
