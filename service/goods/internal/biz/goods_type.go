@@ -4,25 +4,15 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"goods/internal/domain"
 	"strconv"
 	"strings"
 )
 
-type GoodsType struct {
-	ID        int32
-	Name      string
-	TypeCode  string
-	NameAlias string
-	IsVirtual bool
-	Desc      string
-	Sort      int32
-	BrandIds  string
-}
-
 type GoodsTypeRepo interface {
-	CreateGoodsType(context.Context, *GoodsType) (int32, error)
+	CreateGoodsType(context.Context, *domain.GoodsType) (int32, error)
 	CreateGoodsBrandType(context.Context, int32, string) error
-	GetGoodsTypeByID(context.Context, int32) (*GoodsType, error)
+	GetGoodsTypeByID(context.Context, int32) (*domain.GoodsType, error)
 }
 
 type GoodsTypeUsecase struct {
@@ -42,7 +32,7 @@ func NewGoodsTypeUsecase(repo GoodsTypeRepo, tx Transaction, BrandUc BrandRepo, 
 }
 
 // GoosTypeCreate 创建商品类型
-func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *GoodsType) (int32, error) {
+func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsType) (int32, error) {
 	var (
 		id  int32
 		err error

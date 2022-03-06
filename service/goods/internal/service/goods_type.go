@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 	v1 "goods/api/goods/v1"
-	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 func (g *GoodsService) CreateGoodsType(ctx context.Context, r *v1.GoodsTypeRequest) (*v1.GoodsTypeResponse, error) {
-	id, err := g.gt.GoosTypeCreate(ctx, &biz.GoodsType{
+	id, err := g.gt.GoosTypeCreate(ctx, &domain.GoodsType{
 		Name:      r.Name,
 		TypeCode:  r.TypeCode,
 		NameAlias: r.NameAlias,

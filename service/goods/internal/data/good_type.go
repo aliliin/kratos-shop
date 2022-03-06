@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
+	"goods/internal/domain"
 	"gorm.io/gorm"
 	"strconv"
 	"strings"
@@ -46,7 +47,7 @@ func NewGoodsTypeRepo(data *Data, logger log.Logger) biz.GoodsTypeRepo {
 }
 
 // CreateGoodsType 创建基本的商品类型
-func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *biz.GoodsType) (int32, error) {
+func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *domain.GoodsType) (int32, error) {
 	goodsType := &GoodsType{
 		Name:      req.Name,
 		TypeCode:  req.TypeCode,
@@ -77,13 +78,13 @@ func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int32, 
 
 }
 
-func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int32) (*biz.GoodsType, error) {
+func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int32) (*domain.GoodsType, error) {
 	var goodsType GoodsType
 	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
 		return nil, errors.New("商品类型不存在")
 	}
 
-	res := &biz.GoodsType{
+	res := &domain.GoodsType{
 		ID:        goodsType.ID,
 		Name:      goodsType.Name,
 		TypeCode:  goodsType.TypeCode,

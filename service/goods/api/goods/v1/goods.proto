@@ -3,6 +3,7 @@ syntax = "proto3";
 package goods.v1;
 
 import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "goods/api/goods/v1;v1";
 
@@ -124,8 +125,8 @@ message SpecificationResponse {
 }
 message GoodsTypeRequest {
   int32 id = 1;
-  string name = 2;
-  string typeCode = 3;
+  string name = 2  [(validate.rules).string.min_len =  3];
+  string typeCode = 3 [(validate.rules).string.min_len =  3];
   string nameAlias = 4;
   bool isVirtual = 5;
   string desc = 6;
