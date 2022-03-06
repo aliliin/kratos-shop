@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"goods/internal/domain"
 )
 
 type SpecificationInfo struct {
@@ -18,25 +19,6 @@ type GroupAttr struct {
 type Attr struct {
 	AttrID      int64 `json:"attr_id"`
 	AttrValueID int64 `json:"attr_value_id"`
-}
-
-type GoodsSku struct {
-	GoodsID        int64
-	GoodsSn        string
-	GoodsName      string
-	SkuName        string
-	SkuCode        string
-	BarCode        string
-	Price          int64
-	PromotionPrice int64
-	Points         int64
-	RemarksInfo    string
-	Pic            string
-	Num            int64
-	OnSale         bool
-
-	Specification []*SpecificationInfo
-	GroupAttr     []*GroupAttr
 }
 
 type GoodsInfo struct {
@@ -57,7 +39,7 @@ type GoodsInfo struct {
 	ShipID          int32
 	IsNew           bool
 	IsHot           bool
-	Sku             []*GoodsSku
+	Sku             []*domain.GoodsSku
 }
 
 type Goods struct {
