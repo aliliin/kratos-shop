@@ -31,3 +31,8 @@ kratos 框架写商品微服务
 ```
 
 
+* 有任何建议，请扫码添加我微信进行交流。
+
+![扫码提建议](https://gitee.com/aliliin/picture/raw/master/2022-3-2/1646202139081-WechatIMG7.jpeg)
+
+

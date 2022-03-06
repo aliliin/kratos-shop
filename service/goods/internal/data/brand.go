@@ -22,20 +22,20 @@ type Brand struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
-type brandRepo struct {
+type BrandRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
 // NewBrandRepo .
 func NewBrandRepo(data *Data, logger log.Logger) biz.BrandRepo {
-	return &brandRepo{
+	return &BrandRepo{
 		data: data,
 		log:  log.NewHelper(logger),
 	}
 }
 
-func (r *brandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error) {
+func (r *BrandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error) {
 	brand := &Brand{
 		Name:  b.Name,
 		Logo:  b.Logo,
@@ -55,7 +55,7 @@ func (r *brandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error
 	return res, result.Error
 }
 
-func (r *brandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand, error) {
+func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand, error) {
 	var brand Brand
 	result := r.data.db.Where("name=?", name).First(&brand)
 	if result.RowsAffected == 1 {
@@ -72,7 +72,7 @@ func (r *brandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand,
 	}
 }
 
-func (r *brandRepo) Update(ctx context.Context, b *biz.Brand) error {
+func (r *BrandRepo) Update(ctx context.Context, b *biz.Brand) error {
 	brands := Brand{}
 	if result := r.data.db.Where("id=?", b.ID).First(&brands); result.RowsAffected == 0 {
 		return errors.New("品牌不存在")
@@ -96,7 +96,7 @@ func (r *brandRepo) Update(ctx context.Context, b *biz.Brand) error {
 	result := r.data.db.Save(&brands)
 	return result.Error
 }
-func (r *brandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, int64, error) {
+func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, int64, error) {
 	var brands []Brand
 	result := r.data.db.Scopes(Paginate(b.PageNum, b.PageSize)).Find(&brands)
 	if result.Error != nil {
@@ -120,4 +120,37 @@ func (r *brandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, 
 		rsp = append(rsp, br)
 	}
 	return rsp, total, nil
+}
+
+func (r *BrandRepo) IsBrand(ctx context.Context, ids []int32) error {
+	idCount := len(ids)
+	if idCount == 0 {
+		return errors.New("请选择品牌")
+	}
+	var count int64
+	result := r.data.db.Table("brands").Where("id IN (?)", ids).Count(&count)
+	if result.Error != nil {
+		return result.Error
+	}
+	if int64(idCount) != count {
+		return errors.New("品牌不存在")
+	}
+	return nil
+}
+
+func (r *BrandRepo) IsBrandByID(ctx context.Context, id int32) (*biz.Brand, error) {
+	var b Brand
+	result := r.data.db.Table("brands").Where("id = ?", id).First(&b)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	res := &biz.Brand{
+		ID:    b.ID,
+		Name:  b.Name,
+		Logo:  b.Logo,
+		Desc:  b.Desc,
+		IsTab: b.IsTab,
+		Sort:  b.Sort,
+	}
+	return res, nil
 }

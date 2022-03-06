@@ -34,14 +34,20 @@ func main() {
 		panic(err)
 	}
 	_ = db.AutoMigrate(
-		&data.Brand{},
-		&data.Category{},
-		&data.Goods{},
-		&data.GoodsCategoryBrand{},
-		&data.GoodsSku{},
-		&data.GoodsImages{},
-		&data.GoodsPropertyName{},
-		&data.GoodsPropertyValue{},
-		&data.GoodsProperty{},
+		//&data.Brand{},
+		//&data.Category{},
+		//&data.GoodsCategoryBrand{},
+		//&data.GoodsType{},
+		//&data.GoodsTypeBrand{},
+		//&data.SpecificationsAttr{},
+		//&data.SpecificationsAttrValue{},
+		//&data.GoodsAttrGroup{},
+		//&data.GoodsAttr{},
+		//&data.GoodsAttrValue{},
+		//&data.Goods{},
+		//&data.GoodsSku{},
+		//&data.GoodsImages{},
+		//&data.GoodsAttrSku{},
+		&data.GoodsSpecificationSku{},
 	)
 }

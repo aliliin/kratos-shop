@@ -26,13 +26,21 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	goodsRepo := data.NewGoodsRepo(dataData, logger)
-	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, logger)
-	categoryRepo := data.NewCategoryRepo(dataData, logger)
-	categoryUsecase := biz.NewCategoryUsecase(categoryRepo, logger)
 	brandRepo := data.NewBrandRepo(dataData, logger)
 	brandUsecase := biz.NewBrandUsecase(brandRepo, logger)
-	goodsService := service.NewGoodsService(goodsUsecase, categoryUsecase, brandUsecase, logger)
+	categoryRepo := data.NewCategoryRepo(dataData, logger)
+	categoryUsecase := biz.NewCategoryUsecase(categoryRepo, logger)
+	goodsTypeRepo := data.NewGoodsTypeRepo(dataData, logger)
+	transaction := data.NewTransaction(dataData)
+	goodsTypeUsecase := biz.NewGoodsTypeUsecase(goodsTypeRepo, transaction, brandRepo, logger)
+	specificationRepo := data.NewSpecificationRepo(dataData, logger)
+	specificationUsecase := biz.NewSpecificationUsecase(specificationRepo, goodsTypeRepo, transaction, logger)
+	goodsAttrRepo := data.NewGoodsAttrRepo(dataData, logger)
+	goodsAttrUsecase := biz.NewGoodsAttrUsecase(goodsAttrRepo, transaction, goodsTypeRepo, logger)
+	goodsRepo := data.NewGoodsRepo(dataData, logger)
+	goodsSkuRepo := data.NewGoodsSkuRepoRepo(dataData, logger)
+	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, goodsSkuRepo, transaction, goodsTypeRepo, categoryRepo, brandRepo, specificationRepo, goodsAttrRepo, logger)
+	goodsService := service.NewGoodsService(brandUsecase, categoryUsecase, goodsTypeUsecase, specificationUsecase, goodsAttrUsecase, goodsUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	app := newApp(logger, grpcServer)
 	return app, func() {

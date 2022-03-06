@@ -1,8 +1,8 @@
 package data
 
 import (
-	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"golang.org/x/net/context"
 	"goods/internal/biz"
 )
 
@@ -11,8 +11,10 @@ type Goods struct {
 	BaseFields
 	CategoryID int32 `gorm:"type:int;comment:分类ID;not null"`
 	Category   Category
-	BrandsID   int32 `gorm:"type:int;comment:商品ID ;not null"`
+	BrandsID   int32 `gorm:"type:int;comment:品牌ID ;not null"`
 	Brands     Brand
+
+	TypeID int32 `gorm:"type:int;comment:商品类型ID ;not null"`
 
 	Name            string   `gorm:"type:varchar(100);not null;comment:商品名称"`
 	NameAlias       string   `gorm:"type:varchar(100);not null;comment:商品别名"`
@@ -33,7 +35,7 @@ type Goods struct {
 	SoldNum  int64 `gorm:"default:0;type:int; comment 商品销售数"`
 	FavNum   int64 `gorm:"default:0;type:int; comment 商品收藏数"`
 
-	// 售前服务、售后服务、商品促销活动、商品评论
+	// 售前服务信息、售后服务信息、商品促销活动信息
 }
 
 type goodsRepo struct {
@@ -49,10 +51,48 @@ func NewGoodsRepo(data *Data, logger log.Logger) biz.GoodsRepo {
 	}
 }
 
-func (r *goodsRepo) CreateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
-}
+func (g goodsRepo) CreateGoods(c context.Context, goods *biz.Goods) (*biz.Goods, error) {
+	d := &Goods{
+		CategoryID:      goods.CategoryID,
+		BrandsID:        goods.BrandsID,
+		TypeID:          goods.BrandsID,
+		Name:            goods.Name,
+		NameAlias:       goods.NameAlias,
+		GoodsSn:         goods.GoodsSn,
+		GoodsTags:       goods.GoodsTags,
+		MarketPrice:     goods.MarketPrice,
+		GoodsBrief:      goods.GoodsBrief,
+		GoodsFrontImage: goods.GoodsFrontImage,
+		GoodsImages:     goods.GoodsImages,
+		OnSale:          goods.OnSale,
+		ShipFree:        goods.ShipFree,
+		ShipID:          goods.ShipID,
+		IsNew:           goods.IsNew,
+		IsHot:           goods.IsHot,
+	}
 
-func (r *goodsRepo) UpdateGreeter(ctx context.Context, g *biz.Goods) error {
-	return nil
+	result := g.data.DB(c).Save(d)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	res := &biz.Goods{
+		ID:              d.ID,
+		CategoryID:      d.CategoryID,
+		BrandsID:        d.BrandsID,
+		TypeID:          d.TypeID,
+		Name:            d.Name,
+		NameAlias:       d.NameAlias,
+		GoodsSn:         d.GoodsSn,
+		GoodsTags:       d.GoodsTags,
+		MarketPrice:     d.MarketPrice,
+		GoodsBrief:      d.GoodsBrief,
+		GoodsFrontImage: d.GoodsFrontImage,
+		GoodsImages:     d.GoodsImages,
+		OnSale:          d.OnSale,
+		ShipFree:        d.ShipFree,
+		ShipID:          d.ShipID,
+		IsNew:           d.IsNew,
+		IsHot:           d.IsHot,
+	}
+	return res, nil
 }
