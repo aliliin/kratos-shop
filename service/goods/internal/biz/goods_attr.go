@@ -45,7 +45,7 @@ func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *AttrGroup) (
 		return nil, errors.New("请选择商品类型进行绑定")
 	}
 	// 去查询有没有这个类型
-	_, err := ga.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
+	_, err := ga.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
 	if err != nil {
 		return nil, errors.New("请选择商品类型进行绑定")
 	}
@@ -66,7 +66,7 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.Goods
 		return attrInfo, errors.New("请选择商品类型进行绑定")
 	}
 	// 去查询有没有这个类型
-	_, err = ga.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
+	_, err = ga.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
 	if err != nil {
 		return attrInfo, errors.New("请选择商品类型进行绑定")
 	}

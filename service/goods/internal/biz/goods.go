@@ -109,7 +109,7 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 		return nil, errors.New("分类不存在")
 	}
 	// 判断商品类型是否存在
-	typeInfo, err := g.tRepo.GetGoodsTypeByID(ctx, r.TypeID)
+	typeInfo, err := g.tRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
 	if err != nil {
 		return nil, errors.New("商品类型不存在")
 	}

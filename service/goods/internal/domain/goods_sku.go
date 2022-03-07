@@ -1,7 +1,5 @@
 package domain
 
-import "goods/internal/biz"
-
 type GoodsSku struct {
 	GoodsID        int64
 	GoodsSn        string
@@ -18,5 +16,5 @@ type GoodsSku struct {
 	OnSale         bool
 
 	Specification []*SpecificationInfo
-	GroupAttr     []*biz.GroupAttr
+	GroupAttr     []*GroupAttr
 }

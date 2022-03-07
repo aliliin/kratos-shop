@@ -10,9 +10,9 @@ import (
 )
 
 type GoodsTypeRepo interface {
-	CreateGoodsType(context.Context, *domain.GoodsType) (int32, error)
-	CreateGoodsBrandType(context.Context, int32, string) error
-	GetGoodsTypeByID(context.Context, int32) (*domain.GoodsType, error)
+	CreateGoodsType(context.Context, *domain.GoodsType) (int64, error)
+	CreateGoodsBrandType(context.Context, int64, string) error
+	GetGoodsTypeByID(context.Context, int64) (*domain.GoodsType, error)
 }
 
 type GoodsTypeUsecase struct {
@@ -32,9 +32,9 @@ func NewGoodsTypeUsecase(repo GoodsTypeRepo, tx Transaction, BrandUc BrandRepo, 
 }
 
 // GoosTypeCreate 创建商品类型
-func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsType) (int32, error) {
+func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsType) (int64, error) {
 	var (
-		id  int32
+		id  int64
 		err error
 	)
 	if r.BrandIds == "" {
@@ -44,8 +44,8 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsT
 	Ids := strings.Split(ids, ",")
 
 	var i []int32
-	for _, id := range Ids {
-		j, _ := strconv.ParseInt(id, 10, 32)
+	for _, bid := range Ids {
+		j, _ := strconv.ParseInt(bid, 10, 32)
 		i = append(i, int32(j))
 	}
 
@@ -55,7 +55,7 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsT
 	}
 	// 使用事务
 	err = gt.tx.ExecTx(ctx, func(ctx context.Context) error {
-		id, err := gt.repo.CreateGoodsType(ctx, r)
+		id, err = gt.repo.CreateGoodsType(ctx, r)
 		if err != nil {
 			return err
 		}

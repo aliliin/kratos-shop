@@ -62,7 +62,7 @@ func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Speci
 		return id, errors.New("请填写商品规格下的参数")
 	}
 	// 去查询有没有这个类型
-	typeInfo, err := s.gRepo.GetGoodsTypeByID(ctx, r.TypeID)
+	typeInfo, err := s.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
 	if err != nil {
 		return int64(typeInfo.ID), err
 	}

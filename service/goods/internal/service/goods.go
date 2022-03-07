@@ -33,11 +33,11 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 			res.Specification = append(res.Specification, s)
 		}
 		for _, attrGroup := range sku.GroupAttrInfo {
-			group := &biz.GroupAttr{
+			group := &domain.GroupAttr{
 				GroupId: attrGroup.GroupId,
 			}
 			for _, attr := range attrGroup.AttrInfo {
-				s := &biz.Attr{
+				s := &domain.Attr{
 					AttrID:      attr.AttrId,
 					AttrValueID: attr.AttrValueId,
 				}

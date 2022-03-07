@@ -1,5 +1,14 @@
 package domain
 
+type GroupAttr struct {
+	GroupId int64   `json:"group_id"`
+	Attr    []*Attr `json:"attr"`
+}
+type Attr struct {
+	AttrID      int64 `json:"attr_id"`
+	AttrValueID int64 `json:"attr_value_id"`
+}
+
 type GoodsAttr struct {
 	ID             int64
 	TypeID         int32

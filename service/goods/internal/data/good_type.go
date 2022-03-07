@@ -14,7 +14,7 @@ import (
 
 // GoodsType 商品类型表
 type GoodsType struct {
-	ID        int32          `gorm:"primarykey;type:int" json:"id"`
+	ID        int64          `gorm:"primarykey;type:int" json:"id"`
 	Name      string         `gorm:"type:varchar(50);not null;comment:商品类型名称" json:"name"`
 	TypeCode  string         `gorm:"type:varchar(50);not null;comment:商品类型编码" json:"type_code"`
 	NameAlias string         `gorm:"type:varchar(50);not null;comment:商品类型别名" json:"name_alias"`
@@ -30,7 +30,7 @@ type GoodsType struct {
 type GoodsTypeBrand struct {
 	ID      int32 `gorm:"primarykey;type:int" json:"id"`
 	BrandID int32 `gorm:"index:brand_id;type:int;comment:商品品牌ID;not null"`
-	TypeID  int32 `gorm:"index:type_id;type:int;comment:商品类型ID;not null"`
+	TypeID  int64 `gorm:"index:type_id;type:int;comment:商品类型ID;not null"`
 }
 
 type goodsTypeRepo struct {
@@ -47,8 +47,8 @@ func NewGoodsTypeRepo(data *Data, logger log.Logger) biz.GoodsTypeRepo {
 }
 
 // CreateGoodsType 创建基本的商品类型
-func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *domain.GoodsType) (int32, error) {
-	goodsType := &GoodsType{
+func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *domain.GoodsType) (int64, error) {
+	goodsType := GoodsType{
 		Name:      req.Name,
 		TypeCode:  req.TypeCode,
 		NameAlias: req.NameAlias,
@@ -58,11 +58,11 @@ func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *domain.GoodsTy
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	result := g.data.DB(ctx).Save(goodsType)
+	result := g.data.DB(ctx).Save(&goodsType)
 	return goodsType.ID, result.Error
 }
 
-func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int32, brandIds string) error {
+func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int64, brandIds string) error {
 	var gtb []GoodsTypeBrand
 	Ids := strings.Split(brandIds, ",")
 	for _, id := range Ids {
@@ -78,7 +78,7 @@ func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int32, 
 
 }
 
-func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int32) (*domain.GoodsType, error) {
+func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int64) (*domain.GoodsType, error) {
 	var goodsType GoodsType
 	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
 		return nil, errors.New("商品类型不存在")
