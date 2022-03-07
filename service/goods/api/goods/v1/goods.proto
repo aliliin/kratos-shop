@@ -131,7 +131,7 @@ message GoodsTypeRequest {
   bool isVirtual = 5;
   string desc = 6;
   int32 sort = 7;
-  string brandIds = 8;
+  string brandIds = 8 [(validate.rules).string.min_len =  1];
 }
 message GoodsTypeResponse {
   int64 id = 1;

@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "goods/api/goods/v1"
 	"goods/internal/biz"
+	"goods/internal/domain"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -49,7 +50,7 @@ func (g *GoodsService) BrandList(ctx context.Context, r *v1.BrandListRequest) (*
 	return &rs, nil
 }
 
-func toProto(r *biz.Brand) *v1.BrandInfoResponse {
+func toProto(r *domain.Brand) *v1.BrandInfoResponse {
 	return &v1.BrandInfoResponse{
 		Id:    r.ID,
 		Name:  r.Name,
@@ -60,8 +61,8 @@ func toProto(r *biz.Brand) *v1.BrandInfoResponse {
 	}
 }
 
-func toBiz(r *v1.BrandRequest) *biz.Brand {
-	return &biz.Brand{
+func toBiz(r *v1.BrandRequest) *domain.Brand {
+	return &domain.Brand{
 		ID:    r.Id,
 		Name:  r.Name,
 		Logo:  r.Logo,

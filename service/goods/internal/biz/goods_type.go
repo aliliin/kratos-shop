@@ -5,8 +5,6 @@ import (
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/domain"
-	"strconv"
-	"strings"
 )
 
 type GoodsTypeRepo interface {
@@ -37,22 +35,25 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsT
 		id  int64
 		err error
 	)
-	if r.BrandIds == "" {
+
+	if r.IsEmpty() {
 		return id, errors.New("请选择品牌进行绑定")
 	}
-	ids := strings.Replace(r.BrandIds, "，", ",", -1)
-	Ids := strings.Split(ids, ",")
 
-	var i []int32
-	for _, bid := range Ids {
-		j, _ := strconv.ParseInt(bid, 10, 32)
-		i = append(i, int32(j))
-	}
-
-	err = gt.bRepo.IsBrand(ctx, i)
+	i, err := r.FormatBrandIds()
 	if err != nil {
-		return id, err
+		return 0, err
 	}
+
+	brand, err := gt.bRepo.ListByIds(ctx, i...)
+	if err != nil {
+		return 0, err
+	}
+
+	if !brand.CheckLength(len(i)) {
+		return 0, errors.New("品牌不存在")
+	}
+
 	// 使用事务
 	err = gt.tx.ExecTx(ctx, func(ctx context.Context) error {
 		id, err = gt.repo.CreateGoodsType(ctx, r)

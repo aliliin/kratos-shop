@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
+	"goods/internal/domain"
 	"gorm.io/gorm"
 	"time"
 )
@@ -22,6 +23,17 @@ type Brand struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
+func (p *Brand) ToDomain() *domain.Brand {
+	return &domain.Brand{
+		ID:    p.ID,
+		Name:  p.Name,
+		Logo:  p.Logo,
+		Desc:  p.Desc,
+		IsTab: p.IsTab,
+		Sort:  p.Sort,
+	}
+}
+
 type BrandRepo struct {
 	data *Data
 	log  *log.Helper
@@ -35,7 +47,7 @@ func NewBrandRepo(data *Data, logger log.Logger) biz.BrandRepo {
 	}
 }
 
-func (r *BrandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error) {
+func (r *BrandRepo) Create(ctx context.Context, b *domain.Brand) (*domain.Brand, error) {
 	brand := &Brand{
 		Name:  b.Name,
 		Logo:  b.Logo,
@@ -44,7 +56,7 @@ func (r *BrandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error
 		Sort:  b.Sort,
 	}
 	result := r.data.db.Save(brand)
-	res := &biz.Brand{
+	res := &domain.Brand{
 		ID:    brand.ID,
 		Name:  brand.Name,
 		Logo:  brand.Logo,
@@ -55,11 +67,11 @@ func (r *BrandRepo) Create(ctx context.Context, b *biz.Brand) (*biz.Brand, error
 	return res, result.Error
 }
 
-func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand, error) {
+func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*domain.Brand, error) {
 	var brand Brand
 	result := r.data.db.Where("name=?", name).First(&brand)
 	if result.RowsAffected == 1 {
-		return &biz.Brand{
+		return &domain.Brand{
 			ID:    brand.ID,
 			Name:  brand.Name,
 			Logo:  brand.Logo,
@@ -72,7 +84,7 @@ func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*biz.Brand,
 	}
 }
 
-func (r *BrandRepo) Update(ctx context.Context, b *biz.Brand) error {
+func (r *BrandRepo) Update(ctx context.Context, b *domain.Brand) error {
 	brands := Brand{}
 	if result := r.data.db.Where("id=?", b.ID).First(&brands); result.RowsAffected == 0 {
 		return errors.New("品牌不存在")
@@ -96,21 +108,21 @@ func (r *BrandRepo) Update(ctx context.Context, b *biz.Brand) error {
 	result := r.data.db.Save(&brands)
 	return result.Error
 }
-func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*biz.Brand, int64, error) {
+func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*domain.Brand, int64, error) {
 	var brands []Brand
 	result := r.data.db.Scopes(Paginate(b.PageNum, b.PageSize)).Find(&brands)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
-	var rsp []*biz.Brand
+	var rsp []*domain.Brand
 	var total int64
 	result = r.data.db.Table("brands").Model(&Brand{}).Count(&total)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 	for _, v := range brands {
-		br := &biz.Brand{
+		br := &domain.Brand{
 			ID:    v.ID,
 			Name:  v.Name,
 			Logo:  v.Logo,
@@ -138,13 +150,30 @@ func (r *BrandRepo) IsBrand(ctx context.Context, ids []int32) error {
 	return nil
 }
 
-func (r *BrandRepo) IsBrandByID(ctx context.Context, id int32) (*biz.Brand, error) {
+func (p *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandList, error) {
+	if len(ids) == 0 {
+		return nil, errors.New("请选择品牌")
+	}
+
+	var l []*Brand
+	if err := p.data.DB(ctx).Where("id IN (?)", ids).Take(&l).Error; err != nil {
+		return nil, err
+	}
+
+	var res domain.BrandList
+	for _, item := range l {
+		res = append(res, item.ToDomain())
+	}
+	return res, nil
+}
+
+func (r *BrandRepo) IsBrandByID(ctx context.Context, id int32) (*domain.Brand, error) {
 	var b Brand
 	result := r.data.db.Table("brands").Where("id = ?", id).First(&b)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	res := &biz.Brand{
+	res := &domain.Brand{
 		ID:    b.ID,
 		Name:  b.Name,
 		Logo:  b.Logo,
