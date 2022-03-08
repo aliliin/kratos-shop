@@ -173,10 +173,10 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *GoodsInfo) (*GoodsInfo
 				return err
 			}
 			// 更新 sku 规格关联关系表
-			var sInfoIDs []*Specification
+			var sInfoIDs []*domain.Specification
 			var sInfos []*GoodsSpecificationSku
 			for _, info := range v.Specification {
-				s := &Specification{
+				s := &domain.Specification{
 					ID: info.SpecificationID,
 				}
 

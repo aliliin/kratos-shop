@@ -90,24 +90,24 @@ message AttrGroupResponse {
 }
 
 message SpecificationValue {
-  int32 id = 1;
-  int32 attrId = 2;
-  string value = 3;
-  int32 sort = 4;
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).string.min_len = 3];
 }
 
 message SpecificationValueResponse {
-  int32 id = 1;
-  int32 attrId = 2;
-  int32 value = 3;
-  int32 sort = 4;
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).string.min_len = 3];
 }
 
 message SpecificationRequest {
-  int32 id = 1;
-  int32 typeId = 2;
-  string name = 3;
-  int32 sort = 4;
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).string.min_len = 1];
+  string name = 3 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).string.min_len = 1];
   bool status = 5;
   bool isSku = 6;
   bool isSelect = 7;
@@ -115,23 +115,17 @@ message SpecificationRequest {
 }
 
 message SpecificationResponse {
-  int32 id = 1;
-  int32 typeId = 2;
-  string name = 3;
-  int32 sort = 4;
-  bool status = 5;
-  bool isSku = 6;
-  bool IsSelect = 7;
+  int64 id = 1;
 }
 message GoodsTypeRequest {
   int64 id = 1;
-  string name = 2  [(validate.rules).string.min_len =  3];
-  string typeCode = 3 [(validate.rules).string.min_len =  3];
+  string name = 2  [(validate.rules).string.min_len = 3];
+  string typeCode = 3 [(validate.rules).string.min_len = 3];
   string nameAlias = 4;
   bool isVirtual = 5;
   string desc = 6;
   int32 sort = 7;
-  string brandIds = 8 [(validate.rules).string.min_len =  1];
+  string brandIds = 8 [(validate.rules).string.min_len = 1];
 }
 message GoodsTypeResponse {
   int64 id = 1;

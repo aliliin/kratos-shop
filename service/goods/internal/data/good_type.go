@@ -3,13 +3,14 @@ package data
 import (
 	"context"
 	"errors"
-	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
-	"gorm.io/gorm"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 )
 
 // GoodsType 商品类型表
@@ -79,6 +80,24 @@ func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int64, 
 }
 
 func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int64) (*domain.GoodsType, error) {
+	var goodsType GoodsType
+	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
+		return nil, errors.New("商品类型不存在")
+	}
+
+	res := &domain.GoodsType{
+		ID:        goodsType.ID,
+		Name:      goodsType.Name,
+		TypeCode:  goodsType.TypeCode,
+		NameAlias: goodsType.NameAlias,
+		IsVirtual: goodsType.IsVirtual,
+		Desc:      goodsType.Desc,
+		Sort:      goodsType.Sort,
+	}
+	return res, nil
+}
+
+func (g *goodsTypeRepo) IsExistsByID(ctx context.Context, typeID int64) (*domain.GoodsType, error) {
 	var goodsType GoodsType
 	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
 		return nil, errors.New("商品类型不存在")

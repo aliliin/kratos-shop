@@ -1,18 +1,20 @@
 package data
 
 import (
+	"context"
 	"errors"
-	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
 	"goods/internal/biz"
-	"gorm.io/gorm"
+	"goods/internal/domain"
 	"time"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 )
 
 // SpecificationsAttr 规格参数信息表
 type SpecificationsAttr struct {
 	ID        int64          `gorm:"primarykey;type:int" json:"id"`
-	TypeID    int32          `gorm:"index:type_id;type:int;comment:商品类型ID;not null"`
+	TypeID    int64          `gorm:"index:type_id;type:int;comment:商品类型ID;not null"`
 	Name      string         `gorm:"type:varchar(250);not null;comment:规格参数名称" json:"name"`
 	Sort      int32          `gorm:"comment:规格排序;default:99;not null;type:int" json:"sort"`
 	Status    bool           `gorm:"comment:参数状态;default:false" json:"status"`
@@ -47,7 +49,7 @@ func NewSpecificationRepo(data *Data, logger log.Logger) biz.SpecificationRepo {
 	}
 }
 
-func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Specification) (int64, error) {
+func (g *specificationRepo) CreateSpecification(ctx context.Context, req *domain.Specification) (int64, error) {
 	s := &SpecificationsAttr{
 		TypeID:    req.TypeID,
 		Name:      req.Name,
@@ -58,11 +60,11 @@ func (g *specificationRepo) CreateSpecification(ctx context.Context, req *biz.Sp
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	result := g.data.db.Save(s)
+	result := g.data.DB(ctx).Save(s)
 	return s.ID, result.Error
 }
 
-func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int64, req []*biz.SpecificationValue) error {
+func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int64, req []*domain.SpecificationValue) error {
 	var value []*SpecificationsAttrValue
 	for _, v := range req {
 		res := &SpecificationsAttrValue{
@@ -78,7 +80,7 @@ func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId
 	return result.Error
 }
 
-func (g *specificationRepo) GetSpecificationByIDs(ctx context.Context, AttrIds []*biz.Specification) error {
+func (g *specificationRepo) GetSpecificationByIDs(ctx context.Context, AttrIds []*domain.Specification) error {
 	var attrIDs []*int64
 	for _, id := range AttrIds {
 		attrIDs = append(attrIDs, &id.ID)

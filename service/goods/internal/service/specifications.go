@@ -1,28 +1,27 @@
 package service
 
 import (
-	"fmt"
-	"golang.org/x/net/context"
+	"context"
+
 	v1 "goods/api/goods/v1"
-	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // CreateGoodsSpecification 创建商品规格版本
 func (g *GoodsService) CreateGoodsSpecification(ctx context.Context, r *v1.SpecificationRequest) (*v1.SpecificationResponse, error) {
-	fmt.Println(r.SpecificationValue)
-	var value []*biz.SpecificationValue
+	var value []*domain.SpecificationValue
+	// 组织规格参数值
 	if r.SpecificationValue != nil {
 		for _, v := range r.SpecificationValue {
-			res := &biz.SpecificationValue{
-				ID:     int64(v.Id),
-				AttrId: int64(v.AttrId),
-				Value:  v.Value,
-				Sort:   v.Sort,
+			res := &domain.SpecificationValue{
+				Value: v.Value,
+				Sort:  v.Sort,
 			}
 			value = append(value, res)
 		}
 	}
-	id, err := g.s.CreateSpecification(ctx, &biz.Specification{
+
+	id, err := g.s.CreateSpecification(ctx, &domain.Specification{
 		TypeID:             r.TypeId,
 		Name:               r.Name,
 		Sort:               r.Sort,
@@ -36,6 +35,6 @@ func (g *GoodsService) CreateGoodsSpecification(ctx context.Context, r *v1.Speci
 		return nil, err
 	}
 	return &v1.SpecificationResponse{
-		Id: int32(id),
+		Id: id,
 	}, nil
 }

@@ -3,31 +3,15 @@ package biz
 import (
 	"context"
 	"errors"
+	"goods/internal/domain"
+
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-type SpecificationValue struct {
-	ID     int64
-	AttrId int64
-	Value  string
-	Sort   int32
-}
-
-type Specification struct {
-	ID                 int64
-	TypeID             int32
-	Name               string
-	Sort               int32
-	Status             bool
-	IsSKU              bool
-	IsSelect           bool
-	SpecificationValue []*SpecificationValue
-}
-
 type SpecificationRepo interface {
-	CreateSpecification(context.Context, *Specification) (int64, error)
-	CreateSpecificationValue(context.Context, int64, []*SpecificationValue) error
-	GetSpecificationByIDs(context.Context, []*Specification) error
+	CreateSpecification(context.Context, *domain.Specification) (int64, error)
+	CreateSpecificationValue(context.Context, int64, []*domain.SpecificationValue) error
+	GetSpecificationByIDs(context.Context, []*domain.Specification) error
 }
 
 type SpecificationUsecase struct {
@@ -49,22 +33,24 @@ func NewSpecificationUsecase(repo SpecificationRepo, TypeUc GoodsTypeRepo, tx Tr
 }
 
 // CreateSpecification 创建商品规格
-func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *Specification) (int64, error) {
+func (s *SpecificationUsecase) CreateSpecification(ctx context.Context, r *domain.Specification) (int64, error) {
 	var (
 		id  int64
 		err error
 	)
-	if r.TypeID == 0 {
+
+	if r.IsTypeIDEmpty() {
 		return id, errors.New("请选择商品类型进行绑定")
 	}
 
-	if r.SpecificationValue == nil {
+	if r.IsValueEmpty() {
 		return id, errors.New("请填写商品规格下的参数")
 	}
+
 	// 去查询有没有这个类型
-	typeInfo, err := s.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
+	_, err = s.gRepo.IsExistsByID(ctx, r.TypeID)
 	if err != nil {
-		return int64(typeInfo.ID), err
+		return id, err
 	}
 
 	// 使用事务

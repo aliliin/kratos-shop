@@ -3,14 +3,16 @@ package biz
 import (
 	"context"
 	"errors"
-	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/domain"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type GoodsTypeRepo interface {
 	CreateGoodsType(context.Context, *domain.GoodsType) (int64, error)
 	CreateGoodsBrandType(context.Context, int64, string) error
 	GetGoodsTypeByID(context.Context, int64) (*domain.GoodsType, error)
+	IsExistsByID(context.Context, int64) (*domain.GoodsType, error)
 }
 
 type GoodsTypeUsecase struct {
