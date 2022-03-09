@@ -7,17 +7,8 @@ import (
 	"goods/internal/domain"
 )
 
-type AttrGroup struct {
-	ID     int64
-	TypeID int32
-	Title  string
-	Desc   string
-	Status bool
-	Sort   int32
-}
-
 type GoodsAttrRepo interface {
-	CreateGoodsGroupAttr(context.Context, *AttrGroup) (*AttrGroup, error)
+	CreateGoodsGroupAttr(context.Context, *domain.AttrGroup) (*domain.AttrGroup, error)
 	CreateGoodsAttr(context.Context, *domain.GoodsAttr) (*domain.GoodsAttr, error)
 	CreateGoodsAttrValue(context.Context, []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error)
 	GetAttrByIDs(ctx context.Context, id []*int64) error
@@ -40,14 +31,14 @@ func NewGoodsAttrUsecase(repo GoodsAttrRepo, tx Transaction, gRepo GoodsTypeRepo
 	}
 }
 
-func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *AttrGroup) (*AttrGroup, error) {
-	if r.TypeID == 0 {
+func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *domain.AttrGroup) (*domain.AttrGroup, error) {
+	if r.IsTypeIDEmpty() {
 		return nil, errors.New("请选择商品类型进行绑定")
 	}
 	// 去查询有没有这个类型
-	_, err := ga.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
+	_, err := ga.gRepo.IsExistsByID(ctx, r.TypeID)
 	if err != nil {
-		return nil, errors.New("请选择商品类型进行绑定")
+		return nil, err
 	}
 
 	attr, err := ga.repo.CreateGoodsGroupAttr(ctx, r)
@@ -62,13 +53,13 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.Goods
 		attrInfo *domain.GoodsAttr
 		err      error
 	)
-	if r.TypeID == 0 {
+	if r.IsTypeIDEmpty() {
 		return attrInfo, errors.New("请选择商品类型进行绑定")
 	}
 	// 去查询有没有这个类型
-	_, err = ga.gRepo.GetGoodsTypeByID(ctx, int64(r.TypeID))
+	_, err = ga.gRepo.IsExistsByID(ctx, r.TypeID)
 	if err != nil {
-		return attrInfo, errors.New("请选择商品类型进行绑定")
+		return nil, errors.New("请选择商品类型进行绑定")
 	}
 
 	err = ga.tx.ExecTx(ctx, func(ctx context.Context) error {
