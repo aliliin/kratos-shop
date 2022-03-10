@@ -60,7 +60,7 @@ func NewGoodsAttrRepo(data *Data, logger log.Logger) biz.GoodsAttrRepo {
 	}
 }
 
-func (p *GoodsAttrGroup) ToAttrGroupDomain() *domain.AttrGroup {
+func (p *GoodsAttrGroup) ToDomain() *domain.AttrGroup {
 	return &domain.AttrGroup{
 		ID:     p.ID,
 		TypeID: p.GoodsTypeID,
@@ -71,21 +71,29 @@ func (p *GoodsAttrGroup) ToAttrGroupDomain() *domain.AttrGroup {
 	}
 }
 
-func (p *GoodsAttr) ToGoodsAttrDomain() *domain.GoodsAttr {
+func (p *GoodsAttr) ToDomain() *domain.GoodsAttr {
 	return &domain.GoodsAttr{
-		ID:             p.ID,
-		TypeID:         p.GoodsTypeID,
-		GroupID:        p.GroupID,
-		Title:          p.Title,
-		Sort:           p.Sort,
-		Status:         p.Status,
-		Desc:           p.Desc,
-		GoodsAttrValue: nil,
+		ID:      p.ID,
+		TypeID:  p.GoodsTypeID,
+		GroupID: p.GroupID,
+		Title:   p.Title,
+		Sort:    p.Sort,
+		Status:  p.Status,
+		Desc:    p.Desc,
+	}
+}
+
+func (p *GoodsAttrValue) ToDomain() *domain.GoodsAttrValue {
+	return &domain.GoodsAttrValue{
+		ID:      p.ID,
+		AttrId:  p.AttrId,
+		GroupID: p.GroupID,
+		Value:   p.Value,
 	}
 }
 
 func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *domain.AttrGroup) (*domain.AttrGroup, error) {
-	group := &GoodsAttrGroup{
+	group := GoodsAttrGroup{
 		GoodsTypeID: a.TypeID,
 		Title:       a.Title,
 		Desc:        a.Desc,
@@ -93,23 +101,24 @@ func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *domain.Attr
 		Sort:        a.Sort,
 	}
 
-	result := g.data.db.Save(group)
+	result := g.data.db.Save(&group)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &domain.AttrGroup{
-		ID:     group.ID,
-		TypeID: group.GoodsTypeID,
-		Title:  group.Title,
-		Desc:   group.Desc,
-		Status: group.Status,
-		Sort:   group.Sort,
-	}, nil
+	return group.ToDomain(), nil
+}
+
+func (g *goodsAttrRepo) IsExistsGroupByID(ctx context.Context, groupId int64) (*domain.AttrGroup, error) {
+	var group GoodsAttrGroup
+	if res := g.data.db.First(&group, groupId); res.RowsAffected == 0 {
+		return nil, errors.New("商品属性组不存在")
+	}
+	return group.ToDomain(), nil
 }
 
 func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *domain.GoodsAttr) (*domain.GoodsAttr, error) {
-	attr := &GoodsAttr{
+	attr := GoodsAttr{
 		GoodsTypeID: a.TypeID,
 		GroupID:     a.GroupID,
 		Title:       a.Title,
@@ -118,49 +127,32 @@ func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *domain.GoodsAttr
 		Sort:        a.Sort,
 	}
 
-	result := g.data.DB(ctx).Save(attr)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := g.data.DB(ctx).Save(&attr).Error; err != nil {
+		return nil, err
 	}
-
-	return &domain.GoodsAttr{
-		ID:      attr.ID,
-		TypeID:  attr.GoodsTypeID,
-		GroupID: attr.GroupID,
-		Title:   attr.Title,
-		Sort:    attr.Sort,
-		Status:  attr.Status,
-		Desc:    attr.Desc,
-	}, nil
+	return attr.ToDomain(), nil
 }
 
 func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, r []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error) {
 	var attrValue []*GoodsAttrValue
 	for _, v := range r {
-		attr := &GoodsAttrValue{
+		attr := GoodsAttrValue{
 			AttrId:  v.AttrId,
 			GroupID: v.GroupID,
 			Value:   v.Value,
 		}
-		attrValue = append(attrValue, attr)
+		attrValue = append(attrValue, &attr)
 	}
 
-	result := g.data.DB(ctx).Create(&attrValue)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := g.data.DB(ctx).Create(&attrValue).Error; err != nil {
+		return nil, err
 	}
 
 	var res []*domain.GoodsAttrValue
 	for _, v := range attrValue {
-		value := &domain.GoodsAttrValue{
-			ID:      v.ID,
-			AttrId:  v.AttrId,
-			GroupID: v.GroupID,
-			Value:   v.Value,
-		}
+		value := v.ToDomain()
 		res = append(res, value)
 	}
-
 	return res, nil
 }
 
@@ -190,9 +182,7 @@ func (g *goodsAttrRepo) ListByIds(ctx context.Context, ids ...*int64) (domain.Go
 	var res domain.GoodsAttrList
 
 	for _, item := range l {
-		res = append(res, item.ToGoodsAttrDomain())
+		res = append(res, item.ToDomain())
 	}
-
 	return res, nil
-
 }

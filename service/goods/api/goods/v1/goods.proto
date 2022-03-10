@@ -33,7 +33,7 @@ service Goods {
   rpc CreateAttrGroup(AttrGroupRequest) returns(AttrGroupResponse);
 
   // 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-  rpc CreateAttrValue(AttrValueRequest) returns(AttrResponse);
+  rpc CreateAttrValue(AttrRequest) returns(AttrResponse);
 
   // 商品接口
   rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsRequest);
@@ -46,13 +46,20 @@ service Goods {
 
 message AttrValueRequest {
   int64 id = 1;
-  int64 typeId = 2;
-  int64 groupId = 3;
-  string title = 4;
+  int64 attrId = 2;
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string value = 4 [(validate.rules).string.min_len = 3];
+}
+
+message AttrRequest {
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string title = 4 [(validate.rules).string = {min_len: 1}];
   string  desc = 5;
   bool status = 6;
-  int32 sort = 7;
-  repeated AttrValueResponse attrValue = 8;
+  int32 sort = 7 [(validate.rules).int32.gte = 1];
+  repeated AttrValueRequest attrValue = 8;
 }
 
 message AttrValueResponse {
@@ -61,6 +68,7 @@ message AttrValueResponse {
   int64 groupId = 3;
   string value = 4;
 }
+
 message AttrResponse {
   int64 id = 1;
   int64 typeId = 2;
@@ -93,21 +101,21 @@ message SpecificationValue {
   int64 id = 1;
   int64 attrId = 2;
   string value = 3 [(validate.rules).string.min_len = 3];
-  int32 sort = 4 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
 }
 
 message SpecificationValueResponse {
   int64 id = 1;
   int64 attrId = 2;
-  string value = 3 [(validate.rules).string.min_len = 3];
-  int32 sort = 4 [(validate.rules).string.min_len = 3];
+  string value = 3 ;
+  int32 sort = 4;
 }
 
 message SpecificationRequest {
   int64 id = 1;
-  int64 typeId = 2 [(validate.rules).string.min_len = 1];
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
   string name = 3 [(validate.rules).string.min_len = 3];
-  int32 sort = 4 [(validate.rules).string.min_len = 1];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
   bool status = 5;
   bool isSku = 6;
   bool isSelect = 7;

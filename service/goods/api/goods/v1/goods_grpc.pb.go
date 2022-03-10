@@ -43,7 +43,7 @@ type GoodsClient interface {
 	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
 	CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error)
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-	CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*AttrResponse, error)
+	CreateAttrValue(ctx context.Context, in *AttrRequest, opts ...grpc.CallOption) (*AttrResponse, error)
 	// 商品接口
 	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsRequest, error)
 	UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -165,7 +165,7 @@ func (c *goodsClient) CreateAttrGroup(ctx context.Context, in *AttrGroupRequest,
 	return out, nil
 }
 
-func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrValueRequest, opts ...grpc.CallOption) (*AttrResponse, error) {
+func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrRequest, opts ...grpc.CallOption) (*AttrResponse, error) {
 	out := new(AttrResponse)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateAttrValue", in, out, opts...)
 	if err != nil {
@@ -216,7 +216,7 @@ type GoodsServer interface {
 	// 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
 	CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error)
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-	CreateAttrValue(context.Context, *AttrValueRequest) (*AttrResponse, error)
+	CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error)
 	// 商品接口
 	CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error)
 	UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error)
@@ -263,7 +263,7 @@ func (UnimplementedGoodsServer) CreateGoodsSpecification(context.Context, *Speci
 func (UnimplementedGoodsServer) CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrGroup not implemented")
 }
-func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrValueRequest) (*AttrResponse, error) {
+func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrValue not implemented")
 }
 func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error) {
@@ -502,7 +502,7 @@ func _Goods_CreateAttrGroup_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _Goods_CreateAttrValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AttrValueRequest)
+	in := new(AttrRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -514,7 +514,7 @@ func _Goods_CreateAttrValue_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/goods.v1.Goods/CreateAttrValue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateAttrValue(ctx, req.(*AttrValueRequest))
+		return srv.(GoodsServer).CreateAttrValue(ctx, req.(*AttrRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

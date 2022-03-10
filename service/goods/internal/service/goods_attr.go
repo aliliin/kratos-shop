@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	v1 "goods/api/goods/v1"
 	"goods/internal/domain"
 )
@@ -30,7 +31,7 @@ func (g *GoodsService) CreateAttrGroup(ctx context.Context, r *v1.AttrGroupReque
 }
 
 // CreateAttrValue 创建属性名称和值
-func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueRequest) (*v1.AttrResponse, error) {
+func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrRequest) (*v1.AttrResponse, error) {
 	var value []*domain.GoodsAttrValue
 	for _, v := range r.AttrValue {
 		res := &domain.GoodsAttrValue{
@@ -60,10 +61,8 @@ func (g *GoodsService) CreateAttrValue(ctx context.Context, r *v1.AttrValueReque
 			GroupId: v.GroupID,
 			Value:   v.Value,
 		}
-
 		AttrValue = append(AttrValue, result)
 	}
-
 	return &v1.AttrResponse{
 		Id:        info.ID,
 		TypeId:    info.TypeID,

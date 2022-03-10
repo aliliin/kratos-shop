@@ -1,14 +1,5 @@
 package domain
 
-type GroupAttr struct {
-	GroupId int64   `json:"group_id"`
-	Attr    []*Attr `json:"attr"`
-}
-type Attr struct {
-	AttrID      int64 `json:"attr_id"`
-	AttrValueID int64 `json:"attr_value_id"`
-}
-
 type AttrGroup struct {
 	ID     int64
 	TypeID int64
@@ -44,6 +35,10 @@ type GoodsAttrValue struct {
 	Value   string
 }
 
+func (p GoodsAttrValue) IsValueEmpty() bool {
+	return p.Value == ""
+}
+
 type GoodsAttrList []*GoodsAttr
 
 func (p GoodsAttrList) FindById(id int64) *GoodsAttr {
@@ -62,4 +57,13 @@ func (p GoodsAttrList) IsNotExist(groupId, attrId int64) bool {
 		}
 	}
 	return false
+}
+
+type GroupAttr struct {
+	GroupId int64   `json:"group_id"`
+	Attr    []*Attr `json:"attr"`
+}
+type Attr struct {
+	AttrID      int64 `json:"attr_id"`
+	AttrValueID int64 `json:"attr_value_id"`
 }
