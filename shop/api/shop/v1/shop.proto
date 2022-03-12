@@ -37,13 +37,54 @@ service Shop {
       body: "*",
     };
   }
-
+  rpc UpdateAddress (UpdateAddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      put: "/api/update/address",
+      body: "*",
+    };
+  }
+  rpc DefaultAddress (AddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      put: "/api/default/address",
+      body: "*",
+    };
+  }
+  rpc DeleteAddress (AddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      delete: "/api/delete/address",
+    };
+  }
 }
 
 message CreateAddressReq {
   int64 uid = 1;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
+  string post_code = 8;
+  int32 is_default = 9;
+}
+
+message UpdateAddressReq {
+  int64 uid = 1;
   string name = 2;
-  string mobile = 3;
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
+  string post_code = 8;
+  int32 is_default = 9;
+  int64 id = 10 [(validate.rules).int64.gte = 1];
+}
+
+message AddressInfo {
+  int64 id = 1;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
   string Province = 4;
   string City = 5;
   string Districts = 6;
@@ -51,16 +92,22 @@ message CreateAddressReq {
   string post_code = 8;
   int32 is_default = 9;
 }
-message AddressInfo {
-  int64 id = 1;
-  string name = 2;
-  string mobile = 3;
-  string Province = 4;
-  string City = 5;
-  string Districts = 6;
-  string address = 7;
-  string post_code = 8;
-  int32 is_default = 9;
+
+message ListAddressReq {
+  int64 uid = 1;
+}
+
+message ListAddressReply {
+  repeated AddressInfo results = 1;
+}
+
+message AddressReq {
+  int64 id = 1 [(validate.rules).int64.gte = 1];
+  int64 uid = 2;
+}
+
+message CheckResponse{
+  bool success = 1;
 }
 
 // Data returned by registration and login

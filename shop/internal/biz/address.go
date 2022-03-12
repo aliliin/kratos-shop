@@ -24,6 +24,10 @@ type Address struct {
 
 type AddressRepo interface {
 	CreateAddress(ctx context.Context, a *Address) (*Address, error)
+	//AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
+	UpdateAddress(ctx context.Context, a *Address) error
+	DefaultAddress(ctx context.Context, a *Address) error
+	DeleteAddress(ctx context.Context, a *Address) error
 }
 
 type AddressUsecase struct {
@@ -82,4 +86,68 @@ func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddress
 		IsDefault: int32(res.IsDefault),
 	}
 	return result, nil
+}
+
+//func (ua *AddressUsecase) AddressListByUid(ctx context.Context) ([]*Address, error) {
+//	// 在上下文 context 中取出 claims 对象
+//	var uId int64
+//	if claims, ok := jwt.FromContext(ctx); ok {
+//		c := claims.(jwt2.MapClaims)
+//		if c["ID"] == nil {
+//			return nil, ErrAuthFailed
+//		}
+//		uId = int64(c["ID"].(float64))
+//	}
+//	return ua.aRepo.AddressListByUid(ctx, uId)
+//}
+
+func (ua *AddressUsecase) UpdateAddress(ctx context.Context, a *Address) (bool, error) {
+	uId, err := getUid(ctx)
+	if err != nil {
+		return false, err
+	}
+	a.UserID = uId
+	if err := ua.aRepo.UpdateAddress(ctx, a); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func getUid(ctx context.Context) (int64, error) {
+	// 在上下文 context 中取出 claims 对象
+	var uId int64
+	if claims, ok := jwt.FromContext(ctx); ok {
+		c := claims.(jwt2.MapClaims)
+		v, ok := c["ID"]
+
+		if !ok {
+			return 0, ErrAuthFailed
+		}
+		uId = int64(v.(float64))
+	}
+	return uId, nil
+}
+
+func (ua *AddressUsecase) DefaultAddress(ctx context.Context, a *Address) (bool, error) {
+	uId, err := getUid(ctx)
+	if err != nil {
+		return false, err
+	}
+	a.UserID = uId
+	if err := ua.aRepo.DefaultAddress(ctx, a); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (ua *AddressUsecase) DeleteAddress(ctx context.Context, a *Address) (bool, error) {
+	uId, err := getUid(ctx)
+	if err != nil {
+		return false, err
+	}
+	a.UserID = uId
+	if err := ua.aRepo.DeleteAddress(ctx, a); err != nil {
+		return false, err
+	}
+	return true, nil
 }

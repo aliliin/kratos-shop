@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"time"
@@ -83,11 +84,13 @@ func (a *adderessRepo) DefaultAddress(ctx context.Context, r *biz.Address) error
 
 func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error {
 	var address Address
-	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
+	fmt.Println(r)
+	result := a.data.db.Where(&Address{ID: r.ID}).Find(&address)
 	if result.Error != nil {
 		return result.Error
 	}
 
+	fmt.Println(address.UserID, r.UserID)
 	if address.UserID != r.UserID {
 		return errors.New("用户ID参数有误")
 	}

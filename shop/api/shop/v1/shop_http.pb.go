@@ -21,9 +21,12 @@ const _ = http.SupportPackageIsVersion1
 type ShopHTTPServer interface {
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
+	DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error)
+	DeleteAddress(context.Context, *AddressReq) (*CheckResponse, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
+	UpdateAddress(context.Context, *UpdateAddressReq) (*CheckResponse, error)
 }
 
 func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
@@ -33,6 +36,9 @@ func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
 	r.GET("/api/users/captcha", _Shop_Captcha0_HTTP_Handler(srv))
 	r.GET("/api/users/detail", _Shop_Detail0_HTTP_Handler(srv))
 	r.POST("/api/create/address", _Shop_CreateAddress0_HTTP_Handler(srv))
+	r.PUT("/api/update/address", _Shop_UpdateAddress0_HTTP_Handler(srv))
+	r.PUT("/api/default/address", _Shop_DefaultAddress0_HTTP_Handler(srv))
+	r.DELETE("/api/delete/address", _Shop_DeleteAddress0_HTTP_Handler(srv))
 }
 
 func _Shop_Register0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
@@ -130,12 +136,72 @@ func _Shop_CreateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Shop_UpdateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateAddressReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/shop.shop.v1.Shop/UpdateAddress")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateAddress(ctx, req.(*UpdateAddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CheckResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Shop_DefaultAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AddressReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/shop.shop.v1.Shop/DefaultAddress")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DefaultAddress(ctx, req.(*AddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CheckResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Shop_DeleteAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AddressReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/shop.shop.v1.Shop/DeleteAddress")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteAddress(ctx, req.(*AddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CheckResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ShopHTTPClient interface {
 	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
 	CreateAddress(ctx context.Context, req *CreateAddressReq, opts ...http.CallOption) (rsp *AddressInfo, err error)
+	DefaultAddress(ctx context.Context, req *AddressReq, opts ...http.CallOption) (rsp *CheckResponse, err error)
+	DeleteAddress(ctx context.Context, req *AddressReq, opts ...http.CallOption) (rsp *CheckResponse, err error)
 	Detail(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
 	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	UpdateAddress(ctx context.Context, req *UpdateAddressReq, opts ...http.CallOption) (rsp *CheckResponse, err error)
 }
 
 type ShopHTTPClientImpl struct {
@@ -166,6 +232,32 @@ func (c *ShopHTTPClientImpl) CreateAddress(ctx context.Context, in *CreateAddres
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/CreateAddress"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ShopHTTPClientImpl) DefaultAddress(ctx context.Context, in *AddressReq, opts ...http.CallOption) (*CheckResponse, error) {
+	var out CheckResponse
+	pattern := "/api/default/address"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/shop.shop.v1.Shop/DefaultAddress"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ShopHTTPClientImpl) DeleteAddress(ctx context.Context, in *AddressReq, opts ...http.CallOption) (*CheckResponse, error) {
+	var out CheckResponse
+	pattern := "/api/delete/address"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation("/shop.shop.v1.Shop/DeleteAddress"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -205,6 +297,19 @@ func (c *ShopHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/Register"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *ShopHTTPClientImpl) UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...http.CallOption) (*CheckResponse, error) {
+	var out CheckResponse
+	pattern := "/api/update/address"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/shop.shop.v1.Shop/UpdateAddress"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

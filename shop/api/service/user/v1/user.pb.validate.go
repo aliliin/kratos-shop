@@ -62,6 +62,7 @@ func (m *ListAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -179,6 +180,7 @@ func (m *AddressInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return AddressInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -311,6 +313,7 @@ func (m *ListAddressReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReplyMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -428,6 +431,7 @@ func (m *CreateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -547,6 +551,7 @@ func (m *UpdateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -621,22 +626,22 @@ var _ interface {
 	ErrorName() string
 } = UpdateAddressReqValidationError{}
 
-// Validate checks the field values on DeleteAddressReq with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *DeleteAddressReq) Validate() error {
+// Validate checks the field values on AddressReq with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *AddressReq) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DeleteAddressReq with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeleteAddressReqMultiError, or nil if none found.
-func (m *DeleteAddressReq) ValidateAll() error {
+// ValidateAll checks the field values on AddressReq with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in AddressReqMultiError, or
+// nil if none found.
+func (m *AddressReq) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DeleteAddressReq) validate(all bool) error {
+func (m *AddressReq) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -648,18 +653,18 @@ func (m *DeleteAddressReq) validate(all bool) error {
 	// no validation rules for Uid
 
 	if len(errors) > 0 {
-		return DeleteAddressReqMultiError(errors)
+		return AddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
-// DeleteAddressReqMultiError is an error wrapping multiple validation errors
-// returned by DeleteAddressReq.ValidateAll() if the designated constraints
-// aren't met.
-type DeleteAddressReqMultiError []error
+// AddressReqMultiError is an error wrapping multiple validation errors
+// returned by AddressReq.ValidateAll() if the designated constraints aren't met.
+type AddressReqMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DeleteAddressReqMultiError) Error() string {
+func (m AddressReqMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -668,11 +673,11 @@ func (m DeleteAddressReqMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DeleteAddressReqMultiError) AllErrors() []error { return m }
+func (m AddressReqMultiError) AllErrors() []error { return m }
 
-// DeleteAddressReqValidationError is the validation error returned by
-// DeleteAddressReq.Validate if the designated constraints aren't met.
-type DeleteAddressReqValidationError struct {
+// AddressReqValidationError is the validation error returned by
+// AddressReq.Validate if the designated constraints aren't met.
+type AddressReqValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -680,22 +685,22 @@ type DeleteAddressReqValidationError struct {
 }
 
 // Field function returns field value.
-func (e DeleteAddressReqValidationError) Field() string { return e.field }
+func (e AddressReqValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DeleteAddressReqValidationError) Reason() string { return e.reason }
+func (e AddressReqValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DeleteAddressReqValidationError) Cause() error { return e.cause }
+func (e AddressReqValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DeleteAddressReqValidationError) Key() bool { return e.key }
+func (e AddressReqValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DeleteAddressReqValidationError) ErrorName() string { return "DeleteAddressReqValidationError" }
+func (e AddressReqValidationError) ErrorName() string { return "AddressReqValidationError" }
 
 // Error satisfies the builtin error interface
-func (e DeleteAddressReqValidationError) Error() string {
+func (e AddressReqValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -707,14 +712,14 @@ func (e DeleteAddressReqValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDeleteAddressReq.%s: %s%s",
+		"invalid %sAddressReq.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DeleteAddressReqValidationError{}
+var _ error = AddressReqValidationError{}
 
 var _ interface {
 	Field() string
@@ -722,7 +727,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DeleteAddressReqValidationError{}
+} = AddressReqValidationError{}
 
 // Validate checks the field values on CheckResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -751,6 +756,7 @@ func (m *CheckResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return CheckResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -854,6 +860,7 @@ func (m *PageInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PageInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -966,6 +973,7 @@ func (m *UserInfoResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserInfoResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1101,6 +1109,7 @@ func (m *UserListResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserListResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1202,6 +1211,7 @@ func (m *MobileRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return MobileRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1303,6 +1313,7 @@ func (m *IdRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return IdRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1407,6 +1418,7 @@ func (m *CreateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1514,6 +1526,7 @@ func (m *UpdateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1617,6 +1630,7 @@ func (m *PasswordCheckInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PasswordCheckInfoMultiError(errors)
 	}
+
 	return nil
 }
 
