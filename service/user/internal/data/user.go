@@ -173,14 +173,6 @@ func (r *userRepo) UpdateUser(ctx context.Context, user *biz.User) (bool, error)
 	return true, nil
 }
 
-// CheckPassword .
-func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPassword string) (bool, error) {
-	options := &password.Options{SaltLen: 16, Iterations: 10000, KeyLen: 32, HashFunction: sha512.New}
-	passwordInfo := strings.Split(encryptedPassword, "$")
-	check := password.Verify(psd, passwordInfo[2], passwordInfo[3], options)
-	return check, nil
-}
-
 // GetUserById .
 func (r *userRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error) {
 	var user User
@@ -194,4 +186,12 @@ func (r *userRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error)
 
 	re := modelToResponse(user)
 	return &re, nil
+}
+
+// CheckPassword .
+func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPassword string) (bool, error) {
+	options := &password.Options{SaltLen: 16, Iterations: 10000, KeyLen: 32, HashFunction: sha512.New}
+	passwordInfo := strings.Split(encryptedPassword, "$")
+	check := password.Verify(psd, passwordInfo[2], passwordInfo[3], options)
+	return check, nil
 }
