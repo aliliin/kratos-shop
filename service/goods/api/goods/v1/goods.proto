@@ -36,7 +36,7 @@ service Goods {
   rpc CreateAttrValue(AttrRequest) returns(AttrResponse);
 
   // 商品接口
-  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsRequest);
+  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsResponse);
   rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
   //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
   //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
@@ -114,7 +114,7 @@ message SpecificationValueResponse {
 message SpecificationRequest {
   int64 id = 1;
   int64 typeId = 2 [(validate.rules).int64.gte = 1];
-  string name = 3 [(validate.rules).string.min_len = 3];
+  string name = 3 [(validate.rules).string.min_len = 2];
   int32 sort = 4 [(validate.rules).int32.gte = 1];
   bool status = 5;
   bool isSku = 6;
@@ -141,9 +141,9 @@ message GoodsTypeResponse {
 
 message CreateGoodsRequest {
   int64 id = 1;
-  int64 categoryId = 2;
-  int64 brandId = 3;
-  int64 typeId = 4;
+  int32 categoryId = 2 [(validate.rules).int32.gte = 1];
+  int32 brandId = 3 [(validate.rules).int32.gte = 1];
+  int64 typeId = 4 [(validate.rules).int64.gte = 1];
   string name = 5;
   string nameAlias = 6;
   string goodsTags = 7;
@@ -155,7 +155,7 @@ message CreateGoodsRequest {
   string goodsFrontImage = 13;
   repeated string goodsImages = 14;
   bool shipFree = 15;
-  int64 shipId = 16;
+  int32 shipId = 16;
   bool isNew = 17;
   bool isHot = 18;
   bool onSale = 19;
@@ -164,34 +164,40 @@ message CreateGoodsRequest {
   message goodsSku {
     int64 id = 1;
     int64 goodsId = 2;
-    string skuName = 3;
-    string code = 4;
-    string barCode = 5;
+    string skuName = 3 [(validate.rules).string.min_len = 1];
+    string code = 4 [(validate.rules).string.min_len = 1];
+    string barCode = 5 [(validate.rules).string.min_len = 1];
     int64 price = 6;
     int64 promotionPrice = 7;
     int64 points = 8;
-    int32 sort = 9;
-    int64 inventory = 10; // sku 库存
+    string image = 9;
+    int32 sort = 10;
+    int64 inventory = 11; // sku 库存
     // 规格
     message specification {
-      int64 sId = 1;
-      int64 vId = 2;
+      int64 sId = 1 [(validate.rules).int64.gte = 1];
+      int64 vId = 2 [(validate.rules).int64.gte = 1];
     }
-    repeated specification specificationInfo = 11;
+    repeated specification specificationInfo = 12;
     // 属性组
     message groupAttr {
       int64 groupId = 1;
+      string groupName = 2;
       message attr {
-        int64 attrId = 1;
-        int64 attrValueId = 2;
+        int64 attrId = 1 [(validate.rules).int64.gte = 1];
+        string attrName = 2 [(validate.rules).string.min_len = 1];
+        int64 attrValueId = 3 [(validate.rules).int64.gte = 1];
+        string attrValueName = 4 [(validate.rules).string.min_len = 1];
       }
-      repeated attr attrInfo = 2;
+      repeated attr attrInfo = 3;
     }
-    repeated groupAttr groupAttrInfo = 12;
+    repeated groupAttr groupAttrInfo = 13;
   }
   repeated goodsSku sku = 20;
 }
-
+message CreateGoodsResponse {
+  int64 ID = 1;
+}
 
 message GoodsInfoResponse {
   int64 id = 1;

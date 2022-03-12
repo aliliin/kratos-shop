@@ -49,6 +49,18 @@ func NewSpecificationRepo(data *Data, logger log.Logger) biz.SpecificationRepo {
 	}
 }
 
+func (p *SpecificationsAttr) ToDomain() *domain.Specification {
+	return &domain.Specification{
+		ID:       p.ID,
+		TypeID:   p.TypeID,
+		Name:     p.Name,
+		Sort:     p.Sort,
+		Status:   p.Status,
+		IsSKU:    p.IsSKU,
+		IsSelect: p.IsSelect,
+	}
+}
+
 func (g *specificationRepo) CreateSpecification(ctx context.Context, req *domain.Specification) (int64, error) {
 	s := &SpecificationsAttr{
 		TypeID:    req.TypeID,
@@ -80,20 +92,15 @@ func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId
 	return result.Error
 }
 
-func (g *specificationRepo) GetSpecificationByIDs(ctx context.Context, AttrIds []*domain.Specification) error {
-	var attrIDs []*int64
-	for _, id := range AttrIds {
-		attrIDs = append(attrIDs, &id.ID)
+func (g *specificationRepo) ListByIds(ctx context.Context, id ...*int64) (domain.SpecificationList, error) {
+	var l []*SpecificationsAttr
+	if err := g.data.DB(ctx).Where("id IN (?)", id).Find(&l).Error; err != nil {
+		return nil, errors.New("规格不存在")
 	}
-	total := len(AttrIds)
-	var count int64
-	result := g.data.DB(ctx).Where("id IN (?)", attrIDs).Count(&count)
-	if result.Error != nil {
-		return result.Error
-	}
-	if int64(total) != count {
-		return errors.New("部分规格不存在")
-	}
-	return nil
 
+	var res domain.SpecificationList
+	for _, item := range l {
+		res = append(res, item.ToDomain())
+	}
+	return res, nil
 }

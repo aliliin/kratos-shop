@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"goods/internal/domain"
 )
 
 type GoodsImages struct {
@@ -10,8 +11,8 @@ type GoodsImages struct {
 }
 
 type GoodsImagesRepo interface {
-	CreateGreeter(context.Context, *GoodsInfo) error
-	UpdateGreeter(context.Context, *GoodsInfo) error
+	CreateGreeter(context.Context, *domain.GoodsInfo) error
+	UpdateGreeter(context.Context, *domain.GoodsInfo) error
 }
 
 type GoodsImageUsecase struct {

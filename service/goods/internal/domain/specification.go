@@ -1,5 +1,12 @@
 package domain
 
+type SpecificationValue struct {
+	ID     int64
+	AttrId int64
+	Value  string
+	Sort   int32
+}
+
 type Specification struct {
 	ID                 int64
 	TypeID             int64
@@ -19,14 +26,13 @@ func (b *Specification) IsValueEmpty() bool {
 	return b.SpecificationValue == nil
 }
 
-type SpecificationValue struct {
-	ID     int64
-	AttrId int64
-	Value  string
-	Sort   int32
-}
+type SpecificationList []*Specification
 
-type SpecificationInfo struct {
-	SpecificationID      int64
-	SpecificationValueID int64
+func (p SpecificationList) FindById(id int64) *Specification {
+	for _, item := range p {
+		if item.ID == id {
+			return item
+		}
+	}
+	return nil
 }

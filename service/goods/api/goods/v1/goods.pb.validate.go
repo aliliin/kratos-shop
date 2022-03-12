@@ -1127,10 +1127,10 @@ func (m *SpecificationRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetName()) < 3 {
+	if utf8.RuneCountInString(m.GetName()) < 2 {
 		err := SpecificationRequestValidationError{
 			field:  "Name",
-			reason: "value length must be at least 3 runes",
+			reason: "value length must be at least 2 runes",
 		}
 		if !all {
 			return err
@@ -1644,11 +1644,38 @@ func (m *CreateGoodsRequest) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for CategoryId
+	if m.GetCategoryId() < 1 {
+		err := CreateGoodsRequestValidationError{
+			field:  "CategoryId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for BrandId
+	if m.GetBrandId() < 1 {
+		err := CreateGoodsRequestValidationError{
+			field:  "BrandId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for TypeId
+	if m.GetTypeId() < 1 {
+		err := CreateGoodsRequestValidationError{
+			field:  "TypeId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
@@ -1791,6 +1818,110 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateGoodsRequestValidationError{}
+
+// Validate checks the field values on CreateGoodsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateGoodsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateGoodsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateGoodsResponseMultiError, or nil if none found.
+func (m *CreateGoodsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateGoodsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ID
+
+	if len(errors) > 0 {
+		return CreateGoodsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateGoodsResponseMultiError is an error wrapping multiple validation
+// errors returned by CreateGoodsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CreateGoodsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateGoodsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateGoodsResponseMultiError) AllErrors() []error { return m }
+
+// CreateGoodsResponseValidationError is the validation error returned by
+// CreateGoodsResponse.Validate if the designated constraints aren't met.
+type CreateGoodsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateGoodsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateGoodsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateGoodsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateGoodsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateGoodsResponseValidationError) ErrorName() string {
+	return "CreateGoodsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateGoodsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateGoodsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateGoodsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateGoodsResponseValidationError{}
 
 // Validate checks the field values on GoodsInfoResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -3494,17 +3625,46 @@ func (m *CreateGoodsRequestGoodsSku) validate(all bool) error {
 
 	// no validation rules for GoodsId
 
-	// no validation rules for SkuName
+	if utf8.RuneCountInString(m.GetSkuName()) < 1 {
+		err := CreateGoodsRequestGoodsSkuValidationError{
+			field:  "SkuName",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Code
+	if utf8.RuneCountInString(m.GetCode()) < 1 {
+		err := CreateGoodsRequestGoodsSkuValidationError{
+			field:  "Code",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for BarCode
+	if utf8.RuneCountInString(m.GetBarCode()) < 1 {
+		err := CreateGoodsRequestGoodsSkuValidationError{
+			field:  "BarCode",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Price
 
 	// no validation rules for PromotionPrice
 
 	// no validation rules for Points
+
+	// no validation rules for Image
 
 	// no validation rules for Sort
 
@@ -3682,9 +3842,27 @@ func (m *CreateGoodsRequestGoodsSkuSpecification) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for SId
+	if m.GetSId() < 1 {
+		err := CreateGoodsRequestGoodsSkuSpecificationValidationError{
+			field:  "SId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for VId
+	if m.GetVId() < 1 {
+		err := CreateGoodsRequestGoodsSkuSpecificationValidationError{
+			field:  "VId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return CreateGoodsRequestGoodsSkuSpecificationMultiError(errors)
@@ -3792,6 +3970,8 @@ func (m *CreateGoodsRequestGoodsSkuGroupAttr) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for GroupId
+
+	// no validation rules for GroupName
 
 	for idx, item := range m.GetAttrInfo() {
 		_, _ = idx, item
@@ -3933,9 +4113,49 @@ func (m *CreateGoodsRequestGoodsSkuGroupAttrAttr) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for AttrId
+	if m.GetAttrId() < 1 {
+		err := CreateGoodsRequestGoodsSkuGroupAttrAttrValidationError{
+			field:  "AttrId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for AttrValueId
+	if utf8.RuneCountInString(m.GetAttrName()) < 1 {
+		err := CreateGoodsRequestGoodsSkuGroupAttrAttrValidationError{
+			field:  "AttrName",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetAttrValueId() < 1 {
+		err := CreateGoodsRequestGoodsSkuGroupAttrAttrValidationError{
+			field:  "AttrValueId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetAttrValueName()) < 1 {
+		err := CreateGoodsRequestGoodsSkuGroupAttrAttrValidationError{
+			field:  "AttrValueName",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return CreateGoodsRequestGoodsSkuGroupAttrAttrMultiError(errors)

@@ -45,7 +45,7 @@ type GoodsClient interface {
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
 	CreateAttrValue(ctx context.Context, in *AttrRequest, opts ...grpc.CallOption) (*AttrResponse, error)
 	// 商品接口
-	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsRequest, error)
+	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsResponse, error)
 	UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -174,8 +174,8 @@ func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrRequest, opts
 	return out, nil
 }
 
-func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsRequest, error) {
-	out := new(CreateGoodsRequest)
+func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsResponse, error) {
+	out := new(CreateGoodsResponse)
 	err := c.cc.Invoke(ctx, "/goods.v1.Goods/CreateGoods", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -218,7 +218,7 @@ type GoodsServer interface {
 	// 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
 	CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error)
 	// 商品接口
-	CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error)
+	CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsResponse, error)
 	UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedGoodsServer()
 }
@@ -266,7 +266,7 @@ func (UnimplementedGoodsServer) CreateAttrGroup(context.Context, *AttrGroupReque
 func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrValue not implemented")
 }
-func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsRequest, error) {
+func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
 }
 func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error) {

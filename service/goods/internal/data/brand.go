@@ -150,13 +150,13 @@ func (r *BrandRepo) IsBrand(ctx context.Context, ids []int32) error {
 	return nil
 }
 
-func (p *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandList, error) {
+func (r *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandList, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("请选择品牌")
 	}
 
 	var l []*Brand
-	if err := p.data.DB(ctx).Where("id IN (?)", ids).Take(&l).Error; err != nil {
+	if err := r.data.DB(ctx).Where("id IN (?)", ids).Find(&l).Error; err != nil {
 		return nil, err
 	}
 
@@ -169,17 +169,9 @@ func (p *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandLi
 
 func (r *BrandRepo) IsBrandByID(ctx context.Context, id int32) (*domain.Brand, error) {
 	var b Brand
-	result := r.data.db.Table("brands").Where("id = ?", id).First(&b)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.data.db.Table("brands").Where("id = ?", id).First(&b).Error; err != nil {
+		return nil, err
 	}
-	res := &domain.Brand{
-		ID:    b.ID,
-		Name:  b.Name,
-		Logo:  b.Logo,
-		Desc:  b.Desc,
-		IsTab: b.IsTab,
-		Sort:  b.Sort,
-	}
-	return res, nil
+
+	return b.ToDomain(), nil
 }

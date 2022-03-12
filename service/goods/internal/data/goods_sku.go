@@ -4,6 +4,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // GoodsSku 商品SKU 表
@@ -12,7 +13,6 @@ type GoodsSku struct {
 	GoodsID        int64  `gorm:"index:goods_id;type:int;comment:商品ID;not null"`
 	GoodsSn        string `gorm:"type:varchar(100);not null;comment:商品编号"`
 	GoodsName      string `gorm:"type:varchar(100);not null;comment:商品名称"`
-	Goods          Goods
 	SkuName        string `gorm:"type:varchar(100);comment:SKU名称;not null"`
 	SkuCode        string `gorm:"type:varchar(100);comment:SKUCode;not null"`
 	BarCode        string `gorm:"type:varchar(100);comment:条码;not null"`
@@ -22,16 +22,8 @@ type GoodsSku struct {
 	RemarksInfo    string `gorm:"type:varchar(100);comment:备注信息;not null"`
 	Pic            string `gorm:"type:varchar(500);not null;comment:规格参数对应的图片" json:"pic"`
 	OnSale         bool   `gorm:"comment:是否上架;default:false;not null"`
-	AttrInfo       string `gorm:"type:varchar(1000);comment:商品属性JSON内容;not null"`
+	AttrInfo       string `gorm:"type:varchar(2000);comment:商品属性信息JSON;not null"`
 	Inventory      int64  `gorm:"type:int;comment:商品SKU库存冗余字段;not null"`
-}
-
-type GoodsInventory struct {
-	BaseFields
-	SkuID     int64 `gorm:"index:sku_id;type:int;comment:商品SKU_ID;not null"`
-	SKU       GoodsSku
-	Inventory int64 `gorm:"type:int;comment:商品库存;not null"`
-	Sale      int64 `gorm:"type:int;comment:商品销量;not null"`
 }
 
 // GoodsSpecificationSku 商品规格和商品Sku关联表
@@ -40,19 +32,7 @@ type GoodsSpecificationSku struct {
 	SkuID           int64  `gorm:"index:sku_id;type:int;comment:商品SKU_ID;not null"`
 	SkuCode         string `gorm:"type:varchar(100);comment:商品SKU_Code;not null"`
 	SpecificationId int64  `gorm:"index:specification_id;type:int;comment:商品规格ID;not null"`
-	ValueId         int64  `gorm:"index:s_value_id;type:int;comment:商品规格值表ID;not null"`
-	Sort            int32  `gorm:"index:sort;type:int;comment:商品参数展示排序;not null"`
-}
-
-// GoodsAttrSku 商品属性和商品Sku关联表
-type GoodsAttrSku struct {
-	BaseFields
-	SkuID   int64  `gorm:"index:sku_id;type:int;comment:商品SKU_ID;not null"`
-	SkuCode string `gorm:"type:varchar(100);comment:商品SKU_Code;not null"`
-	Sort    int32  `gorm:"index:sort;type:int;comment:商品参数展示排序;not null"`
-
-	AttrId  int64 `gorm:"index:attr_id;type:int;comment:商品属性ID;not null"`
-	ValueId int64 `gorm:"index:attr_value_id;type:int;comment:属性值表ID;not null"`
+	ValueId         int64  `gorm:"index:value_id;type:int;comment:商品规格值表ID;not null"`
 }
 
 type goodsSkuRepo struct {
@@ -68,7 +48,27 @@ func NewGoodsSkuRepoRepo(data *Data, logger log.Logger) biz.GoodsSkuRepo {
 	}
 }
 
-func (g *goodsSkuRepo) Create(ctx context.Context, req *biz.Sku) (*biz.Sku, error) {
+func (p *GoodsSku) ToDomain() *domain.GoodsSku {
+	return &domain.GoodsSku{
+		ID:             p.ID,
+		GoodsID:        p.GoodsID,
+		GoodsSn:        p.GoodsSn,
+		GoodsName:      p.GoodsName,
+		SkuName:        p.SkuName,
+		SkuCode:        p.SkuCode,
+		BarCode:        p.BarCode,
+		Price:          p.Price,
+		PromotionPrice: p.PromotionPrice,
+		Points:         p.Points,
+		RemarksInfo:    p.RemarksInfo,
+		Pic:            p.Pic,
+		Inventory:      p.Inventory,
+		OnSale:         p.OnSale,
+		AttrInfo:       p.AttrInfo,
+	}
+}
+
+func (g *goodsSkuRepo) Create(ctx context.Context, req *domain.GoodsSku) (*domain.GoodsSku, error) {
 	sku := &GoodsSku{
 		GoodsID:        req.GoodsID,
 		GoodsSn:        req.GoodsSn,
@@ -86,44 +86,23 @@ func (g *goodsSkuRepo) Create(ctx context.Context, req *biz.Sku) (*biz.Sku, erro
 		Inventory:      req.Inventory,
 	}
 
-	var res biz.Sku
-	result := g.data.DB(ctx).Save(sku)
-	if result.Error != nil {
-		return &res, nil
+	if err := g.data.DB(ctx).Save(sku).Error; err != nil {
+		return nil, err
 	}
-	res = biz.Sku{
-		GoodsID:        sku.GoodsID,
-		GoodsSn:        sku.GoodsSn,
-		GoodsName:      sku.GoodsName,
-		SkuName:        sku.SkuName,
-		SkuCode:        sku.SkuCode,
-		BarCode:        sku.BarCode,
-		Price:          sku.Price,
-		PromotionPrice: sku.PromotionPrice,
-		Points:         sku.Points,
-		RemarksInfo:    sku.RemarksInfo,
-		Pic:            sku.Pic,
-		Inventory:      sku.Inventory,
-		OnSale:         sku.OnSale,
-		AttrInfo:       sku.AttrInfo,
-	}
-
-	return &res, nil
+	return sku.ToDomain(), nil
 }
 
-func (g *goodsSkuRepo) CreateSkuRelation(ctx context.Context, req []*biz.GoodsSpecificationSku) error {
+func (g *goodsSkuRepo) CreateSkuRelation(ctx context.Context, req []*domain.GoodsSpecificationSku) error {
 	var info []*GoodsSpecificationSku
-
 	for _, sku := range req {
-		i := &GoodsSpecificationSku{
-			SkuID:   sku.SkuID,
-			SkuCode: sku.SkuCode,
-			//Sort:            req.Sort,
+		i := GoodsSpecificationSku{
+			SkuID:           sku.SkuID,
+			SkuCode:         sku.SkuCode,
 			SpecificationId: sku.SpecificationId,
 			ValueId:         sku.ValueId,
 		}
-		info = append(info, i)
+		info = append(info, &i)
 	}
-	result := g.data.DB(ctx).Table("GoodsSpecificationSku").Save(info)
+	result := g.data.DB(ctx).Table("goods_specification_skus").Save(&info)
 	return result.Error
 }

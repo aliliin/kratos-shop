@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
+	"goods/internal/domain"
 )
 
 // GoodsImages goods images
@@ -30,10 +31,10 @@ func NewGoodsImagesRepo(data *Data, logger log.Logger) biz.GoodsImagesRepo {
 	}
 }
 
-func (r *goodsImagesRepo) CreateGreeter(ctx context.Context, g *biz.GoodsInfo) error {
+func (r *goodsImagesRepo) CreateGreeter(ctx context.Context, g *domain.GoodsInfo) error {
 	return nil
 }
 
-func (r *goodsImagesRepo) UpdateGreeter(ctx context.Context, g *biz.GoodsInfo) error {
+func (r *goodsImagesRepo) UpdateGreeter(ctx context.Context, g *domain.GoodsInfo) error {
 	return nil
 }

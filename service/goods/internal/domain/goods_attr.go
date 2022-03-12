@@ -58,12 +58,3 @@ func (p GoodsAttrList) IsNotExist(groupId, attrId int64) bool {
 	}
 	return false
 }
-
-type GroupAttr struct {
-	GroupId int64   `json:"group_id"`
-	Attr    []*Attr `json:"attr"`
-}
-type Attr struct {
-	AttrID      int64 `json:"attr_id"`
-	AttrValueID int64 `json:"attr_value_id"`
-}

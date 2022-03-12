@@ -15,7 +15,7 @@ type GoodsAttrRepo interface {
 	CreateGoodsAttrValue(context.Context, []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error)
 	GetAttrByIDs(ctx context.Context, id []*int64) error
 
-	ListByIds(ctx context.Context, id ...*int64) (domain.GoodsAttrList, error)
+	ListByIds(ctx context.Context, id ...int64) (domain.GoodsAttrList, error)
 }
 
 type GoodsAttrUsecase struct {
