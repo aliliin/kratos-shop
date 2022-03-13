@@ -1,8 +1,7 @@
 package domain
 
-import "goods/internal/biz"
-
 type GoodsSku struct {
+	ID             int64
 	GoodsID        int64
 	GoodsSn        string
 	GoodsName      string
@@ -14,9 +13,35 @@ type GoodsSku struct {
 	Points         int64
 	RemarksInfo    string
 	Pic            string
-	Num            int64
+	Inventory      int64
 	OnSale         bool
+	AttrInfo       string
+	Specification  []*SpecificationInfo
+	GroupAttr      []*GroupAttr
+}
 
-	Specification []*SpecificationInfo
-	GroupAttr     []*biz.GroupAttr
+type SpecificationInfo struct {
+	SpecificationID      int64
+	SpecificationValueID int64
+}
+
+type GroupAttr struct {
+	GroupId   int64   `json:"group_id"`
+	GroupName string  `json:"group_name"`
+	Attr      []*Attr `json:"attr"`
+}
+
+type Attr struct {
+	AttrID        int64  `json:"attr_id"`
+	AttrName      string `json:"attr_name"`
+	AttrValueID   int64  `json:"attr_value_id"`
+	AttrValueName string `json:"attr_value_name"`
+}
+
+type GoodsSpecificationSku struct {
+	ID              int64
+	SkuID           int64
+	SkuCode         string
+	SpecificationId int64
+	ValueId         int64
 }

@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"goods/internal/domain"
 )
 
 type Sku struct {
@@ -23,18 +24,9 @@ type Sku struct {
 	AttrInfo       string
 }
 
-type GoodsSpecificationSku struct {
-	ID              int64
-	SkuID           int64
-	SkuCode         string
-	Sort            int32
-	SpecificationId int64
-	ValueId         int64
-}
-
 type GoodsSkuRepo interface {
-	Create(context.Context, *Sku) (*Sku, error)
-	CreateSkuRelation(context.Context, []*GoodsSpecificationSku) error
+	Create(context.Context, *domain.GoodsSku) (*domain.GoodsSku, error)
+	CreateSkuRelation(context.Context, []*domain.GoodsSpecificationSku) error
 }
 
 type GoodsSkuUsecase struct {

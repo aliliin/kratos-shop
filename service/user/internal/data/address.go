@@ -2,8 +2,8 @@ package data
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"time"
@@ -46,53 +46,66 @@ func NewAddressRepo(data *Data, logger log.Logger) biz.AddressRepo {
 func (a *adderessRepo) DeleteAddress(ctx context.Context, r *biz.Address) error {
 	var address Address
 	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.NotFound("ADDRESS_NOT_FOUND", "address not found")
+	}
+
 	if result.Error != nil {
 		return result.Error
 	}
 
 	if address.UserID != r.UserID {
-		return errors.New("用户ID参数有误")
+		return errors.NotFound("NOT_USER_ADDRESS_FOR_FOUND", "Is not the address of this user")
 	}
-	//address.DeletedAt = time.Now()
 
-	return a.data.db.Delete(&address).Error
+	if err := a.data.db.Delete(&address).Error; err != nil {
+		return errors.New(500, "DELETE_USER_ADDRESS_ERROR", "用户地址删除失败")
+	}
+	return nil
 }
 
 func (a *adderessRepo) DefaultAddress(ctx context.Context, r *biz.Address) error {
 	var address, addressOld Address
 	resCurrDefAdr := a.data.db.Where(&Address{UserID: r.UserID, IsDefault: 1}).First(&addressOld)
+	if errors.Is(resCurrDefAdr.Error, gorm.ErrRecordNotFound) {
+		return errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
+	}
+
 	if resCurrDefAdr.Error == nil {
 		addressOld.IsDefault = 0
 		addressOld.UpdatedAt = time.Now()
-		a.data.db.Save(&addressOld)
+		if err := a.data.db.Save(&addressOld).Error; err != nil {
+			return errors.NotFound("SET_ADDRESS_ERROR", "用户地址修改失败")
+		}
 	}
 
-	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	if address.UserID != r.UserID {
-		return errors.New("用户ID参数有误")
+	result := a.data.db.Where(&Address{ID: r.ID, UserID: r.UserID}).First(&address)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
 	}
 
 	address.IsDefault = 1
 	address.UpdatedAt = time.Now()
-
-	return a.data.db.Save(&address).Error
+	if err := a.data.db.Save(&address).Error; err != nil {
+		return errors.NotFound("SET_ADDRESS_ERROR", "用户地址修改失败")
+	}
+	return nil
 }
 
 func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error {
 	var address Address
 	fmt.Println(r)
 	result := a.data.db.Where(&Address{ID: r.ID}).Find(&address)
-	if result.Error != nil {
-		return result.Error
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
 	}
 
-	fmt.Println(address.UserID, r.UserID)
+	if result.Error != nil {
+		return errors.New(500, "UPDATE_USER_ADDRESS_ERROR", "用户地址更新失败")
+	}
+
 	if address.UserID != r.UserID {
-		return errors.New("用户ID参数有误")
+		return errors.New(500, "UPDATE_USER_ADDRESS_ERROR", "用户 ID 参数有误")
 	}
 
 	address.Address = r.Address
@@ -105,18 +118,25 @@ func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error 
 	address.Province = r.Province
 	address.UpdatedAt = time.Now()
 
-	return a.data.db.Save(&address).Error
+	if err := a.data.db.Save(&address).Error; err != nil {
+		return errors.New(500, "UPDATE_USER_ADDRESS_ERROR", "用户地址更新失败")
+	}
+	return nil
 }
 
 func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.Address, error) {
 	var address []Address
 	result := a.data.db.Where(&Address{UserID: uid}).Find(&address)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
+	}
+
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.New(500, "USER_ADDRESS_LIST_ERROR", "查询用户地址列表失败")
 	}
 
 	if result.RowsAffected == 0 {
-		return nil, errors.New("地址列表为空")
+		return nil, errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
 	}
 	var addressList []*biz.Address
 	for _, v := range address {
@@ -141,7 +161,7 @@ func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Ad
 
 	result := a.data.db.Save(&addInfo)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.NotFound("CREATE_ADDRESS_NOT_FOUND", "创建用户地址失败")
 	}
 
 	return modelToBizResponse(addInfo), nil

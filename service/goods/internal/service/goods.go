@@ -1,14 +1,13 @@
 package service
 
 import (
-	"golang.org/x/net/context"
+	"context"
 	v1 "goods/api/goods/v1"
-	"goods/internal/biz"
 	"goods/internal/domain"
 )
 
 // CreateGoods 创建商品
-func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest) (*v1.CreateGoodsRequest, error) {
+func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest) (*v1.CreateGoodsResponse, error) {
 	var goodsSku []*domain.GoodsSku
 	for _, sku := range r.Sku {
 		res := &domain.GoodsSku{
@@ -20,9 +19,9 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 			Price:          sku.Price,
 			PromotionPrice: sku.PromotionPrice,
 			Points:         sku.Points,
-			//Pic:            sku.Pic,
-			Num:    sku.Inventory,
-			OnSale: r.OnSale,
+			Pic:            sku.Image,
+			Inventory:      sku.Inventory,
+			OnSale:         r.OnSale,
 		}
 
 		for _, specification := range sku.SpecificationInfo {
@@ -33,13 +32,16 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 			res.Specification = append(res.Specification, s)
 		}
 		for _, attrGroup := range sku.GroupAttrInfo {
-			group := &biz.GroupAttr{
-				GroupId: attrGroup.GroupId,
+			group := &domain.GroupAttr{
+				GroupId:   attrGroup.GroupId,
+				GroupName: attrGroup.GroupName,
 			}
 			for _, attr := range attrGroup.AttrInfo {
-				s := &biz.Attr{
-					AttrID:      attr.AttrId,
-					AttrValueID: attr.AttrValueId,
+				s := &domain.Attr{
+					AttrID:        attr.AttrId,
+					AttrName:      attr.AttrName,
+					AttrValueID:   attr.AttrValueId,
+					AttrValueName: attr.AttrValueName,
 				}
 				group.Attr = append(group.Attr, s)
 			}
@@ -48,11 +50,11 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 		goodsSku = append(goodsSku, res)
 	}
 
-	goodsInfo := &biz.GoodsInfo{
+	goodsInfo := &domain.Goods{
 		ID:              r.Id,
-		CategoryID:      int32(r.CategoryId),
-		BrandsID:        int32(r.BrandId),
-		TypeID:          int32(r.TypeId),
+		CategoryID:      r.CategoryId,
+		BrandsID:        r.BrandId,
+		TypeID:          r.TypeId,
 		Name:            r.Name,
 		NameAlias:       r.NameAlias,
 		GoodsSn:         r.GoodsSn,
@@ -63,17 +65,16 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 		GoodsImages:     r.GoodsImages,
 		OnSale:          r.OnSale,
 		ShipFree:        r.ShipFree,
-		ShipID:          int32(r.ShipId),
+		ShipID:          r.ShipId,
 		IsNew:           r.IsNew,
 		IsHot:           r.IsHot,
 		Sku:             goodsSku,
 	}
 
-	_, err := g.g.CreateGoods(ctx, goodsInfo)
-
+	result, err := g.g.CreateGoods(ctx, goodsInfo)
 	if err != nil {
 		return nil, err
 	}
+	return &v1.CreateGoodsResponse{ID: result.GoodsID}, nil
 
-	return r, nil
 }

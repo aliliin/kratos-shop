@@ -33,10 +33,10 @@ service Goods {
   rpc CreateAttrGroup(AttrGroupRequest) returns(AttrGroupResponse);
 
   // 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
-  rpc CreateAttrValue(AttrValueRequest) returns(AttrResponse);
+  rpc CreateAttrValue(AttrRequest) returns(AttrResponse);
 
   // 商品接口
-  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsRequest);
+  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsResponse);
   rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
   //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
   //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
@@ -46,13 +46,20 @@ service Goods {
 
 message AttrValueRequest {
   int64 id = 1;
-  int32 typeId = 2;
-  int64 groupId = 3;
-  string title = 4;
+  int64 attrId = 2;
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string value = 4 [(validate.rules).string.min_len = 3];
+}
+
+message AttrRequest {
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string title = 4 [(validate.rules).string = {min_len: 1}];
   string  desc = 5;
   bool status = 6;
-  int32 sort = 7;
-  repeated AttrValueResponse attrValue = 8;
+  int32 sort = 7 [(validate.rules).int32.gte = 1];
+  repeated AttrValueRequest attrValue = 8;
 }
 
 message AttrValueResponse {
@@ -61,9 +68,10 @@ message AttrValueResponse {
   int64 groupId = 3;
   string value = 4;
 }
+
 message AttrResponse {
   int64 id = 1;
-  int32 typeId = 2;
+  int64 typeId = 2;
   int64 groupId = 3;
   string title = 4;
   string  desc = 5;
@@ -74,15 +82,15 @@ message AttrResponse {
 
 message AttrGroupRequest {
   int64 id = 1;
-  int32 typeId = 2;
-  string title = 3;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  string title = 3 [(validate.rules).string.min_len = 3];
   string  desc = 4;
   bool status = 5;
-  int32 sort = 6;
+  int32 sort = 6 [(validate.rules).int32.gte = 1];
 }
 message AttrGroupResponse {
   int64 id = 1;
-  int32 typeId = 2;
+  int64 typeId = 2;
   string title = 3;
   string  desc = 4;
   bool status = 5;
@@ -90,24 +98,24 @@ message AttrGroupResponse {
 }
 
 message SpecificationValue {
-  int32 id = 1;
-  int32 attrId = 2;
-  string value = 3;
-  int32 sort = 4;
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
 }
 
 message SpecificationValueResponse {
-  int32 id = 1;
-  int32 attrId = 2;
-  int32 value = 3;
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 ;
   int32 sort = 4;
 }
 
 message SpecificationRequest {
-  int32 id = 1;
-  int32 typeId = 2;
-  string name = 3;
-  int32 sort = 4;
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  string name = 3 [(validate.rules).string.min_len = 2];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
   bool status = 5;
   bool isSku = 6;
   bool isSelect = 7;
@@ -115,33 +123,27 @@ message SpecificationRequest {
 }
 
 message SpecificationResponse {
-  int32 id = 1;
-  int32 typeId = 2;
-  string name = 3;
-  int32 sort = 4;
-  bool status = 5;
-  bool isSku = 6;
-  bool IsSelect = 7;
+  int64 id = 1;
 }
 message GoodsTypeRequest {
-  int32 id = 1;
-  string name = 2  [(validate.rules).string.min_len =  3];
-  string typeCode = 3 [(validate.rules).string.min_len =  3];
+  int64 id = 1;
+  string name = 2  [(validate.rules).string.min_len = 3];
+  string typeCode = 3 [(validate.rules).string.min_len = 3];
   string nameAlias = 4;
   bool isVirtual = 5;
   string desc = 6;
   int32 sort = 7;
-  string brandIds = 8;
+  string brandIds = 8 [(validate.rules).string.min_len = 1];
 }
 message GoodsTypeResponse {
-  int32 id = 1;
+  int64 id = 1;
 }
 
 message CreateGoodsRequest {
   int64 id = 1;
-  int64 categoryId = 2;
-  int64 brandId = 3;
-  int64 typeId = 4;
+  int32 categoryId = 2 [(validate.rules).int32.gte = 1];
+  int32 brandId = 3 [(validate.rules).int32.gte = 1];
+  int64 typeId = 4 [(validate.rules).int64.gte = 1];
   string name = 5;
   string nameAlias = 6;
   string goodsTags = 7;
@@ -153,7 +155,7 @@ message CreateGoodsRequest {
   string goodsFrontImage = 13;
   repeated string goodsImages = 14;
   bool shipFree = 15;
-  int64 shipId = 16;
+  int32 shipId = 16;
   bool isNew = 17;
   bool isHot = 18;
   bool onSale = 19;
@@ -162,34 +164,40 @@ message CreateGoodsRequest {
   message goodsSku {
     int64 id = 1;
     int64 goodsId = 2;
-    string skuName = 3;
-    string code = 4;
-    string barCode = 5;
+    string skuName = 3 [(validate.rules).string.min_len = 1];
+    string code = 4 [(validate.rules).string.min_len = 1];
+    string barCode = 5 [(validate.rules).string.min_len = 1];
     int64 price = 6;
     int64 promotionPrice = 7;
     int64 points = 8;
-    int32 sort = 9;
-    int64 inventory = 10; // sku 库存
+    string image = 9;
+    int32 sort = 10;
+    int64 inventory = 11; // sku 库存
     // 规格
     message specification {
-      int64 sId = 1;
-      int64 vId = 2;
+      int64 sId = 1 [(validate.rules).int64.gte = 1];
+      int64 vId = 2 [(validate.rules).int64.gte = 1];
     }
-    repeated specification specificationInfo = 11;
+    repeated specification specificationInfo = 12;
     // 属性组
     message groupAttr {
       int64 groupId = 1;
+      string groupName = 2;
       message attr {
-        int64 attrId = 1;
-        int64 attrValueId = 2;
+        int64 attrId = 1 [(validate.rules).int64.gte = 1];
+        string attrName = 2 [(validate.rules).string.min_len = 1];
+        int64 attrValueId = 3 [(validate.rules).int64.gte = 1];
+        string attrValueName = 4 [(validate.rules).string.min_len = 1];
       }
-      repeated attr attrInfo = 2;
+      repeated attr attrInfo = 3;
     }
-    repeated groupAttr groupAttrInfo = 12;
+    repeated groupAttr groupAttrInfo = 13;
   }
   repeated goodsSku sku = 20;
 }
-
+message CreateGoodsResponse {
+  int64 ID = 1;
+}
 
 message GoodsInfoResponse {
   int64 id = 1;

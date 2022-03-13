@@ -1,20 +1,21 @@
 package data
 
 import (
+	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
 	"goods/internal/biz"
+	"goods/internal/domain"
+	"gorm.io/gorm"
+	"strconv"
 )
 
 // Goods 商品表
 type Goods struct {
 	BaseFields
-	CategoryID int32 `gorm:"type:int;comment:分类ID;not null"`
-	Category   Category
-	BrandsID   int32 `gorm:"type:int;comment:品牌ID ;not null"`
-	Brands     Brand
-
-	TypeID int32 `gorm:"type:int;comment:商品类型ID ;not null"`
+	CategoryID int32 `gorm:"index:category_id;type:int;comment:分类ID;not null"`
+	BrandsID   int32 `gorm:"index:brand_id;type:int;comment:品牌ID ;not null"`
+	TypeID     int64 `gorm:"index:type_id;type:int;comment:商品类型ID ;not null"`
 
 	Name            string   `gorm:"type:varchar(100);not null;comment:商品名称"`
 	NameAlias       string   `gorm:"type:varchar(100);not null;comment:商品别名"`
@@ -51,11 +52,36 @@ func NewGoodsRepo(data *Data, logger log.Logger) biz.GoodsRepo {
 	}
 }
 
-func (g goodsRepo) CreateGoods(c context.Context, goods *biz.Goods) (*biz.Goods, error) {
-	d := &Goods{
+func (p *Goods) ToDomain() *domain.Goods {
+	return &domain.Goods{
+		ID:              p.ID,
+		CategoryID:      p.CategoryID,
+		BrandsID:        p.BrandsID,
+		TypeID:          p.TypeID,
+		Name:            p.Name,
+		NameAlias:       p.NameAlias,
+		GoodsSn:         p.GoodsSn,
+		GoodsTags:       p.GoodsTags,
+		MarketPrice:     p.MarketPrice,
+		GoodsBrief:      p.GoodsBrief,
+		GoodsFrontImage: p.GoodsFrontImage,
+		GoodsImages:     p.GoodsImages,
+		OnSale:          p.OnSale,
+		ShipFree:        p.ShipFree,
+		ShipID:          p.ShipID,
+		IsNew:           p.IsNew,
+		IsHot:           p.IsHot,
+		ClickNum:        p.ClickNum,
+		SoldNum:         p.SoldNum,
+		FavNum:          p.FavNum,
+	}
+}
+
+func (g goodsRepo) CreateGoods(c context.Context, goods *domain.Goods) (*domain.Goods, error) {
+	product := &Goods{
 		CategoryID:      goods.CategoryID,
 		BrandsID:        goods.BrandsID,
-		TypeID:          goods.BrandsID,
+		TypeID:          goods.TypeID,
 		Name:            goods.Name,
 		NameAlias:       goods.NameAlias,
 		GoodsSn:         goods.GoodsSn,
@@ -71,28 +97,32 @@ func (g goodsRepo) CreateGoods(c context.Context, goods *biz.Goods) (*biz.Goods,
 		IsHot:           goods.IsHot,
 	}
 
-	result := g.data.DB(c).Save(d)
+	result := g.data.DB(c).Save(product)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.InternalServer("GOODS_CREATE_ERROR", "商品创建失败")
 	}
-	res := &biz.Goods{
-		ID:              d.ID,
-		CategoryID:      d.CategoryID,
-		BrandsID:        d.BrandsID,
-		TypeID:          d.TypeID,
-		Name:            d.Name,
-		NameAlias:       d.NameAlias,
-		GoodsSn:         d.GoodsSn,
-		GoodsTags:       d.GoodsTags,
-		MarketPrice:     d.MarketPrice,
-		GoodsBrief:      d.GoodsBrief,
-		GoodsFrontImage: d.GoodsFrontImage,
-		GoodsImages:     d.GoodsImages,
-		OnSale:          d.OnSale,
-		ShipFree:        d.ShipFree,
-		ShipID:          d.ShipID,
-		IsNew:           d.IsNew,
-		IsHot:           d.IsHot,
+	return product.ToDomain(), nil
+}
+
+func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
+	esModel := ESGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandsID:    g.BrandsID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
 	}
-	return res, nil
+	_, err = EsClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }
