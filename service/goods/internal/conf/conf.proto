@@ -40,8 +40,12 @@ message Data {
     google.protobuf.Duration read_timeout = 6;
     google.protobuf.Duration write_timeout = 7;
   }
+  message Elastic {
+    string addr = 1;
+  }
   Database database = 1;
   Redis redis = 2;
+  Elastic elasticsearch = 3;
 }
 
 message Registry {

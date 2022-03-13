@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
+	"github.com/olivere/elastic/v7"
 	"goods/internal/biz"
 	"goods/internal/conf"
 	"gorm.io/driver/mysql"
@@ -19,7 +20,7 @@ import (
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
-	NewData,
+	NewData, NewElasticsearch,
 	NewDB, NewTransaction, NewRedis,
 	NewBrandRepo,
 	NewCategoryRepo,
@@ -35,6 +36,8 @@ type Data struct {
 	db  *gorm.DB
 	rdb *redis.Client
 }
+
+type ESClient *elastic.Client
 
 // 用来承载事务的上下文
 type contextTxKey struct{}
@@ -112,4 +115,25 @@ func NewRedis(c *conf.Data) *redis.Client {
 		log.Error(err)
 	}
 	return rdb
+}
+
+func NewElasticsearch(c *conf.Data) *elastic.Client {
+	es, err := elastic.NewClient(elastic.SetURL(c.Elasticsearch.Addr), elastic.SetSniff(false),
+		elastic.SetTraceLog(slog.New(os.Stdout, "shop", slog.LstdFlags)))
+	if err != nil {
+		panic(err)
+	}
+
+	// 新建 mapping 和 index
+	exists, err := es.IndexExists(ESGoods{}.GetIndexName()).Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	if !exists {
+		_, err = es.CreateIndex(ESGoods{}.GetIndexName()).BodyString(ESGoods{}.GetMapping()).Do(context.Background())
+		if err != nil {
+			panic(err)
+		}
+	}
+	return es
 }

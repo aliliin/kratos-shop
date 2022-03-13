@@ -6,6 +6,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
+	"gorm.io/gorm"
+	"strconv"
 )
 
 // Goods 商品表
@@ -100,4 +102,63 @@ func (g goodsRepo) CreateGoods(c context.Context, goods *domain.Goods) (*domain.
 		return nil, errors.InternalServer("GOODS_CREATE_ERROR", "商品创建失败")
 	}
 	return product.ToDomain(), nil
+}
+
+func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
+	esModel := ESGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandsID:    g.BrandsID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
+		ShopPrice:   g.ShopPrice,
+	}
+
+	_, err = ESClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Goods) AfterUpdate(tx *gorm.DB) (err error) {
+	esModel := EsGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandsID:    g.BrandsID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
+		ShopPrice:   g.ShopPrice,
+	}
+
+	_, err = global.EsClient.Update().Index(esModel.GetIndexName()).
+		Doc(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Goods) AfterDelete(tx *gorm.DB) (err error) {
+	_, err = global.EsClient.Delete().Index(EsGoods{}.GetIndexName()).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }

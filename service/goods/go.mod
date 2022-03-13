@@ -6,10 +6,11 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/go-kratos/kratos/v2 v2.1.5
 	github.com/go-redis/redis/extra/redisotel v0.3.0
-	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/google/wire v0.5.0
 	github.com/jinzhu/copier v0.3.5
 	github.com/kr/pretty v0.3.0 // indirect
+	github.com/olivere/elastic/v7 v7.0.31
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
