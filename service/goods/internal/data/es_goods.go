@@ -1,7 +1,7 @@
 package data
 
 type ESGoods struct {
-	ID          int32  `json:"id"`
+	ID          int64  `json:"id"`
 	CategoryID  int32  `json:"category_id"`
 	BrandsID    int32  `json:"brands_id"`
 	TypeID      int64  `json:"type_id"`
@@ -18,7 +18,7 @@ type ESGoods struct {
 }
 
 func (ESGoods) GetIndexName() string {
-	return "goods"
+	return "product"
 }
 
 func (ESGoods) GetMapping() string {

@@ -45,7 +45,7 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
-  Elastic elasticsearch = 3;
+  Elastic elastic = 3;
 }
 
 message Registry {

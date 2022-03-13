@@ -117,8 +117,8 @@ func NewRedis(c *conf.Data) *redis.Client {
 	return rdb
 }
 
-func NewElasticsearch(c *conf.Data) {
-	es, err := elastic.NewClient(elastic.SetURL(c.Elasticsearch.Addr), elastic.SetSniff(false),
+func NewElasticsearch(c *conf.Data) *elastic.Client {
+	es, err := elastic.NewClient(elastic.SetURL(c.Elastic.Addr), elastic.SetSniff(false),
 		elastic.SetTraceLog(slog.New(os.Stdout, "shop", slog.LstdFlags)))
 	if err != nil {
 		panic(err)
@@ -135,6 +135,6 @@ func NewElasticsearch(c *conf.Data) {
 			panic(err)
 		}
 	}
-
 	EsClient = es
+	return es
 }
