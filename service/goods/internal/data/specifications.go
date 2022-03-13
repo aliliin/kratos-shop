@@ -2,11 +2,11 @@ package data
 
 import (
 	"context"
-	"errors"
 	"goods/internal/biz"
 	"goods/internal/domain"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 )
@@ -72,8 +72,10 @@ func (g *specificationRepo) CreateSpecification(ctx context.Context, req *domain
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	result := g.data.DB(ctx).Save(s)
-	return s.ID, result.Error
+	if err := g.data.DB(ctx).Save(s).Error; err != nil {
+		return 0, errors.InternalServer("SPECIFICATION_SAVED_ERROR", err.Error())
+	}
+	return s.ID, nil
 }
 
 func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId int64, req []*domain.SpecificationValue) error {
@@ -88,14 +90,16 @@ func (g *specificationRepo) CreateSpecificationValue(ctx context.Context, AttrId
 		}
 		value = append(value, res)
 	}
-	result := g.data.DB(ctx).Create(&value)
-	return result.Error
+	if err := g.data.DB(ctx).Create(&value).Error; err != nil {
+		return errors.InternalServer("SPECIFICATION_VALUE_SAVED_ERROR", err.Error())
+	}
+	return nil
 }
 
 func (g *specificationRepo) ListByIds(ctx context.Context, id ...*int64) (domain.SpecificationList, error) {
 	var l []*SpecificationsAttr
 	if err := g.data.DB(ctx).Where("id IN (?)", id).Find(&l).Error; err != nil {
-		return nil, errors.New("规格不存在")
+		return nil, errors.NotFound("SPECIFICATION_NOT_FOUND", "规格不存在")
 	}
 
 	var res domain.SpecificationList

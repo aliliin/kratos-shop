@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"errors"
 	"goods/internal/domain"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 )
 
@@ -39,7 +39,7 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsT
 	)
 
 	if r.IsEmpty() {
-		return id, errors.New("请选择品牌进行绑定")
+		return id, errors.InternalServer("TYPE_IS_EMPTY", "请选择品牌进行绑定")
 	}
 
 	i, err := r.FormatBrandIds()
@@ -53,7 +53,7 @@ func (gt *GoodsTypeUsecase) GoosTypeCreate(ctx context.Context, r *domain.GoodsT
 	}
 
 	if !brand.CheckLength(len(i)) {
-		return 0, errors.New("品牌不存在")
+		return 0, errors.InternalServer("BRAND_IS_EMPTY", "品牌不存在")
 	}
 
 	// 使用事务

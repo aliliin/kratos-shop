@@ -2,8 +2,7 @@ package data
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/jinzhu/copier"
 	"goods/internal/biz"
@@ -28,17 +27,12 @@ type Category struct {
 
 // GoodsCategoryBrand  商品和分类多对对的表
 type GoodsCategoryBrand struct {
-	ID int32 `gorm:"primarykey;type:int" json:"id"` // bigint
-
-	CategoryID int32 `gorm:"type:int;index:idx_category_brand,unique;comment:商品和分类联合索引唯一"`
-	Category   Category
-
-	BrandsID int32 `gorm:"type:int;index:idx_category_brand,unique:comment:商品和分类联合索引唯一"`
-	Brands   Brand
-
-	CreatedAt time.Time      `gorm:"column:add_time" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:update_time" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"deleted_at"`
+	ID         int32          `gorm:"primarykey;type:int" json:"id"` // bigint
+	CategoryID int32          `gorm:"type:int;index:idx_category_brand,unique;comment:商品和分类联合索引唯一"`
+	BrandsID   int32          `gorm:"type:int;index:idx_category_brand,unique:comment:商品和分类联合索引唯一"`
+	CreatedAt  time.Time      `gorm:"column:add_time" json:"created_at"`
+	UpdatedAt  time.Time      `gorm:"column:update_time" json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `json:"deleted_at"`
 }
 
 type CategoryRepo struct {
@@ -56,7 +50,7 @@ func NewCategoryRepo(data *Data, logger log.Logger) biz.CategoryRepo {
 
 func (r *CategoryRepo) DeleteCategory(ctx context.Context, id int32) error {
 	if res := r.data.db.Delete(&Category{}, id); res.RowsAffected == 0 {
-		return res.Error
+		return errors.InternalServer("DELETE_CATGORY_ERROR", res.Error.Error())
 	}
 	return nil
 }
@@ -64,7 +58,7 @@ func (r *CategoryRepo) DeleteCategory(ctx context.Context, id int32) error {
 func (r *CategoryRepo) UpdateCategory(ctx context.Context, req *biz.CategoryInfo) error {
 	var category Category
 	if result := r.data.db.First(&category, req.ID); result.RowsAffected == 0 {
-		return errors.New("商品分类不存在")
+		return errors.NotFound("CATEGORY_NOT_FOUND", "商品分类不存在")
 	}
 
 	if req.Name != "" {
@@ -80,7 +74,10 @@ func (r *CategoryRepo) UpdateCategory(ctx context.Context, req *biz.CategoryInfo
 		category.IsTab = req.IsTab
 	}
 	result := r.data.db.Save(&category)
-	return result.Error
+	if result.Error != nil {
+		return errors.InternalServer("CATEGORY_UPDATE_ERROR", "商品分类创建失败")
+	}
+	return nil
 }
 
 func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (*biz.CategoryInfo, error) {
@@ -96,14 +93,14 @@ func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (
 	if req.Level != 1 {
 		var categories Category
 		if res := r.data.db.First(&categories, req.ParentCategory); res.RowsAffected == 0 {
-			return nil, errors.New("商品分类不存在")
+			return nil, errors.NotFound("CATEGORY_NOT_FOUND", "商品分类不存在")
 		}
 		cMap["parent_category_id"] = req.ParentCategory
 	}
 
 	result := r.data.db.Model(&Category{}).Create(&cMap)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.InternalServer("CATEGORY_CREATE_ERROR", result.Error.Error())
 	}
 	var value int32
 	value, ok := cMap["parent_category_id"].(int32)
@@ -124,27 +121,25 @@ func (r *CategoryRepo) AddCategory(ctx context.Context, req *biz.CategoryInfo) (
 func (r *CategoryRepo) Category(ctx context.Context) ([]*biz.Category, error) {
 	var cate []*Category
 	result := r.data.db.Where(&Category{Level: 1}).Preload("SubCategory.SubCategory").Find(&cate)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.NotFound("CATEGORY_NOT_FOUND", "分类不存在")
+	}
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.InternalServer("CATEGORY_NOT_FOUND", result.Error.Error())
 	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("分类为空")
-	}
+
 	var res []*biz.Category
 	err := copier.Copy(&res, &cate)
 	if err != nil {
-		fmt.Println("err", err)
-		return nil, err
+		return nil, errors.InternalServer("CATEGORY_COPY_ERROR", err.Error())
 	}
-
-	fmt.Println("dddd", res)
 	return res, nil
 }
 
 func (r *CategoryRepo) GetCategoryByID(ctx context.Context, id int32) (*biz.CategoryInfo, error) {
 	var categories Category
 	if res := r.data.db.First(&categories, id); res.RowsAffected == 0 {
-		return nil, errors.New("商品分类不存在")
+		return nil, errors.NotFound("CATEGORY_NOT_FOUND", "分类不存在")
 	}
 
 	info := &biz.CategoryInfo{
@@ -166,7 +161,9 @@ func (r *CategoryRepo) SubCategory(ctx context.Context, req biz.CategoryInfo) ([
 		preload = "SubCategory.SubCategory"
 	}
 
-	r.data.db.Where(&Category{ParentCategoryID: req.ID}).Preload(preload).Find(&subCategory)
+	if err := r.data.db.Where(&Category{ParentCategoryID: req.ID}).Preload(preload).Find(&subCategory).Error; err != nil {
+		return nil, errors.NotFound("CATEGORY_NOT_FOUND", "分类不存在")
+	}
 	for _, v := range subCategory {
 		subCategoryInfo = append(subCategoryInfo, &biz.CategoryInfo{
 			ID:             v.ID,
@@ -180,30 +177,3 @@ func (r *CategoryRepo) SubCategory(ctx context.Context, req biz.CategoryInfo) ([
 
 	return subCategoryInfo, nil
 }
-
-//
-//// buildData 数据的资源组装
-//func buildData(list []*Category) map[int32]map[int32]biz.Categories {
-//	var data map[int32]map[int32]biz.Categories = make(map[int32]map[int32]biz.Categories)
-//	for _, v := range list {
-//		id := v.ID
-//		fid := v.ParentCategoryID
-//		if _, ok := data[fid]; !ok {
-//			data[fid] = make(map[int32]biz.Categories)
-//		}
-//		data[fid][id] = v.(biz.)
-//	}
-//	return data
-//}
-//
-//// makeTreeCore 图形化
-//func (myL *BusinessRelationLogic) makeTreeCore(index int, data map[int]map[int]models.BusinessRelationOther) []models.BusinessRelationOther {
-//	tmp := make([]models.BusinessRelationOther)
-//	for id, item := range data[index] {
-//		if data[id] != nil {
-//			item.List = myL.makeTreeCore(id, data)
-//		}
-//		tmp = append(tmp, item)
-//	}
-//	return tmp
-//}

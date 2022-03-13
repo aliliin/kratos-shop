@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
@@ -40,7 +41,7 @@ func (i inventoryRepo) Create(ctx context.Context, inventory *domain.Inventory) 
 		Inventory: inventory.Inventory,
 	}
 	if err := i.data.DB(ctx).Save(&info).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("INENNTORY_SAVE_ERROR", err.Error())
 	}
 	return info.ToDomain(), nil
 }

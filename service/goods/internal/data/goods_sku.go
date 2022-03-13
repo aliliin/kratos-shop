@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"goods/internal/biz"
@@ -87,7 +88,7 @@ func (g *goodsSkuRepo) Create(ctx context.Context, req *domain.GoodsSku) (*domai
 	}
 
 	if err := g.data.DB(ctx).Save(sku).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("SKU_SAVE_ERROR", err.Error())
 	}
 	return sku.ToDomain(), nil
 }
@@ -103,6 +104,8 @@ func (g *goodsSkuRepo) CreateSkuRelation(ctx context.Context, req []*domain.Good
 		}
 		info = append(info, &i)
 	}
-	result := g.data.DB(ctx).Table("goods_specification_skus").Save(&info)
-	return result.Error
+	if err := g.data.DB(ctx).Table("goods_specification_skus").Save(&info).Error; err != nil {
+		return errors.InternalServer("SKU_RELATION_SAVE_ERROR", err.Error())
+	}
+	return nil
 }

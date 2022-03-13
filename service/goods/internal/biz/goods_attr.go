@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"errors"
 	"goods/internal/domain"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 )
 
@@ -14,7 +14,6 @@ type GoodsAttrRepo interface {
 	CreateGoodsAttr(context.Context, *domain.GoodsAttr) (*domain.GoodsAttr, error)
 	CreateGoodsAttrValue(context.Context, []*domain.GoodsAttrValue) ([]*domain.GoodsAttrValue, error)
 	GetAttrByIDs(ctx context.Context, id []*int64) error
-
 	ListByIds(ctx context.Context, id ...int64) (domain.GoodsAttrList, error)
 }
 
@@ -36,7 +35,7 @@ func NewGoodsAttrUsecase(repo GoodsAttrRepo, tx Transaction, gRepo GoodsTypeRepo
 
 func (ga *GoodsAttrUsecase) CreateAttrGroup(ctx context.Context, r *domain.AttrGroup) (*domain.AttrGroup, error) {
 	if r.IsTypeIDEmpty() {
-		return nil, errors.New("请选择商品类型进行绑定")
+		return nil, errors.InternalServer("TYPE_IS_EMPTY", "请选择商品类型进行绑定")
 	}
 
 	_, err := ga.typeRepo.IsExistsByID(ctx, r.TypeID)
@@ -59,7 +58,7 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.Goods
 		err       error
 	)
 	if r.IsTypeIDEmpty() {
-		return nil, errors.New("请选择商品类型进行绑定")
+		return nil, errors.InternalServer("TYPE_IS_EMPTY", "请选择商品类型进行绑定")
 	}
 
 	_, err = ga.typeRepo.IsExistsByID(ctx, r.TypeID)
@@ -80,7 +79,7 @@ func (ga *GoodsAttrUsecase) CreateAttrValue(ctx context.Context, r *domain.Goods
 		var value []*domain.GoodsAttrValue
 		for _, v := range r.GoodsAttrValue {
 			if v.IsValueEmpty() {
-				return errors.New("商品属性不能为空")
+				return errors.InternalServer("ATTR_IS_EMPTY", "商品属性不能为空")
 			}
 			res := &domain.GoodsAttrValue{
 				AttrId:  attrInfo.ID,

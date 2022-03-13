@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"errors"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
@@ -103,7 +103,7 @@ func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *domain.Attr
 
 	result := g.data.db.Save(&group)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.InternalServer("ATTR_GROUP_SAVE_ERROR", result.Error.Error())
 	}
 
 	return group.ToDomain(), nil
@@ -112,7 +112,7 @@ func (g *goodsAttrRepo) CreateGoodsGroupAttr(ctx context.Context, a *domain.Attr
 func (g *goodsAttrRepo) IsExistsGroupByID(ctx context.Context, groupId int64) (*domain.AttrGroup, error) {
 	var group GoodsAttrGroup
 	if res := g.data.db.First(&group, groupId); res.RowsAffected == 0 {
-		return nil, errors.New("商品属性组不存在")
+		return nil, errors.NotFound("ATTR_GROUP_NOT_FOUND", "商品属性组不存在")
 	}
 	return group.ToDomain(), nil
 }
@@ -128,7 +128,7 @@ func (g *goodsAttrRepo) CreateGoodsAttr(ctx context.Context, a *domain.GoodsAttr
 	}
 
 	if err := g.data.DB(ctx).Save(&attr).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("ATTR_SAVE_ERROR", err.Error())
 	}
 	return attr.ToDomain(), nil
 }
@@ -145,7 +145,7 @@ func (g *goodsAttrRepo) CreateGoodsAttrValue(ctx context.Context, r []*domain.Go
 	}
 
 	if err := g.data.DB(ctx).Create(&attrValue).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("ATTR_CREATE_ERROR", err.Error())
 	}
 
 	var res []*domain.GoodsAttrValue
@@ -165,10 +165,13 @@ func (g *goodsAttrRepo) GetAttrByIDs(ctx context.Context, ids []*int64) error {
 	var count int64
 	result := g.data.DB(ctx).Where("id IN (?)", attrIDs).Count(&count)
 	if result.Error != nil {
-		return result.Error
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return errors.NotFound("ATTR_NOT_FOUND", "商品属性不存在")
+		}
+		return errors.InternalServer("ATTR_GET_ERROR", result.Error.Error())
 	}
 	if int64(total) != count {
-		return errors.New("部分属性不存在")
+		return errors.NotFound("ATTR_NOT_FOUND", "部分属性不存在")
 	}
 	return nil
 
@@ -177,7 +180,7 @@ func (g *goodsAttrRepo) GetAttrByIDs(ctx context.Context, ids []*int64) error {
 func (g *goodsAttrRepo) ListByIds(ctx context.Context, ids ...int64) (domain.GoodsAttrList, error) {
 	var l []*GoodsAttr
 	if err := g.data.DB(ctx).Where("id IN (?)", ids).Find(&l).Error; err != nil {
-		return nil, errors.New("属性不存在")
+		return nil, errors.NotFound("ATTR_NOT_FOUND", "商品属性不存在")
 	}
 
 	var res domain.GoodsAttrList

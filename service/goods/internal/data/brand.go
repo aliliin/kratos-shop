@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"errors"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
@@ -55,7 +55,9 @@ func (r *BrandRepo) Create(ctx context.Context, b *domain.Brand) (*domain.Brand,
 		IsTab: b.IsTab,
 		Sort:  b.Sort,
 	}
-	result := r.data.db.Save(brand)
+	if err := r.data.db.Save(brand).Error; err != nil {
+		return nil, errors.InternalServer("SAVE_BRAND_ERROR", err.Error())
+	}
 	res := &domain.Brand{
 		ID:    brand.ID,
 		Name:  brand.Name,
@@ -64,12 +66,15 @@ func (r *BrandRepo) Create(ctx context.Context, b *domain.Brand) (*domain.Brand,
 		IsTab: brand.IsTab,
 		Sort:  brand.Sort,
 	}
-	return res, result.Error
+	return res, nil
 }
 
 func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*domain.Brand, error) {
 	var brand Brand
 	result := r.data.db.Where("name=?", name).First(&brand)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.NotFound("BRAND_NOT_FOUND", "brand not found")
+	}
 	if result.RowsAffected == 1 {
 		return &domain.Brand{
 			ID:    brand.ID,
@@ -80,14 +85,14 @@ func (r *BrandRepo) GetBradByName(ctx context.Context, name string) (*domain.Bra
 			Sort:  brand.Sort,
 		}, nil
 	} else {
-		return nil, errors.New("品牌不存在")
+		return nil, errors.NotFound("BRAND_NOT_FOUND", "brand not found")
 	}
 }
 
 func (r *BrandRepo) Update(ctx context.Context, b *domain.Brand) error {
 	brands := Brand{}
 	if result := r.data.db.Where("id=?", b.ID).First(&brands); result.RowsAffected == 0 {
-		return errors.New("品牌不存在")
+		return errors.NotFound("BRAND_NOT_FOUND", "brand not found")
 	}
 
 	if b.Name != "" {
@@ -105,12 +110,17 @@ func (r *BrandRepo) Update(ctx context.Context, b *domain.Brand) error {
 	if b.Desc != "" {
 		brands.Desc = b.Desc
 	}
-	result := r.data.db.Save(&brands)
-	return result.Error
+	if err := r.data.db.Save(&brands).Error; err != nil {
+		return errors.InternalServer("UPDATE_BRAND_ERROR", err.Error())
+	}
+	return nil
 }
 func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*domain.Brand, int64, error) {
 	var brands []Brand
 	result := r.data.db.Scopes(Paginate(b.PageNum, b.PageSize)).Find(&brands)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, 0, errors.NotFound("BRAND_NOT_FOUND", "brand not found")
+	}
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
@@ -119,7 +129,7 @@ func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*domain.Bran
 	var total int64
 	result = r.data.db.Table("brands").Model(&Brand{}).Count(&total)
 	if result.Error != nil {
-		return nil, 0, result.Error
+		return nil, 0, errors.NotFound("BRAND_NOT_FOUND", "brand not found")
 	}
 	for _, v := range brands {
 		br := &domain.Brand{
@@ -137,27 +147,27 @@ func (r *BrandRepo) List(ctx context.Context, b *biz.Pagination) ([]*domain.Bran
 func (r *BrandRepo) IsBrand(ctx context.Context, ids []int32) error {
 	idCount := len(ids)
 	if idCount == 0 {
-		return errors.New("请选择品牌")
+		return errors.InternalServer("BRAND_NOT_FOUND", "brand not found")
 	}
 	var count int64
 	result := r.data.db.Table("brands").Where("id IN (?)", ids).Count(&count)
 	if result.Error != nil {
-		return result.Error
+		return errors.InternalServer("BRAND_NOT_FOUND", result.Error.Error())
 	}
 	if int64(idCount) != count {
-		return errors.New("品牌不存在")
+		return errors.InternalServer("BRAND_NOT_FOUND", "品牌不存在")
 	}
 	return nil
 }
 
 func (r *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandList, error) {
 	if len(ids) == 0 {
-		return nil, errors.New("请选择品牌")
+		return nil, errors.InternalServer("BRAND_NOT_FOUND", "请选择品牌")
 	}
 
 	var l []*Brand
 	if err := r.data.DB(ctx).Where("id IN (?)", ids).Find(&l).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("BRAND_NOT_FOUND", err.Error())
 	}
 
 	var res domain.BrandList
@@ -170,7 +180,7 @@ func (r *BrandRepo) ListByIds(ctx context.Context, ids ...int32) (domain.BrandLi
 func (r *BrandRepo) IsBrandByID(ctx context.Context, id int32) (*domain.Brand, error) {
 	var b Brand
 	if err := r.data.db.Table("brands").Where("id = ?", id).First(&b).Error; err != nil {
-		return nil, err
+		return nil, errors.InternalServer("BRAND_NOT_FOUND", err.Error())
 	}
 
 	return b.ToDomain(), nil

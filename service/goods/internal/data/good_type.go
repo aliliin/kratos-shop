@@ -2,13 +2,13 @@ package data
 
 import (
 	"context"
-	"errors"
 	"goods/internal/biz"
 	"goods/internal/domain"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 )
@@ -71,6 +71,9 @@ func (g *goodsTypeRepo) CreateGoodsType(ctx context.Context, req *domain.GoodsTy
 		UpdatedAt: time.Time{},
 	}
 	result := g.data.DB(ctx).Save(&goodsType)
+	if result.Error != nil {
+		return 0, errors.InternalServer("GOODS_TYPE_SAVE_ERROR", result.Error.Error())
+	}
 	return goodsType.ID, result.Error
 }
 
@@ -85,15 +88,17 @@ func (g *goodsTypeRepo) CreateGoodsBrandType(ctx context.Context, typeID int64, 
 		}
 		gtb = append(gtb, v)
 	}
-	result := g.data.DB(ctx).Create(&gtb)
-	return result.Error
+	if err := g.data.DB(ctx).Create(&gtb).Error; err != nil {
+		return errors.InternalServer("GOODS_TYPE_CREATE_ERROR", err.Error())
+	}
+	return nil
 
 }
 
 func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int64) (*domain.GoodsType, error) {
 	var goodsType GoodsType
 	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
-		return nil, errors.New("商品类型不存在")
+		return nil, errors.NotFound("GOODS_TYPE_NOT_FOUND", "商品类型不存在")
 	}
 
 	return goodsType.ToDomain(), nil
@@ -102,7 +107,7 @@ func (g *goodsTypeRepo) GetGoodsTypeByID(ctx context.Context, typeID int64) (*do
 func (g *goodsTypeRepo) IsExistsByID(ctx context.Context, typeID int64) (*domain.GoodsType, error) {
 	var goodsType GoodsType
 	if res := g.data.db.First(&goodsType, typeID); res.RowsAffected == 0 {
-		return nil, errors.New("商品类型不存在")
+		return nil, errors.NotFound("GOODS_TYPE_NOT_FOUND", "商品类型不存在")
 	}
 	return goodsType.ToDomain(), nil
 }

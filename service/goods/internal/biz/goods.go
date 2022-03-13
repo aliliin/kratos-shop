@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/domain"
 )
@@ -50,18 +50,18 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *domain.Goods) (*domain
 	// 判断品牌是否存在
 	_, err = g.brandRepo.IsBrandByID(ctx, r.BrandsID)
 	if err != nil {
-		return nil, errors.New("品牌不存在")
+		return nil, err
 	}
 
 	// 判断分类是否存在
 	_, err = g.categoryRepo.GetCategoryByID(ctx, r.CategoryID)
 	if err != nil {
-		return nil, errors.New("分类不存在")
+		return nil, err
 	}
 	// 判断商品类型是否存在
 	_, err = g.typeRepo.IsExistsByID(ctx, r.TypeID)
 	if err != nil {
-		return nil, errors.New("商品类型不存在")
+		return nil, err
 	}
 	// 判断商品规格和属性是否存在
 	for _, sku := range r.Sku {
@@ -77,7 +77,7 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *domain.Goods) (*domain
 		for _, sId := range sIDs {
 			info := specList.FindById(*sId)
 			if info == nil {
-				return nil, errors.New("商品规格不存在")
+				return nil, errors.NotFound("SPECIFICATION_NOT_FOUND", "商品规格不存在")
 			}
 		}
 		var attrIDs []int64
@@ -96,7 +96,7 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *domain.Goods) (*domain
 				attrIDs = append(attrIDs, id.AttrID)
 				true := attrList.IsNotExist(attr.GroupId, id.AttrID)
 				if true {
-					return nil, errors.New("商品属性不存在")
+					return nil, errors.NotFound("ATTR_NOT_FOUND", "商品属性不存在")
 				}
 			}
 		}

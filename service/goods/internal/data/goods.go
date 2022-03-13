@@ -1,8 +1,9 @@
 package data
 
 import (
+	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/net/context"
 	"goods/internal/biz"
 	"goods/internal/domain"
 )
@@ -96,7 +97,7 @@ func (g goodsRepo) CreateGoods(c context.Context, goods *domain.Goods) (*domain.
 
 	result := g.data.DB(c).Save(product)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.InternalServer("GOODS_CREATE_ERROR", "商品创建失败")
 	}
 	return product.ToDomain(), nil
 }
