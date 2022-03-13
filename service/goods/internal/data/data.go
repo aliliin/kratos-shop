@@ -37,7 +37,7 @@ type Data struct {
 	rdb *redis.Client
 }
 
-type ESClient *elastic.Client
+var EsClient *elastic.Client
 
 // 用来承载事务的上下文
 type contextTxKey struct{}
@@ -117,7 +117,7 @@ func NewRedis(c *conf.Data) *redis.Client {
 	return rdb
 }
 
-func NewElasticsearch(c *conf.Data) *elastic.Client {
+func NewElasticsearch(c *conf.Data) {
 	es, err := elastic.NewClient(elastic.SetURL(c.Elasticsearch.Addr), elastic.SetSniff(false),
 		elastic.SetTraceLog(slog.New(os.Stdout, "shop", slog.LstdFlags)))
 	if err != nil {
@@ -135,5 +135,6 @@ func NewElasticsearch(c *conf.Data) *elastic.Client {
 			panic(err)
 		}
 	}
-	return es
+
+	EsClient = es
 }

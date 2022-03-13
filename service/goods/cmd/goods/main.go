@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"goods/internal/data"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -68,6 +69,8 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+
+	data.NewElasticsearch(bc.Data)
 
 	app, cleanup, err := initApp(bc.Server, bc.Data, logger)
 	if err != nil {

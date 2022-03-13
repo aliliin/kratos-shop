@@ -122,7 +122,7 @@ func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
 		ShopPrice:   g.ShopPrice,
 	}
 
-	_, err = ESClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	_, err = EsClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
 	if err != nil {
 		return err
 	}
