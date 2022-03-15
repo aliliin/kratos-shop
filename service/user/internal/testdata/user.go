@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"user/internal/biz"
+	"user/internal/domain"
 )
 
 func User(id ...int64) *biz.User {
@@ -25,8 +26,8 @@ func User(id ...int64) *biz.User {
 	return user
 }
 
-func Address(id ...int64) *biz.Address {
-	addressInfo := &biz.Address{
+func Address(id ...int64) *domain.Address {
+	addressInfo := &domain.Address{
 		ID:        0,
 		UserID:    0,
 		IsDefault: 0,

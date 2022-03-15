@@ -7,7 +7,7 @@ package mrepo
 import (
 	context "context"
 	reflect "reflect"
-	biz "user/internal/biz"
+	"user/internal/domain"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -36,10 +36,10 @@ func (m *MockAddressRepo) EXPECT() *MockAddressRepoMockRecorder {
 }
 
 // AddressListByUid mocks base method.
-func (m *MockAddressRepo) AddressListByUid(arg0 context.Context, arg1 int64) ([]*biz.Address, error) {
+func (m *MockAddressRepo) AddressListByUid(arg0 context.Context, arg1 int64) ([]*domain.Address, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddressListByUid", arg0, arg1)
-	ret0, _ := ret[0].([]*biz.Address)
+	ret0, _ := ret[0].([]*domain.Address)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,10 +51,10 @@ func (mr *MockAddressRepoMockRecorder) AddressListByUid(arg0, arg1 interface{}) 
 }
 
 // CreateAddress mocks base method.
-func (m *MockAddressRepo) CreateAddress(arg0 context.Context, arg1 *biz.Address) (*biz.Address, error) {
+func (m *MockAddressRepo) CreateAddress(arg0 context.Context, arg1 *domain.Address) (*domain.Address, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAddress", arg0, arg1)
-	ret0, _ := ret[0].(*biz.Address)
+	ret0, _ := ret[0].(*domain.Address)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,7 +66,7 @@ func (mr *MockAddressRepoMockRecorder) CreateAddress(arg0, arg1 interface{}) *go
 }
 
 // DefaultAddress mocks base method.
-func (m *MockAddressRepo) DefaultAddress(arg0 context.Context, arg1 *biz.Address) error {
+func (m *MockAddressRepo) DefaultAddress(arg0 context.Context, arg1 *domain.Address) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DefaultAddress", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -80,7 +80,7 @@ func (mr *MockAddressRepoMockRecorder) DefaultAddress(arg0, arg1 interface{}) *g
 }
 
 // DeleteAddress mocks base method.
-func (m *MockAddressRepo) DeleteAddress(arg0 context.Context, arg1 *biz.Address) error {
+func (m *MockAddressRepo) DeleteAddress(arg0 context.Context, arg1 *domain.Address) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteAddress", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -94,7 +94,7 @@ func (mr *MockAddressRepoMockRecorder) DeleteAddress(arg0, arg1 interface{}) *go
 }
 
 // UpdateAddress mocks base method.
-func (m *MockAddressRepo) UpdateAddress(arg0 context.Context, arg1 *biz.Address) error {
+func (m *MockAddressRepo) UpdateAddress(arg0 context.Context, arg1 *domain.Address) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateAddress", arg0, arg1)
 	ret0, _ := ret[0].(error)

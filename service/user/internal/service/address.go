@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 	v1 "user/api/user/v1"
-	"user/internal/biz"
+	"user/internal/domain"
 )
 
 func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.AddressReq) (*v1.CheckResponse, error) {
-	err := ua.ac.DeleteAddress(ctx, &biz.Address{
+	err := ua.ac.DeleteAddress(ctx, &domain.Address{
 		ID:     req.Id,
 		UserID: req.Uid,
 	})
@@ -20,7 +20,7 @@ func (ua *UserService) DeleteAddress(ctx context.Context, req *v1.AddressReq) (*
 }
 
 func (ua *UserService) DefaultAddress(ctx context.Context, req *v1.AddressReq) (*v1.CheckResponse, error) {
-	err := ua.ac.DefaultAddress(ctx, &biz.Address{
+	err := ua.ac.DefaultAddress(ctx, &domain.Address{
 		ID:     req.Id,
 		UserID: req.Uid,
 	})
@@ -34,7 +34,7 @@ func (ua *UserService) DefaultAddress(ctx context.Context, req *v1.AddressReq) (
 
 func (ua *UserService) UpdateAddress(ctx context.Context, req *v1.UpdateAddressReq) (*v1.CheckResponse, error) {
 
-	err := ua.ac.UpdateAddress(ctx, &biz.Address{
+	err := ua.ac.UpdateAddress(ctx, &domain.Address{
 		ID:        req.Id,
 		UserID:    req.Uid,
 		IsDefault: int(req.IsDefault),
@@ -84,7 +84,7 @@ func (ua *UserService) CreateAddress(ctx context.Context, req *v1.CreateAddressR
 		return nil, err
 	}
 
-	rv, err := ua.ac.AddAddress(ctx, &biz.Address{
+	rv, err := ua.ac.AddAddress(ctx, &domain.Address{
 		UserID:    req.Uid,
 		IsDefault: int(req.IsDefault),
 		Mobile:    req.Mobile,
