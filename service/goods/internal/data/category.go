@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/jinzhu/copier"
@@ -176,4 +177,30 @@ func (r *CategoryRepo) SubCategory(ctx context.Context, req biz.CategoryInfo) ([
 	}
 
 	return subCategoryInfo, nil
+}
+
+func (r *CategoryRepo) GetCategoryAll(ctx context.Context, level, id int32) ([]interface{}, error) {
+	categoryIds := make([]interface{}, 0)
+	var subQuery string
+	// 把一级级分类下的所有三级分类都拿到
+	if level == 1 {
+		subQuery = fmt.Sprintf("SELECT id FROM categories WHERE parent_category_id IN (SELECT id FROM categories WHERE parent_category_id=%d)", id)
+	} else if level == 2 {
+		subQuery = fmt.Sprintf("SELECT id FROM categories WHERE parent_category_id=%d", id)
+	} else if level == 3 {
+		subQuery = fmt.Sprintf("SELECT id FROM categories WHERE id=%d", id)
+	}
+
+	type Result struct {
+		ID int32
+	}
+
+	var results []Result
+	if err := r.data.db.Table("categories").Model(Category{}).Raw(subQuery).Scan(&results).Error; err != nil {
+		return nil, errors.InternalServer("CATEGORY_ERROR", err.Error())
+	}
+	for _, re := range results {
+		categoryIds = append(categoryIds, re.ID)
+	}
+	return categoryIds, nil
 }

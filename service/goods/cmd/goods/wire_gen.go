@@ -22,7 +22,8 @@ import (
 func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client)
+	elasticClient := data.NewElasticsearch(confData)
+	dataData, cleanup, err := data.NewData(confData, logger, db, client, elasticClient)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -40,8 +41,10 @@ func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	goodsRepo := data.NewGoodsRepo(dataData, logger)
 	goodsSkuRepo := data.NewGoodsSkuRepoRepo(dataData, logger)
 	inventoryRepo := data.NewInventoryRepo(dataData, logger)
-	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, goodsSkuRepo, transaction, goodsTypeRepo, categoryRepo, brandRepo, specificationRepo, goodsAttrRepo, inventoryRepo, logger)
-	goodsService := service.NewGoodsService(brandUsecase, categoryUsecase, goodsTypeUsecase, specificationUsecase, goodsAttrUsecase, goodsUsecase, logger)
+	esGoodsRepo := data.NewEsGoodsRepo(dataData, logger)
+	goodsUsecase := biz.NewGoodsUsecase(goodsRepo, goodsSkuRepo, transaction, goodsTypeRepo, categoryRepo, brandRepo, specificationRepo, goodsAttrRepo, inventoryRepo, esGoodsRepo, logger)
+	esGoodsUsecase := biz.NewEsGoodsUsecase(goodsRepo, esGoodsRepo, categoryRepo, logger)
+	goodsService := service.NewGoodsService(brandUsecase, categoryUsecase, goodsTypeUsecase, specificationUsecase, goodsAttrUsecase, goodsUsecase, esGoodsUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	registrar := server.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, registrar)

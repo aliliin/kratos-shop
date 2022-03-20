@@ -13,25 +13,27 @@ var ProviderSet = wire.NewSet(NewGoodsService)
 // GoodsService is a goods service.
 type GoodsService struct {
 	v1.UnimplementedGoodsServer
-	cac *biz.CategoryUsecase
-	bc  *biz.BrandUsecase
-	gt  *biz.GoodsTypeUsecase
-	s   *biz.SpecificationUsecase
-	ga  *biz.GoodsAttrUsecase
-	g   *biz.GoodsUsecase
-	log *log.Helper
+	cac     *biz.CategoryUsecase
+	bc      *biz.BrandUsecase
+	gt      *biz.GoodsTypeUsecase
+	s       *biz.SpecificationUsecase
+	ga      *biz.GoodsAttrUsecase
+	g       *biz.GoodsUsecase
+	esGoods *biz.EsGoodsUsecase
+	log     *log.Helper
 }
 
 // NewGoodsService new a goods service.
 func NewGoodsService(bc *biz.BrandUsecase, cac *biz.CategoryUsecase, gt *biz.GoodsTypeUsecase, s *biz.SpecificationUsecase,
-	ga *biz.GoodsAttrUsecase, gc *biz.GoodsUsecase, logger log.Logger) *GoodsService {
+	ga *biz.GoodsAttrUsecase, gc *biz.GoodsUsecase, esGoods *biz.EsGoodsUsecase, logger log.Logger) *GoodsService {
 	return &GoodsService{
-		bc:  bc,
-		cac: cac,
-		gt:  gt,
-		s:   s,
-		ga:  ga,
-		g:   gc,
-		log: log.NewHelper(logger),
+		bc:      bc,
+		cac:     cac,
+		gt:      gt,
+		s:       s,
+		ga:      ga,
+		g:       gc,
+		esGoods: esGoods,
+		log:     log.NewHelper(logger),
 	}
 }

@@ -38,8 +38,8 @@ service Goods {
   // 商品接口
   rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsResponse);
   rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
+  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
   //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
-  //  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
   //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
   //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
 }
@@ -201,47 +201,45 @@ message CreateGoodsResponse {
 
 message GoodsInfoResponse {
   int64 id = 1;
-  int64 categoryId = 2;
-  string name = 3;
-  string goodsSn = 4;
-  int64 clickNum = 5;
-  int64 soldNum = 6;
-  int64 favNum = 7;
-  float marketPrice = 9;
-  float shopPrice = 10;
-  string goodsBrief = 11;
-  string goodsDesc = 12;
-  bool shipFree = 13;
-  repeated string images = 14;
-  repeated string descImages = 15;
-  string goodsFrontImage = 16;
-  bool isNew = 17;
-  bool isHot = 18;
-  bool onSale = 19;
-  int64 addTime = 20;
-  //  CategoryBriefInfoResponse category = 21;
-  //  BrandInfoResponse brand = 22;
-}
-
-
-message GoodsFilterRequest  {
-  int32 priceMin = 1;
-  int32 priceMax = 2;
-  bool  isHot = 3;
-  bool  isNew = 4;
-  bool  isTab = 5;
-  int32 topCategory = 6;
-  int32 pages = 7;
-  int32 pagePerNums = 8;
-  string keyWords = 9;
-  int32 brand = 10;
+  int32 categoryId = 2;
+  int32 brandId = 3;
+  string name = 4;
+  string goodsSn = 5;
+  int64 clickNum = 6;
+  int64 soldNum = 7;
+  int64 favNum = 8;
+  int64 marketPrice = 9;
+  string goodsBrief = 10;
+  string goodsDesc = 11;
+  bool shipFree = 12;
+  string images = 13;
+  repeated string goodsImages = 14;
+  bool isNew = 15;
+  bool isHot = 16;
+  bool onSale = 17;
 }
 
 message GoodsListResponse {
-  int32 total = 1;
-  repeated GoodsInfoResponse data = 2;
+  int64 total = 1;
+  repeated GoodsInfoResponse list = 2;
 }
 
+message GoodsFilterRequest  {
+  string keywords = 1;
+  int32 categoryId = 2;
+  int32 brandId = 3;
+  int64 minPrice = 4;
+  int64 maxPrice = 5;
+  bool  isHot = 6;
+  bool  isNew = 7;
+  bool  isTab = 8;
+  int64 clickNum = 9;
+  int64 soldNum = 10;
+  int64 favNum = 11;
+  int64 pages = 12;
+  int64 pagePerNums = 13;
+  int64 id = 14;
+}
 
 // 商品分类
 message CategoryInfoResponse {

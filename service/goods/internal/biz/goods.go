@@ -3,13 +3,16 @@ package biz
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"goods/internal/domain"
+
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"goods/internal/domain"
 )
 
 type GoodsRepo interface {
 	CreateGoods(ctx context.Context, goods *domain.Goods) (*domain.Goods, error)
+	GoodsListByIDs(context.Context, ...int64) ([]*domain.Goods, error)
 }
 
 type GoodsUsecase struct {
@@ -22,11 +25,12 @@ type GoodsUsecase struct {
 	specificationRepo SpecificationRepo
 	goodsAttrRepo     GoodsAttrRepo
 	inventoryRepo     InventoryRepo
+	esGoodsRepo       EsGoodsRepo
 	log               *log.Helper
 }
 
 func NewGoodsUsecase(repo GoodsRepo, skuRepo GoodsSkuRepo, tx Transaction, gRepo GoodsTypeRepo, cRepo CategoryRepo,
-	bRepo BrandRepo, sRepo SpecificationRepo, aRepo GoodsAttrRepo, iRepo InventoryRepo, logger log.Logger) *GoodsUsecase {
+	bRepo BrandRepo, sRepo SpecificationRepo, aRepo GoodsAttrRepo, iRepo InventoryRepo, es EsGoodsRepo, logger log.Logger) *GoodsUsecase {
 
 	return &GoodsUsecase{
 		repo:              repo,
@@ -38,31 +42,36 @@ func NewGoodsUsecase(repo GoodsRepo, skuRepo GoodsSkuRepo, tx Transaction, gRepo
 		specificationRepo: sRepo,
 		goodsAttrRepo:     aRepo,
 		inventoryRepo:     iRepo,
+		esGoodsRepo:       es,
 		log:               log.NewHelper(logger),
 	}
 }
 
 func (g GoodsUsecase) CreateGoods(ctx context.Context, r *domain.Goods) (*domain.GoodsInfoResponse, error) {
 	var (
-		err   error
-		goods *domain.Goods
+		err     error
+		goods   *domain.Goods
+		EsGoods domain.ESGoods
 	)
+
 	// 判断品牌是否存在
-	_, err = g.brandRepo.IsBrandByID(ctx, r.BrandsID)
+	brand, err := g.brandRepo.IsBrandByID(ctx, r.BrandsID)
 	if err != nil {
 		return nil, err
 	}
 
 	// 判断分类是否存在
-	_, err = g.categoryRepo.GetCategoryByID(ctx, r.CategoryID)
+	cate, err := g.categoryRepo.GetCategoryByID(ctx, r.CategoryID)
 	if err != nil {
 		return nil, err
 	}
+
 	// 判断商品类型是否存在
-	_, err = g.typeRepo.IsExistsByID(ctx, r.TypeID)
+	goodsType, err := g.typeRepo.IsExistsByID(ctx, r.TypeID)
 	if err != nil {
 		return nil, err
 	}
+
 	// 判断商品规格和属性是否存在
 	for _, sku := range r.Sku {
 		var sIDs []*int64
@@ -180,6 +189,40 @@ func (g GoodsUsecase) CreateGoods(ctx context.Context, r *domain.Goods) (*domain
 				return err
 			}
 
+			// esModel
+			{
+				EsGoods.Sku = append(EsGoods.Sku, domain.EsSku{
+					SkuID:    skuInfo.ID,
+					SkuName:  skuInfo.SkuName,
+					SkuPrice: skuInfo.Price,
+				})
+				EsGoods.BrandsID = brand.ID
+				EsGoods.BrandName = brand.Name
+				EsGoods.CategoryID = cate.ID
+				EsGoods.CategoryName = cate.Name
+				EsGoods.TypeID = goodsType.ID
+				EsGoods.TypeName = goodsType.Name
+				EsGoods.Name = goodsType.Name
+				EsGoods.ID = goods.ID
+				EsGoods.OnSale = goods.OnSale
+				EsGoods.ShipFree = goods.ShipFree
+				EsGoods.IsNew = goods.IsNew
+				EsGoods.IsHot = goods.IsHot
+				EsGoods.Name = goods.Name
+				EsGoods.GoodsTags = goods.GoodsTags
+				EsGoods.ClickNum = goods.ClickNum
+				EsGoods.SoldNum = goods.SoldNum
+				EsGoods.FavNum = goods.FavNum
+				EsGoods.MarketPrice = goods.MarketPrice
+				EsGoods.GoodsBrief = goods.GoodsBrief
+
+			}
+			fmt.Println("EsGoods", EsGoods)
+			// 插入 EsGoods
+			err = g.esGoodsRepo.InsertEsGoods(ctx, EsGoods)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})

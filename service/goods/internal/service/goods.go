@@ -50,7 +50,7 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 		goodsSku = append(goodsSku, res)
 	}
 
-	goodsInfo := &domain.Goods{
+	goodsInfo := domain.Goods{
 		ID:              r.Id,
 		CategoryID:      r.CategoryId,
 		BrandsID:        r.BrandId,
@@ -71,10 +71,59 @@ func (g *GoodsService) CreateGoods(ctx context.Context, r *v1.CreateGoodsRequest
 		Sku:             goodsSku,
 	}
 
-	result, err := g.g.CreateGoods(ctx, goodsInfo)
+	result, err := g.g.CreateGoods(ctx, &goodsInfo)
 	if err != nil {
 		return nil, err
 	}
 	return &v1.CreateGoodsResponse{ID: result.GoodsID}, nil
 
+}
+
+func (g *GoodsService) GoodsList(ctx context.Context, r *v1.GoodsFilterRequest) (*v1.GoodsListResponse, error) {
+	goodsFilter := &domain.ESGoodsFilter{
+		ID:          r.Id,
+		CategoryID:  r.CategoryId,
+		BrandsID:    r.BrandId,
+		Keywords:    r.Keywords,
+		IsNew:       r.IsNew,
+		IsHot:       r.IsHot,
+		ClickNum:    r.ClickNum,
+		SoldNum:     r.SoldNum,
+		FavNum:      r.FavNum,
+		MaxPrice:    r.MaxPrice,
+		MinPrice:    r.MinPrice,
+		Pages:       r.Pages,
+		PagePerNums: r.PagePerNums,
+	}
+
+	result, err := g.esGoods.GoodsList(ctx, goodsFilter)
+	if err != nil {
+		return nil, err
+	}
+	response := v1.GoodsListResponse{
+		Total: result.Total,
+	}
+	for _, goods := range result.List {
+		res := v1.GoodsInfoResponse{
+			Id:          goods.ID,
+			CategoryId:  goods.CategoryID,
+			BrandId:     goods.BrandsID,
+			Name:        goods.Name,
+			GoodsSn:     goods.GoodsSn,
+			ClickNum:    goods.ClickNum,
+			SoldNum:     goods.SoldNum,
+			FavNum:      goods.FavNum,
+			MarketPrice: goods.MarketPrice,
+			GoodsBrief:  goods.GoodsBrief,
+			GoodsDesc:   goods.GoodsBrief,
+			ShipFree:    goods.ShipFree,
+			Images:      goods.GoodsFrontImage,
+			GoodsImages: goods.GoodsImages,
+			IsNew:       goods.IsNew,
+			IsHot:       goods.IsHot,
+			OnSale:      goods.OnSale,
+		}
+		response.List = append(response.List, &res)
+	}
+	return &response, nil
 }

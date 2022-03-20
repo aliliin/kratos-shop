@@ -8,7 +8,6 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
 
-	"goods/internal/data"
 	"os"
 
 	"github.com/go-kratos/kratos/v2/config"
@@ -108,8 +107,6 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-
-	data.NewElasticsearch(bc.Data)
 
 	app, cleanup, err := initApp(bc.Server, &rc, bc.Data, logger)
 	if err != nil {

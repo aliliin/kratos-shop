@@ -1,80 +1,174 @@
 package data
 
-type ESGoods struct {
-	ID          int64  `json:"id"`
-	CategoryID  int32  `json:"category_id"`
-	BrandsID    int32  `json:"brands_id"`
-	TypeID      int64  `json:"type_id"`
-	OnSale      bool   `json:"on_sale"`
-	ShipFree    bool   `json:"ship_free"`
-	IsNew       bool   `json:"is_new"`
-	IsHot       bool   `json:"is_hot"`
-	Name        string `json:"name"`
-	ClickNum    int64  `json:"click_num"`
-	SoldNum     int64  `json:"sold_num"`
-	FavNum      int64  `json:"fav_num"`
-	MarketPrice int64  `json:"market_price"`
-	GoodsBrief  string `json:"goods_brief"`
+import (
+	"context"
+	"encoding/json"
+	"goods/internal/biz"
+	"goods/internal/domain"
+	"strconv"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/olivere/elastic/v7"
+)
+
+// GetIndexName 设计商品的索引 goods
+func (esGoodsRepo) GetIndexName() string {
+	return "goods"
 }
 
-func (ESGoods) GetIndexName() string {
-	return "product"
-}
-
-func (ESGoods) GetMapping() string {
+// GetMapping 设计商品的 mapping 结构
+func (esGoodsRepo) GetMapping() string {
 	goodsMapping := `
 	{
-		"mappings" : {
-			"properties" : {
-				"id" : {
-					"type" : "integer"
+    "mappings": {
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "brands_id": {
+                "type": "integer"
+            },
+            "category_id": {
+                "type": "integer"
+            },
+            "type_id": {
+                "type": "integer"
+            },
+            "click_num": {
+                "type": "integer"
+            },
+            "fav_num": {
+                "type": "integer"
+            },
+            "is_hot": {
+                "type": "boolean"
+            },
+            "is_new": {
+                "type": "boolean"
+            },
+            "market_price": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "text",
+                "analyzer": "ik_max_word"
+            },
+			"brand_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+			"category_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+			"type_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+            "goods_brief": {
+                "type": "text",
+                "analyzer": "ik_max_word"
+            },
+            "on_sale": {
+                "type": "boolean"
+            },
+            "ship_free": {
+                "type": "boolean"
+            },
+            "shop_price": {
+                "type": "integer"
+            },
+            "sold_num": {
+                "type": "integer"
+            },
+			"sku": {
+				"type": "nested",
+				"sku_id": {
+					"type": "integer",
+            	},
+				"sku_name": {
+					"type": "text",
+					"analyzer": "ik_max_word"
+            	},
+				"sku_price": {
+					"type": "integer",
 				},
-				"brands_id" : {
-					"type" : "integer"
-				},
-				"category_id" : {
-					"type" : "integer"
-				},
-				"type_id" : {
-					"type" : "integer"
-				},
-				"click_num" : {
-					"type" : "integer"
-				},
-				"fav_num" : {
-					"type" : "integer"
-				},
-				"is_hot" : {
-					"type" : "boolean"
-				},
-				"is_new" : {
-					"type" : "boolean"
-				},
-				"market_price" : {
-					"type" : "integer"
-				},
-				"name" : {
-					"type" : "text",
-					"analyzer":"ik_max_word"
-				},
-				"goods_brief" : {
-					"type" : "text",
-					"analyzer":"ik_max_word"
-				},
-				"on_sale" : {
-					"type" : "boolean"
-				},
-				"ship_free" : {
-					"type" : "boolean"
-				},
-				"shop_price" : {
-					"type" : "integer"
-				},
-				"sold_num" : {
-					"type" : "integer"
-				}
 			}
-		}
-	}`
+        }
+    }
+}`
 	return goodsMapping
+}
+
+type esGoodsRepo struct {
+	data *Data
+	log  *log.Helper
+}
+
+// NewEsGoodsRepo .
+func NewEsGoodsRepo(data *Data, logger log.Logger) biz.EsGoodsRepo {
+	return &esGoodsRepo{
+		data: data,
+		log:  log.NewHelper(logger),
+	}
+}
+
+func (p esGoodsRepo) GoodsList(ctx context.Context, filter *domain.EsSearch) ([]int64, int64, error) {
+	boolQuery := elastic.NewBoolQuery()
+	boolQuery.Must(filter.MustQuery...)
+	boolQuery.MustNot(filter.MustNotQuery...)
+	boolQuery.Should(filter.ShouldQuery...)
+	boolQuery.Filter(filter.Filters...)
+
+	result, err := p.data.EsClient.Search().
+		Index(p.GetIndexName()).
+		Query(boolQuery).
+		SortBy(filter.Sorters...).
+		From(int(filter.Form)).
+		Size(int(filter.Size)).
+		Do(ctx)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 取出来商品ID
+	goodsIds := make([]int64, 0)
+	for _, value := range result.Hits.Hits {
+		goods := domain.ESGoods{}
+		_ = json.Unmarshal(value.Source, &goods)
+		goodsIds = append(goodsIds, goods.ID)
+	}
+	return goodsIds, result.Hits.TotalHits.Value, nil
+
+}
+
+func (p esGoodsRepo) InsertEsGoods(ctx context.Context, esModel domain.ESGoods) error {
+	// 新建 mapping 和 index
+	exists, err := p.data.EsClient.IndexExists(p.GetIndexName()).Do(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+	if !exists {
+		_, err = p.data.EsClient.CreateIndex(p.GetIndexName()).BodyString(p.GetMapping()).Do(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = p.data.EsClient.Index().Index(p.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(esModel.ID))).Do(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = p.data.EsClient.Index().Index(p.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(esModel.ID))).Do(ctx)
+
+	_, err = p.data.EsClient.Update().Index(p.GetIndexName()).
+		Doc(esModel).Id("自己的ID").Do(ctx)
+
+	return nil
 }

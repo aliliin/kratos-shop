@@ -27,3 +27,8 @@ type Goods struct {
 type GoodsInfoResponse struct {
 	GoodsID int64
 }
+
+type GoodsListResponse struct {
+	Total int64
+	List  []*Goods
+}

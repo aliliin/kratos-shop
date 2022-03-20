@@ -6,8 +6,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"goods/internal/biz"
 	"goods/internal/domain"
-	"gorm.io/gorm"
-	"strconv"
 )
 
 // Goods 商品表
@@ -104,25 +102,14 @@ func (g goodsRepo) CreateGoods(c context.Context, goods *domain.Goods) (*domain.
 	return product.ToDomain(), nil
 }
 
-func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
-	esModel := ESGoods{
-		ID:          g.ID,
-		CategoryID:  g.CategoryID,
-		BrandsID:    g.BrandsID,
-		OnSale:      g.OnSale,
-		ShipFree:    g.ShipFree,
-		IsNew:       g.IsNew,
-		IsHot:       g.IsHot,
-		Name:        g.Name,
-		ClickNum:    g.ClickNum,
-		SoldNum:     g.SoldNum,
-		FavNum:      g.FavNum,
-		MarketPrice: g.MarketPrice,
-		GoodsBrief:  g.GoodsBrief,
+func (g goodsRepo) GoodsListByIDs(c context.Context, ids ...int64) ([]*domain.Goods, error) {
+	var l []*Goods
+	if err := g.data.DB(c).Where("id IN (?)", ids).Find(&l).Error; err != nil {
+		return nil, errors.NotFound("GOODS_NOT_FOUND", "商品不存在")
 	}
-	_, err = EsClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
-	if err != nil {
-		return err
+	var res []*domain.Goods
+	for _, item := range l {
+		res = append(res, item.ToDomain())
 	}
-	return nil
+	return res, nil
 }

@@ -2,26 +2,27 @@ package data
 
 import (
 	"context"
+	"goods/internal/biz"
+	"goods/internal/conf"
+	slog "log"
+	"os"
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/extra/redisotel"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"github.com/olivere/elastic/v7"
-	"goods/internal/biz"
-	"goods/internal/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	slog "log"
-	"os"
-	"time"
 )
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
-	NewData, NewElasticsearch,
-	NewDB, NewTransaction, NewRedis,
+	NewData,
+	NewDB, NewTransaction, NewRedis, NewElasticsearch,
 	NewBrandRepo,
 	NewCategoryRepo,
 	NewGoodsTypeRepo,
@@ -30,24 +31,28 @@ var ProviderSet = wire.NewSet(
 	NewGoodsRepo,
 	NewGoodsSkuRepoRepo,
 	NewInventoryRepo,
+	NewEsGoodsRepo,
 )
 
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	db       *gorm.DB
+	rdb      *redis.Client
+	EsClient *elastic.Client
 }
-
-var EsClient *elastic.Client
 
 // 用来承载事务的上下文
 type contextTxKey struct{}
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, es *elastic.Client) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
-	return &Data{db: db, rdb: rdb}, cleanup, nil
+	return &Data{
+		db:       db,
+		rdb:      rdb,
+		EsClient: es,
+	}, cleanup, nil
 }
 
 // NewTransaction .
@@ -124,17 +129,5 @@ func NewElasticsearch(c *conf.Data) *elastic.Client {
 		panic(err)
 	}
 
-	// 新建 mapping 和 index
-	exists, err := es.IndexExists(ESGoods{}.GetIndexName()).Do(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		_, err = es.CreateIndex(ESGoods{}.GetIndexName()).BodyString(ESGoods{}.GetMapping()).Do(context.Background())
-		if err != nil {
-			panic(err)
-		}
-	}
-	EsClient = es
 	return es
 }
