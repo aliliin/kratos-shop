@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	addressService "shop/api/service/user/v1"
 	"shop/internal/biz"
@@ -37,7 +36,7 @@ func (a *addressRepo) CreateAddress(c context.Context, address *biz.Address) (*b
 	}
 	res := &biz.Address{
 		ID:        createAddress.Id,
-		IsDefault: int(createAddress.IsDefault),
+		IsDefault: createAddress.IsDefault,
 		Mobile:    createAddress.Mobile,
 		Name:      createAddress.Name,
 		Province:  createAddress.Province,
@@ -101,8 +100,20 @@ func (a *addressRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.A
 		return nil, err
 	}
 	var res []*biz.Address
-	for _, v := range addressList {
-
+	for _, v := range addressList.Results {
+		addressTmp := &biz.Address{
+			ID:        v.Id,
+			UserID:    uid,
+			IsDefault: v.IsDefault,
+			Mobile:    v.Mobile,
+			Name:      v.Name,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+		}
+		res = append(res, addressTmp)
 	}
 	return res, nil
 }

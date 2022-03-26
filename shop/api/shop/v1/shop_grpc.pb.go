@@ -28,7 +28,7 @@ type ShopClient interface {
 	Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error)
 	Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error)
 	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressInfo, error)
-	AddressListByUid(ctx context.Context, in *ListAddressReq, opts ...grpc.CallOption) (*ListAddressReply, error)
+	AddressListByUid(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListAddressReply, error)
 	UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
 	DefaultAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
 	DeleteAddress(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*CheckResponse, error)
@@ -87,7 +87,7 @@ func (c *shopClient) CreateAddress(ctx context.Context, in *CreateAddressReq, op
 	return out, nil
 }
 
-func (c *shopClient) AddressListByUid(ctx context.Context, in *ListAddressReq, opts ...grpc.CallOption) (*ListAddressReply, error) {
+func (c *shopClient) AddressListByUid(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListAddressReply, error) {
 	out := new(ListAddressReply)
 	err := c.cc.Invoke(ctx, "/shop.shop.v1.Shop/AddressListByUid", in, out, opts...)
 	if err != nil {
@@ -132,7 +132,7 @@ type ShopServer interface {
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
-	AddressListByUid(context.Context, *ListAddressReq) (*ListAddressReply, error)
+	AddressListByUid(context.Context, *emptypb.Empty) (*ListAddressReply, error)
 	UpdateAddress(context.Context, *UpdateAddressReq) (*CheckResponse, error)
 	DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error)
 	DeleteAddress(context.Context, *AddressReq) (*CheckResponse, error)
@@ -158,7 +158,7 @@ func (UnimplementedShopServer) Detail(context.Context, *emptypb.Empty) (*UserDet
 func (UnimplementedShopServer) CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAddress not implemented")
 }
-func (UnimplementedShopServer) AddressListByUid(context.Context, *ListAddressReq) (*ListAddressReply, error) {
+func (UnimplementedShopServer) AddressListByUid(context.Context, *emptypb.Empty) (*ListAddressReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressListByUid not implemented")
 }
 func (UnimplementedShopServer) UpdateAddress(context.Context, *UpdateAddressReq) (*CheckResponse, error) {
@@ -274,7 +274,7 @@ func _Shop_CreateAddress_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Shop_AddressListByUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAddressReq)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func _Shop_AddressListByUid_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/shop.shop.v1.Shop/AddressListByUid",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShopServer).AddressListByUid(ctx, req.(*ListAddressReq))
+		return srv.(ShopServer).AddressListByUid(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

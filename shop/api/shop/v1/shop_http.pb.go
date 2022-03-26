@@ -19,7 +19,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 type ShopHTTPServer interface {
-	AddressListByUid(context.Context, *ListAddressReq) (*ListAddressReply, error)
+	AddressListByUid(context.Context, *emptypb.Empty) (*ListAddressReply, error)
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
 	DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error)
@@ -140,13 +140,13 @@ func _Shop_CreateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context
 
 func _Shop_AddressListByUid0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in ListAddressReq
+		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, "/shop.shop.v1.Shop/AddressListByUid")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.AddressListByUid(ctx, req.(*ListAddressReq))
+			return srv.AddressListByUid(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -215,7 +215,7 @@ func _Shop_DeleteAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context
 }
 
 type ShopHTTPClient interface {
-	AddressListByUid(ctx context.Context, req *ListAddressReq, opts ...http.CallOption) (rsp *ListAddressReply, err error)
+	AddressListByUid(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *ListAddressReply, err error)
 	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
 	CreateAddress(ctx context.Context, req *CreateAddressReq, opts ...http.CallOption) (rsp *AddressInfo, err error)
 	DefaultAddress(ctx context.Context, req *AddressReq, opts ...http.CallOption) (rsp *CheckResponse, err error)
@@ -234,7 +234,7 @@ func NewShopHTTPClient(client *http.Client) ShopHTTPClient {
 	return &ShopHTTPClientImpl{client}
 }
 
-func (c *ShopHTTPClientImpl) AddressListByUid(ctx context.Context, in *ListAddressReq, opts ...http.CallOption) (*ListAddressReply, error) {
+func (c *ShopHTTPClientImpl) AddressListByUid(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*ListAddressReply, error) {
 	var out ListAddressReply
 	pattern := "/api/address/list/uid"
 	path := binding.EncodeURL(pattern, in, true)

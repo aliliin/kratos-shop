@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	jwt2 "github.com/golang-jwt/jwt/v4"
@@ -13,7 +12,7 @@ import (
 type Address struct {
 	ID        int64
 	UserID    int64
-	IsDefault int
+	IsDefault int32
 	Mobile    string
 	Name      string
 	Province  string
@@ -84,16 +83,29 @@ func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddress
 	return result, nil
 }
 
-func (ua *AddressUsecase) AddressListByUid(ctx context.Context) ([]*v1.ListAddressReply, error) {
+func (ua *AddressUsecase) AddressListByUid(ctx context.Context) (*v1.ListAddressReply, error) {
 	// 在上下文 context 中取出 claims 对象
 	uId, err := getUid(ctx)
 	if err != nil {
 		return nil, err
 	}
 	addressList, err := ua.aRepo.AddressListByUid(ctx, uId)
-	fmt.Println(addressList)
-	var res []*v1.ListAddressReply
-	return res, err
+	var res v1.ListAddressReply
+	for _, v := range addressList {
+		addressInfoTmp := &v1.AddressInfo{
+			Id:        v.ID,
+			Name:      v.Name,
+			Mobile:    v.Mobile,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+			IsDefault: v.IsDefault,
+		}
+		res.Results = append(res.Results, addressInfoTmp)
+	}
+	return &res, err
 }
 
 func (ua *AddressUsecase) UpdateAddress(ctx context.Context, a *Address) (bool, error) {

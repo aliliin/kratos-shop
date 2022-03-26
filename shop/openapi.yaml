@@ -71,12 +71,6 @@ paths:
             tags:
                 - Shop
             operationId: Shop_AddressListByUid
-            parameters:
-                - name: uid
-                  in: query
-                  schema:
-                    type: integer
-                    format: int64
             responses:
                 "200":
                     description: OK

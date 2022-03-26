@@ -37,7 +37,7 @@ service Shop {
       body: "*",
     };
   }
-  rpc AddressListByUid (ListAddressReq) returns (ListAddressReply) {
+  rpc AddressListByUid (google.protobuf.Empty) returns (ListAddressReply) {
     option (google.api.http) = {
       get: "/api/address/list/uid",
     };
