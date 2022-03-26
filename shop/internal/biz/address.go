@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	jwt2 "github.com/golang-jwt/jwt/v4"
@@ -24,7 +25,7 @@ type Address struct {
 
 type AddressRepo interface {
 	CreateAddress(ctx context.Context, a *Address) (*Address, error)
-	//AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
+	AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
 	UpdateAddress(ctx context.Context, a *Address) error
 	DefaultAddress(ctx context.Context, a *Address) error
 	DeleteAddress(ctx context.Context, a *Address) error
@@ -48,14 +49,9 @@ func NewAddressUsecase(repo UserRepo, arepo AddressRepo, logger log.Logger, conf
 
 func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddressReq) (*v1.AddressInfo, error) {
 	// 在上下文 context 中取出 claims 对象
-	var uId int64
-	if claims, ok := jwt.FromContext(ctx); ok {
-		c := claims.(jwt2.MapClaims)
-		i, ok := c["ID"].(float64)
-		if !ok {
-			return nil, ErrAuthFailed
-		}
-		uId = int64(i)
+	uId, err := getUid(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	req := Address{
@@ -88,18 +84,17 @@ func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddress
 	return result, nil
 }
 
-//func (ua *AddressUsecase) AddressListByUid(ctx context.Context) ([]*Address, error) {
-//	// 在上下文 context 中取出 claims 对象
-//	var uId int64
-//	if claims, ok := jwt.FromContext(ctx); ok {
-//		c := claims.(jwt2.MapClaims)
-//		if c["ID"] == nil {
-//			return nil, ErrAuthFailed
-//		}
-//		uId = int64(c["ID"].(float64))
-//	}
-//	return ua.aRepo.AddressListByUid(ctx, uId)
-//}
+func (ua *AddressUsecase) AddressListByUid(ctx context.Context) ([]*v1.ListAddressReply, error) {
+	// 在上下文 context 中取出 claims 对象
+	uId, err := getUid(ctx)
+	if err != nil {
+		return nil, err
+	}
+	addressList, err := ua.aRepo.AddressListByUid(ctx, uId)
+	fmt.Println(addressList)
+	var res []*v1.ListAddressReply
+	return res, err
+}
 
 func (ua *AddressUsecase) UpdateAddress(ctx context.Context, a *Address) (bool, error) {
 	uId, err := getUid(ctx)

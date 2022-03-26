@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
@@ -95,7 +94,7 @@ func (a *adderessRepo) DefaultAddress(ctx context.Context, r *domain.Address) er
 
 func (a *adderessRepo) UpdateAddress(ctx context.Context, r *domain.Address) error {
 	var address Address
-	fmt.Println(r)
+	//fmt.Println(r)
 	result := a.data.db.Where(&Address{ID: r.ID}).Find(&address)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")

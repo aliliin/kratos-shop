@@ -35,9 +35,9 @@ func (s *ShopService) CreateAddress(ctx context.Context, r *v1.CreateAddressReq)
 	return s.ua.CreateAddress(ctx, r)
 }
 
-//func (s *ShopService) AddressListByUid(ctx context.Context) ([]*v1.ListAddressReply, error) {
-//	return s.ua.AddressListByUid(ctx)
-//}
+func (s *ShopService) AddressListByUid(ctx context.Context) ([]*v1.ListAddressReply, error) {
+	return s.ua.AddressListByUid(ctx)
+}
 
 func (s *ShopService) UpdateAddress(ctx context.Context, r *v1.UpdateAddressReq) (*v1.CheckResponse, error) {
 	req := toBizAddress(r)
