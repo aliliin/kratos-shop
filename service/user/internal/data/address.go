@@ -2,12 +2,12 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"time"
 	"user/internal/biz"
+	"user/internal/domain"
 )
 
 type Address struct {
@@ -43,7 +43,7 @@ func NewAddressRepo(data *Data, logger log.Logger) biz.AddressRepo {
 	}
 }
 
-func (a *adderessRepo) DeleteAddress(ctx context.Context, r *biz.Address) error {
+func (a *adderessRepo) DeleteAddress(ctx context.Context, r *domain.Address) error {
 	var address Address
 	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -64,7 +64,7 @@ func (a *adderessRepo) DeleteAddress(ctx context.Context, r *biz.Address) error 
 	return nil
 }
 
-func (a *adderessRepo) DefaultAddress(ctx context.Context, r *biz.Address) error {
+func (a *adderessRepo) DefaultAddress(ctx context.Context, r *domain.Address) error {
 	var address, addressOld Address
 	resCurrDefAdr := a.data.db.Where(&Address{UserID: r.UserID, IsDefault: 1}).First(&addressOld)
 	if errors.Is(resCurrDefAdr.Error, gorm.ErrRecordNotFound) {
@@ -92,9 +92,9 @@ func (a *adderessRepo) DefaultAddress(ctx context.Context, r *biz.Address) error
 	return nil
 }
 
-func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error {
+func (a *adderessRepo) UpdateAddress(ctx context.Context, r *domain.Address) error {
 	var address Address
-	fmt.Println(r)
+	//fmt.Println(r)
 	result := a.data.db.Where(&Address{ID: r.ID}).Find(&address)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
@@ -124,7 +124,7 @@ func (a *adderessRepo) UpdateAddress(ctx context.Context, r *biz.Address) error 
 	return nil
 }
 
-func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.Address, error) {
+func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*domain.Address, error) {
 	var address []Address
 	result := a.data.db.Where(&Address{UserID: uid}).Find(&address)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -138,7 +138,7 @@ func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.
 	if result.RowsAffected == 0 {
 		return nil, errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
 	}
-	var addressList []*biz.Address
+	var addressList []*domain.Address
 	for _, v := range address {
 		addressTmp := modelToBizResponse(v)
 		addressList = append(addressList, addressTmp)
@@ -146,7 +146,7 @@ func (a *adderessRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.
 	return addressList, nil
 }
 
-func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Address, error) {
+func (a *adderessRepo) CreateAddress(c context.Context, r *domain.Address) (*domain.Address, error) {
 	addInfo := Address{
 		UserID:    r.UserID,
 		IsDefault: r.IsDefault,
@@ -167,8 +167,8 @@ func (a *adderessRepo) CreateAddress(c context.Context, r *biz.Address) (*biz.Ad
 	return modelToBizResponse(addInfo), nil
 }
 
-func modelToBizResponse(addInfo Address) *biz.Address {
-	return &biz.Address{
+func modelToBizResponse(addInfo Address) *domain.Address {
+	return &domain.Address{
 		ID:        addInfo.ID,
 		UserID:    addInfo.UserID,
 		IsDefault: addInfo.IsDefault,

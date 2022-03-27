@@ -12,7 +12,7 @@ import (
 type Address struct {
 	ID        int64
 	UserID    int64
-	IsDefault int
+	IsDefault int32
 	Mobile    string
 	Name      string
 	Province  string
@@ -24,7 +24,7 @@ type Address struct {
 
 type AddressRepo interface {
 	CreateAddress(ctx context.Context, a *Address) (*Address, error)
-	//AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
+	AddressListByUid(ctx context.Context, uid int64) ([]*Address, error)
 	UpdateAddress(ctx context.Context, a *Address) error
 	DefaultAddress(ctx context.Context, a *Address) error
 	DeleteAddress(ctx context.Context, a *Address) error
@@ -48,14 +48,9 @@ func NewAddressUsecase(repo UserRepo, arepo AddressRepo, logger log.Logger, conf
 
 func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddressReq) (*v1.AddressInfo, error) {
 	// 在上下文 context 中取出 claims 对象
-	var uId int64
-	if claims, ok := jwt.FromContext(ctx); ok {
-		c := claims.(jwt2.MapClaims)
-		i, ok := c["ID"].(float64)
-		if !ok {
-			return nil, ErrAuthFailed
-		}
-		uId = int64(i)
+	uId, err := getUid(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	req := Address{
@@ -88,18 +83,30 @@ func (ua *AddressUsecase) CreateAddress(ctx context.Context, r *v1.CreateAddress
 	return result, nil
 }
 
-//func (ua *AddressUsecase) AddressListByUid(ctx context.Context) ([]*Address, error) {
-//	// 在上下文 context 中取出 claims 对象
-//	var uId int64
-//	if claims, ok := jwt.FromContext(ctx); ok {
-//		c := claims.(jwt2.MapClaims)
-//		if c["ID"] == nil {
-//			return nil, ErrAuthFailed
-//		}
-//		uId = int64(c["ID"].(float64))
-//	}
-//	return ua.aRepo.AddressListByUid(ctx, uId)
-//}
+func (ua *AddressUsecase) AddressListByUid(ctx context.Context) (*v1.ListAddressReply, error) {
+	// 在上下文 context 中取出 claims 对象
+	uId, err := getUid(ctx)
+	if err != nil {
+		return nil, err
+	}
+	addressList, err := ua.aRepo.AddressListByUid(ctx, uId)
+	var res v1.ListAddressReply
+	for _, v := range addressList {
+		addressInfoTmp := &v1.AddressInfo{
+			Id:        v.ID,
+			Name:      v.Name,
+			Mobile:    v.Mobile,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+			IsDefault: v.IsDefault,
+		}
+		res.Results = append(res.Results, addressInfoTmp)
+	}
+	return &res, err
+}
 
 func (ua *AddressUsecase) UpdateAddress(ctx context.Context, a *Address) (bool, error) {
 	uId, err := getUid(ctx)

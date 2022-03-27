@@ -19,6 +19,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 type ShopHTTPServer interface {
+	AddressListByUid(context.Context, *emptypb.Empty) (*ListAddressReply, error)
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*AddressInfo, error)
 	DefaultAddress(context.Context, *AddressReq) (*CheckResponse, error)
@@ -35,10 +36,11 @@ func RegisterShopHTTPServer(s *http.Server, srv ShopHTTPServer) {
 	r.POST("/api/users/login", _Shop_Login0_HTTP_Handler(srv))
 	r.GET("/api/users/captcha", _Shop_Captcha0_HTTP_Handler(srv))
 	r.GET("/api/users/detail", _Shop_Detail0_HTTP_Handler(srv))
-	r.POST("/api/create/address", _Shop_CreateAddress0_HTTP_Handler(srv))
-	r.PUT("/api/update/address", _Shop_UpdateAddress0_HTTP_Handler(srv))
-	r.PUT("/api/default/address", _Shop_DefaultAddress0_HTTP_Handler(srv))
-	r.DELETE("/api/delete/address", _Shop_DeleteAddress0_HTTP_Handler(srv))
+	r.POST("/api/address/create", _Shop_CreateAddress0_HTTP_Handler(srv))
+	r.GET("/api/address/list/uid", _Shop_AddressListByUid0_HTTP_Handler(srv))
+	r.PUT("/api/address/update", _Shop_UpdateAddress0_HTTP_Handler(srv))
+	r.PUT("/api/address/default", _Shop_DefaultAddress0_HTTP_Handler(srv))
+	r.DELETE("/api/address/delete", _Shop_DeleteAddress0_HTTP_Handler(srv))
 }
 
 func _Shop_Register0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
@@ -136,6 +138,25 @@ func _Shop_CreateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Shop_AddressListByUid0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/shop.shop.v1.Shop/AddressListByUid")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddressListByUid(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListAddressReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Shop_UpdateAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in UpdateAddressReq
@@ -194,6 +215,7 @@ func _Shop_DeleteAddress0_HTTP_Handler(srv ShopHTTPServer) func(ctx http.Context
 }
 
 type ShopHTTPClient interface {
+	AddressListByUid(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *ListAddressReply, err error)
 	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
 	CreateAddress(ctx context.Context, req *CreateAddressReq, opts ...http.CallOption) (rsp *AddressInfo, err error)
 	DefaultAddress(ctx context.Context, req *AddressReq, opts ...http.CallOption) (rsp *CheckResponse, err error)
@@ -212,6 +234,19 @@ func NewShopHTTPClient(client *http.Client) ShopHTTPClient {
 	return &ShopHTTPClientImpl{client}
 }
 
+func (c *ShopHTTPClientImpl) AddressListByUid(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*ListAddressReply, error) {
+	var out ListAddressReply
+	pattern := "/api/address/list/uid"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation("/shop.shop.v1.Shop/AddressListByUid"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *ShopHTTPClientImpl) Captcha(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*CaptchaReply, error) {
 	var out CaptchaReply
 	pattern := "/api/users/captcha"
@@ -227,7 +262,7 @@ func (c *ShopHTTPClientImpl) Captcha(ctx context.Context, in *emptypb.Empty, opt
 
 func (c *ShopHTTPClientImpl) CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...http.CallOption) (*AddressInfo, error) {
 	var out AddressInfo
-	pattern := "/api/create/address"
+	pattern := "/api/address/create"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/CreateAddress"))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -240,7 +275,7 @@ func (c *ShopHTTPClientImpl) CreateAddress(ctx context.Context, in *CreateAddres
 
 func (c *ShopHTTPClientImpl) DefaultAddress(ctx context.Context, in *AddressReq, opts ...http.CallOption) (*CheckResponse, error) {
 	var out CheckResponse
-	pattern := "/api/default/address"
+	pattern := "/api/address/default"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/DefaultAddress"))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -253,7 +288,7 @@ func (c *ShopHTTPClientImpl) DefaultAddress(ctx context.Context, in *AddressReq,
 
 func (c *ShopHTTPClientImpl) DeleteAddress(ctx context.Context, in *AddressReq, opts ...http.CallOption) (*CheckResponse, error) {
 	var out CheckResponse
-	pattern := "/api/delete/address"
+	pattern := "/api/address/delete"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/DeleteAddress"))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -305,7 +340,7 @@ func (c *ShopHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts
 
 func (c *ShopHTTPClientImpl) UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...http.CallOption) (*CheckResponse, error) {
 	var out CheckResponse
-	pattern := "/api/update/address"
+	pattern := "/api/address/update"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/shop.shop.v1.Shop/UpdateAddress"))
 	opts = append(opts, http.PathTemplate(pattern))

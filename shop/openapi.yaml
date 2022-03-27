@@ -7,7 +7,7 @@ info:
     description: The Shop service definition.
     version: 0.0.1
 paths:
-    /api/create/address:
+    /api/address/create:
         post:
             tags:
                 - Shop
@@ -25,7 +25,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/AddressInfo'
-    /api/default/address:
+    /api/address/default:
         put:
             tags:
                 - Shop
@@ -43,7 +43,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CheckResponse'
-    /api/delete/address:
+    /api/address/delete:
         delete:
             tags:
                 - Shop
@@ -66,7 +66,19 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CheckResponse'
-    /api/update/address:
+    /api/address/list/uid:
+        get:
+            tags:
+                - Shop
+            operationId: Shop_AddressListByUid
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAddressReply'
+    /api/address/update:
         put:
             tags:
                 - Shop
@@ -213,6 +225,13 @@ components:
                 isDefault:
                     type: integer
                     format: int32
+        ListAddressReply:
+            type: object
+            properties:
+                results:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AddressInfo'
         LoginReq:
             type: object
             properties:

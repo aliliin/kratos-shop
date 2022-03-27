@@ -82,7 +82,7 @@ func TestCreateAddress() {
 
 func TestGetUserAddressList() {
 	rsp, err := userClient.ListAddress(context.Background(), &v1.ListAddressReq{
-		Uid: 2,
+		Uid: 11,
 	})
 	if err != nil {
 		panic("grpc get user by ID err" + err.Error())

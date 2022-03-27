@@ -36,7 +36,7 @@ func (a *addressRepo) CreateAddress(c context.Context, address *biz.Address) (*b
 	}
 	res := &biz.Address{
 		ID:        createAddress.Id,
-		IsDefault: int(createAddress.IsDefault),
+		IsDefault: createAddress.IsDefault,
 		Mobile:    createAddress.Mobile,
 		Name:      createAddress.Name,
 		Province:  createAddress.Province,
@@ -93,30 +93,27 @@ func (a *addressRepo) UpdateAddress(c context.Context, address *biz.Address) err
 }
 
 func (a *addressRepo) AddressListByUid(ctx context.Context, uid int64) ([]*biz.Address, error) {
-	//var address []Address
-	//result := a.data.db.Where(&Address{UserID: uid}).Find(&address)
-	//if result.Error != nil {
-	//	return nil, result.Error
-	//}
-	//
-	//if result.RowsAffected == 0 {
-	//	return nil, errors.New("地址列表为空")
-	//}
-	var addressList []*biz.Address
-	//for _, v := range address {
-	//	addressTmp := biz.Address{
-	//		ID:        v.ID,
-	//		UserID:    v.UserID,
-	//		IsDefault: v.IsDefault,
-	//		Mobile:    v.Mobile,
-	//		Name:      v.Name,
-	//		Province:  v.Province,
-	//		City:      v.City,
-	//		Districts: v.Districts,
-	//		Address:   v.Address,
-	//		PostCode:  v.PostCode,
-	//	}
-	//	addressList = append(addressList, &addressTmp)
-	//}
-	return addressList, nil
+	addressList, err := a.data.uc.ListAddress(ctx, &addressService.ListAddressReq{
+		Uid: uid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var res []*biz.Address
+	for _, v := range addressList.Results {
+		addressTmp := &biz.Address{
+			ID:        v.Id,
+			UserID:    uid,
+			IsDefault: v.IsDefault,
+			Mobile:    v.Mobile,
+			Name:      v.Name,
+			Province:  v.Province,
+			City:      v.City,
+			Districts: v.Districts,
+			Address:   v.Address,
+			PostCode:  v.PostCode,
+		}
+		res = append(res, addressTmp)
+	}
+	return res, nil
 }

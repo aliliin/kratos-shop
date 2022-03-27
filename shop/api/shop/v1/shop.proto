@@ -33,25 +33,30 @@ service Shop {
   }
   rpc CreateAddress (CreateAddressReq) returns (AddressInfo) {
     option (google.api.http) = {
-      post: "/api/create/address",
+      post: "/api/address/create",
       body: "*",
+    };
+  }
+  rpc AddressListByUid (google.protobuf.Empty) returns (ListAddressReply) {
+    option (google.api.http) = {
+      get: "/api/address/list/uid",
     };
   }
   rpc UpdateAddress (UpdateAddressReq) returns (CheckResponse) {
     option (google.api.http) = {
-      put: "/api/update/address",
+      put: "/api/address/update",
       body: "*",
     };
   }
   rpc DefaultAddress (AddressReq) returns (CheckResponse) {
     option (google.api.http) = {
-      put: "/api/default/address",
+      put: "/api/address/default",
       body: "*",
     };
   }
   rpc DeleteAddress (AddressReq) returns (CheckResponse) {
     option (google.api.http) = {
-      delete: "/api/delete/address",
+      delete: "/api/address/delete",
     };
   }
 }
