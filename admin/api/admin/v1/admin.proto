@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package admin.admin.v1;
+// 这里可以把 proto 文件下载下来，放到项目的 third_party 目录下
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "admin/api/admin/v1;v1";
+// The admin service definition.
+service admin {
+  rpc Register (RegisterReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/api/users/register",
+      body: "*",
+    };
+  }
+  rpc Login (LoginReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/api/users/login",
+      body: "*",
+    };
+  }
+  rpc Captcha (google.protobuf.Empty) returns (CaptchaReply) {
+    option (google.api.http) = {
+      get: "/api/users/captcha",
+    };
+  }
+  rpc Detail (google.protobuf.Empty) returns (UserDetailResponse) {
+    option (google.api.http) = {
+      get: "/api/users/detail",
+    };
+  }
+  rpc CreateAddress (CreateAddressReq) returns (AddressInfo) {
+    option (google.api.http) = {
+      post: "/api/address/create",
+      body: "*",
+    };
+  }
+  rpc AddressListByUid (google.protobuf.Empty) returns (ListAddressReply) {
+    option (google.api.http) = {
+      get: "/api/address/list/uid",
+    };
+  }
+  rpc UpdateAddress (UpdateAddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      put: "/api/address/update",
+      body: "*",
+    };
+  }
+  rpc DefaultAddress (AddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      put: "/api/address/default",
+      body: "*",
+    };
+  }
+  rpc DeleteAddress (AddressReq) returns (CheckResponse) {
+    option (google.api.http) = {
+      delete: "/api/address/delete",
+    };
+  }
+}
+
+message CreateAddressReq {
+  int64 uid = 1;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
+  string post_code = 8;
+  int32 is_default = 9;
+}
+
+message UpdateAddressReq {
+  int64 uid = 1;
+  string name = 2;
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4 [(validate.rules).string ={min_len: 1}];
+  string City = 5 [(validate.rules).string ={min_len: 1}];
+  string Districts = 6 [(validate.rules).string ={min_len: 1}];
+  string address = 7 [(validate.rules).string ={min_len: 1}];
+  string post_code = 8;
+  int32 is_default = 9;
+  int64 id = 10 [(validate.rules).int64.gte = 1];
+}
+
+message AddressInfo {
+  int64 id = 1;
+  string name = 2 [(validate.rules).string ={min_len: 1}];
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string Province = 4;
+  string City = 5;
+  string Districts = 6;
+  string address = 7;
+  string post_code = 8;
+  int32 is_default = 9;
+}
+
+message ListAddressReq {
+  int64 uid = 1;
+}
+
+message ListAddressReply {
+  repeated AddressInfo results = 1;
+}
+
+message AddressReq {
+  int64 id = 1 [(validate.rules).int64.gte = 1];
+  int64 uid = 2;
+}
+
+message CheckResponse{
+  bool success = 1;
+}
+
+// Data returned by registration and login
+message RegisterReply {
+  int64 id = 1;
+  string mobile = 3;
+  string username = 4;
+  string token = 5;
+  int64 expiredAt = 6;
+}
+
+message RegisterReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string username = 2 [(validate.rules).string = {min_len: 3, max_len: 15}];
+  string password = 3 [(validate.rules).string = {min_len: 8}];
+}
+
+message LoginReq {
+  string username = 1 [(validate.rules).string = {min_len: 3}];
+  string password = 2 [(validate.rules).string = {min_len: 8}];
+//  string captcha = 3 [(validate.rules).string = {min_len: 5,max_len:5}];
+//  string captchaId = 4  [(validate.rules).string ={min_len: 1}];
+}
+
+// user Detail returned
+message UserDetailResponse{
+  int64 id = 1;
+  string mobile = 2;
+  string nickName = 3;
+  int64 birthday = 4;
+  string gender = 5;
+  int32 role = 6;
+}
+
+message CaptchaReply{
+  string captchaId = 1;
+  string picPath = 2;
+}
