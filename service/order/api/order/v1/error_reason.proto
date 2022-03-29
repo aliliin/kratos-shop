@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package order.v1;
+import "errors/errors.proto";
+
+option go_package = "order/api/order/v1;v1";
+option objc_class_prefix = "APIorderErrors";
+
+enum ErrorReason {
+  option (errors.default_code) = 500;
+
+  order_NOT_FOUND = 0 [(errors.code) = 404];
+  CONTENT_MISSING = 1 [(errors.code) = 400];
+}
