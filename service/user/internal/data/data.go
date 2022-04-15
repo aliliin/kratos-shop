@@ -39,7 +39,7 @@ func NewTransaction(d *Data) biz.Transaction {
 	return d
 }
 
-func (d *Data) User(ctx context.Context) *gorm.DB {
+func (d *Data) DB(ctx context.Context) *gorm.DB {
 	tx, ok := ctx.Value(contextTxKey{}).(*gorm.DB)
 	if ok {
 		return tx
@@ -47,15 +47,7 @@ func (d *Data) User(ctx context.Context) *gorm.DB {
 	return d.db
 }
 
-func (d *Data) Address(ctx context.Context) *gorm.DB {
-	tx, ok := ctx.Value(contextTxKey{}).(*gorm.DB)
-	if ok {
-		return tx
-	}
-	return d.db
-}
-
-func (d *Data) Transaction(ctx context.Context, fn func(ctx context.Context) error) error {
+func (d *Data) ExecTx(ctx context.Context, fn func(ctx context.Context) error) error {
 	return d.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		ctx = context.WithValue(ctx, contextTxKey{}, tx)
 		return fn(ctx)

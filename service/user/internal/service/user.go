@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
+	"time"
+	v1 "user/api/user/v1"
+	"user/internal/biz"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"time"
-	v1 "user/api/user/v1"
-	"user/internal/biz"
 )
 
 type UserService struct {
