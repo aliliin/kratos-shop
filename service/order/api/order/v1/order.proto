@@ -14,9 +14,6 @@ service Order {
   rpc UpdateOrderStatus(OrderStatus) returns (google.protobuf.Empty); // 修改订单状态
 }
 
-message UserInfo {
-  int32 id = 1;
-}
 
 message OrderStatus {
   int32 id = 1;
@@ -24,16 +21,6 @@ message OrderStatus {
   string status = 3;
 }
 
-message CartItemRequest {
-  int32 id = 1;
-  int32 userId = 2;
-  int32 goodsId = 3;
-  string goodsName = 4;
-  string goodsImage = 5;
-  float goodsPrice = 6;
-  int32 nums = 7;
-  bool checked = 8;
-}
 
 message OrderRequest {
   int32 id = 1;
@@ -56,14 +43,6 @@ message OrderInfoResponse {
   string name = 9;
   string mobile = 10;
   string addTime = 11;
-}
-
-message ShopCartInfoResponse {
-  int32 id = 1;
-  int32 userId = 2;
-  int32 goodsId = 3;
-  int32 nums = 4;
-  bool checked = 5;
 }
 
 message OrderItemResponse {
@@ -92,8 +71,4 @@ message OrderListResponse {
   repeated OrderInfoResponse data = 2;
 }
 
-message CartItemListResponse {
-  int32 total = 1;
-  repeated ShopCartInfoResponse data = 2;
-}
 
