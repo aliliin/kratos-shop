@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"time"
@@ -34,38 +33,15 @@ type UserRepo interface {
 
 type UserUsecase struct {
 	repo UserRepo
-	tr   Transaction
 	log  *log.Helper
 }
 
-func NewUserUsecase(repo UserRepo, tr Transaction, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, tr: tr, log: log.NewHelper(logger)}
+func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
+	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
 func (uc *UserUsecase) Create(ctx context.Context, u *User) (*User, error) {
-	var (
-		err  error
-		user *User
-	)
-	err = uc.tr.ExecTx(ctx, func(ctx context.Context) error {
-		user, err = uc.repo.CreateUser(ctx, u)
-		if err != nil {
-			return err
-		}
-		fmt.Println("ddd1111", user)
-		user.NickName = "2222222"
-		updateUser, err := uc.repo.UpdateUser(ctx, user)
-		if err != nil {
-			return err
-		}
-		fmt.Println("ddd", updateUser)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-	//return uc.repo.CreateUser(ctx, u)
+	return uc.repo.CreateUser(ctx, u)
 }
 
 func (uc *UserUsecase) List(ctx context.Context, pageNum, pageSize int) ([]*User, int, error) {

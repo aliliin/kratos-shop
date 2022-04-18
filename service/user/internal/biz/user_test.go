@@ -6,32 +6,26 @@ import (
 	. "github.com/onsi/gomega"
 	"user/internal/biz"
 	"user/internal/mocks/mrepo"
-	"user/internal/mocks/usecase"
 	"user/internal/testdata"
 )
 
 var _ = Describe("UserUsecase", func() {
 	var userCase *biz.UserUsecase
 	var mUserRepo *mrepo.MockUserRepo
-	var transaction *usecase.MockTransaction
 
 	BeforeEach(func() {
 		mUserRepo = mrepo.NewMockUserRepo(ctl)
-		transaction = usecase.NewMockTransaction(ctl)
-		userCase = biz.NewUserUsecase(mUserRepo, transaction, nil)
+		userCase = biz.NewUserUsecase(mUserRepo, nil)
 	})
 
 	FIt("Create", func() {
-		//info := testdata.User()
-		transaction.EXPECT().ExecTx(ctx, gomock.Any()).Return(nil)
-		//mUserRepo.EXPECT().CreateUser(ctx, gomock.Any()).Return(info, nil)
-		//mUserRepo.EXPECT().UpdateUser(ctx, gomock.Any()).Return(true, nil)
-		//l, err := userCase.Create(ctx, info)
-		//Ω(err).ShouldNot(HaveOccurred())
-		//Ω(err).ToNot(HaveOccurred())
-		//fmt.Println(l)
-		//Ω(l.ID).To(Equal(int64(1)))
-		//Ω(l.Mobile).To(Equal("13509876789"))
+		info := testdata.User()
+		mUserRepo.EXPECT().CreateUser(ctx, gomock.Any()).Return(info, nil)
+		l, err := userCase.Create(ctx, info)
+		Ω(err).ShouldNot(HaveOccurred())
+		Ω(err).ToNot(HaveOccurred())
+		Ω(l.ID).To(Equal(int64(1)))
+		Ω(l.Mobile).To(Equal("13509876789"))
 	})
 
 	It("List", func() {
