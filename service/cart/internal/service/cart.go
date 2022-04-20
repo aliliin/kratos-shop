@@ -2,6 +2,7 @@ package service
 
 import (
 	"cart/internal/biz"
+	"cart/internal/domain"
 	"context"
 
 	v1 "cart/api/cart/v1"
@@ -17,7 +18,33 @@ func NewCartService(cart *biz.CartUsecase) *CartService {
 }
 
 func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest) (*v1.CartInfo, error) {
-	return &v1.CartInfo{}, nil
+
+	rv, err := s.cart.CreateCart(ctx, &domain.ShopCart{
+		UserId:     req.UserId,
+		GoodsId:    req.GoodsId,
+		SkuId:      req.SkuId,
+		GoodsPrice: req.GoodsPrice,
+		GoodsNum:   req.GoodsNum,
+		GoodsSn:    req.GoodsSn,
+		GoodsName:  req.GoodsName,
+		IsSelect:   req.IsSelect,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.CartInfo{
+		Id:         rv.ID,
+		UserId:     rv.UserId,
+		GoodsId:    rv.GoodsId,
+		GoodsSn:    rv.GoodsSn,
+		GoodsName:  rv.GoodsName,
+		SkuId:      rv.SkuId,
+		GoodsPrice: rv.GoodsPrice,
+		GoodsNum:   rv.GoodsNum,
+		IsSelect:   rv.IsSelect,
+	}, nil
 }
 //func (s *CartService) UpdateCart(ctx context.Context, req *pb.UpdateCartRequest) (*pb.UpdateCartReply, error) {
 //	return &pb.UpdateCartReply{}, nil

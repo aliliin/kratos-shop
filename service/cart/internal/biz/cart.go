@@ -1,6 +1,7 @@
 package biz
 
 import (
+	"cart/internal/domain"
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -14,7 +15,7 @@ type Greeter struct {
 }
 
 type CartRepo interface {
-	Create(context.Context, *Greeter) (*Greeter, error)
+	Create(ctx context.Context,c *domain.ShopCart) (*domain.ShopCart, error)
 }
 
 type CartUsecase struct {
@@ -26,6 +27,6 @@ func NewCartUsecase(repo CartRepo, logger log.Logger) *CartUsecase {
 	return &CartUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
-func (uc *CartUsecase) CreateCart(ctx context.Context, g *Greeter) (*Greeter, error) {
-	return uc.repo.Create(ctx, g)
+func (uc *CartUsecase) CreateCart(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error) {
+	return uc.repo.Create(ctx, c)
 }

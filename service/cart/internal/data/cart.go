@@ -1,7 +1,9 @@
 package data
 
 import (
+	"cart/internal/domain"
 	"context"
+	"github.com/go-kratos/kratos/v2/errors"
 	"gorm.io/gorm"
 	"time"
 
@@ -36,6 +38,36 @@ func NewCartRepo(data *Data, logger log.Logger) biz.CartRepo {
 	}
 }
 
-func (r *cartRepo) Create(ctx context.Context, g *biz.Greeter) (*biz.Greeter, error) {
-	return g, nil
+func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error) {
+	cartInfo := ShopCart{
+		UserId:     c.UserId,
+		GoodsId:    c.GoodsId,
+		SkuId:      c.SkuId,
+		GoodsPrice: c.GoodsPrice,
+		GoodsNum:   c.GoodsNum,
+		GoodsSn:    c.GoodsSn,
+		GoodsName:  c.GoodsName,
+		IsSelect:   c.IsSelect,
+	}
+
+	result := r.data.db.Save(&cartInfo)
+	if result.Error != nil {
+		return nil, errors.NotFound("CREATE_CART_NOT_FOUND", "创建购物车失败")
+	}
+
+	return modelToBizResponse(cartInfo), nil
+}
+
+func modelToBizResponse(cartInfo ShopCart) *domain.ShopCart {
+	return &domain.ShopCart{
+		ID:         cartInfo.ID,
+		UserId:     cartInfo.UserId,
+		GoodsId:    cartInfo.GoodsId,
+		SkuId:      cartInfo.SkuId,
+		GoodsPrice: cartInfo.GoodsPrice,
+		GoodsNum:   cartInfo.GoodsNum,
+		GoodsSn:    cartInfo.GoodsSn,
+		GoodsName:  cartInfo.GoodsName,
+		IsSelect:   cartInfo.IsSelect,
+	}
 }

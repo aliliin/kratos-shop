@@ -32,7 +32,7 @@ message CreateCartRequest {
  string goodsName = 5 [(validate.rules).string.min_len = 1];
  int64 skuId = 6 [(validate.rules).int64 = {gt:0}];
  int64 goodsPrice = 7;
- int32 goodsNum = 8 [(validate.rules).int64 = {gt:0}];
+ int32 goodsNum = 8 [(validate.rules).int32 = {gt:0}];
   bool isSelect = 9 [(validate.rules).bool.const = true];
 }
 
