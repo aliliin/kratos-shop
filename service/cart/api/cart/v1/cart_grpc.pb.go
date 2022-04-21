@@ -38,7 +38,7 @@ func NewCartClient(cc grpc.ClientConnInterface) CartClient {
 
 func (c *cartClient) CreateCart(ctx context.Context, in *CreateCartRequest, opts ...grpc.CallOption) (*CartInfo, error) {
 	out := new(CartInfo)
-	err := c.cc.Invoke(ctx, "/api.cart.v1.Cart/CreateCart", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cart.v1.Cart/CreateCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *cartClient) CreateCart(ctx context.Context, in *CreateCartRequest, opts
 
 func (c *cartClient) UpdateCart(ctx context.Context, in *UpdateCartRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
 	out := new(CheckResponse)
-	err := c.cc.Invoke(ctx, "/api.cart.v1.Cart/UpdateCart", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cart.v1.Cart/UpdateCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *cartClient) UpdateCart(ctx context.Context, in *UpdateCartRequest, opts
 
 func (c *cartClient) DeleteCart(ctx context.Context, in *DeleteCartRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
 	out := new(CheckResponse)
-	err := c.cc.Invoke(ctx, "/api.cart.v1.Cart/DeleteCart", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cart.v1.Cart/DeleteCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *cartClient) DeleteCart(ctx context.Context, in *DeleteCartRequest, opts
 
 func (c *cartClient) ListCart(ctx context.Context, in *ListCartRequest, opts ...grpc.CallOption) (*CartListReply, error) {
 	out := new(CartListReply)
-	err := c.cc.Invoke(ctx, "/api.cart.v1.Cart/ListCart", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cart.v1.Cart/ListCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func _Cart_CreateCart_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.cart.v1.Cart/CreateCart",
+		FullMethod: "/cart.v1.Cart/CreateCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServer).CreateCart(ctx, req.(*CreateCartRequest))
@@ -140,7 +140,7 @@ func _Cart_UpdateCart_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.cart.v1.Cart/UpdateCart",
+		FullMethod: "/cart.v1.Cart/UpdateCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServer).UpdateCart(ctx, req.(*UpdateCartRequest))
@@ -158,7 +158,7 @@ func _Cart_DeleteCart_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.cart.v1.Cart/DeleteCart",
+		FullMethod: "/cart.v1.Cart/DeleteCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServer).DeleteCart(ctx, req.(*DeleteCartRequest))
@@ -176,7 +176,7 @@ func _Cart_ListCart_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.cart.v1.Cart/ListCart",
+		FullMethod: "/cart.v1.Cart/ListCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServer).ListCart(ctx, req.(*ListCartRequest))
@@ -188,7 +188,7 @@ func _Cart_ListCart_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Cart_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.cart.v1.Cart",
+	ServiceName: "cart.v1.Cart",
 	HandlerType: (*CartServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

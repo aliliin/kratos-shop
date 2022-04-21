@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package api.cart.v1;
+package cart.v1;
 import "validate/validate.proto";
 
 option go_package = "cart/api/cart/v1;v1";
