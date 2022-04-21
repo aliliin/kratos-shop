@@ -38,6 +38,20 @@ func NewCartRepo(data *Data, logger log.Logger) biz.CartRepo {
 	}
 }
 
+func (p *ShopCart) ToDomain() *domain.ShopCart {
+	return &domain.ShopCart{
+		ID:         p.ID,
+		UserId:     p.UserId,
+		GoodsId:    p.GoodsId,
+		SkuId:      p.SkuId,
+		GoodsPrice: p.GoodsPrice,
+		GoodsNum:   p.GoodsNum,
+		GoodsSn:    p.GoodsSn,
+		GoodsName:  p.GoodsName,
+		IsSelect:   p.IsSelect,
+	}
+}
+
 func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error) {
 	cartInfo := ShopCart{
 		UserId:     c.UserId,
@@ -55,19 +69,5 @@ func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.Shop
 		return nil, errors.NotFound("CREATE_CART_NOT_FOUND", "创建购物车失败")
 	}
 
-	return modelToBizResponse(cartInfo), nil
-}
-
-func modelToBizResponse(cartInfo ShopCart) *domain.ShopCart {
-	return &domain.ShopCart{
-		ID:         cartInfo.ID,
-		UserId:     cartInfo.UserId,
-		GoodsId:    cartInfo.GoodsId,
-		SkuId:      cartInfo.SkuId,
-		GoodsPrice: cartInfo.GoodsPrice,
-		GoodsNum:   cartInfo.GoodsNum,
-		GoodsSn:    cartInfo.GoodsSn,
-		GoodsName:  cartInfo.GoodsName,
-		IsSelect:   cartInfo.IsSelect,
-	}
+	return cartInfo.ToDomain(), nil
 }
