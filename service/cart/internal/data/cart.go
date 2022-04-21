@@ -55,10 +55,10 @@ func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.Shop
 		return nil, errors.NotFound("CREATE_CART_NOT_FOUND", "创建购物车失败")
 	}
 
-	return modelToBizResponse(cartInfo), nil
+	return cartInfo.ToDomain(), nil
 }
 
-func modelToBizResponse(cartInfo ShopCart) *domain.ShopCart {
+func (cartInfo ShopCart) ToDomain() *domain.ShopCart {
 	return &domain.ShopCart{
 		ID:         cartInfo.ID,
 		UserId:     cartInfo.UserId,
