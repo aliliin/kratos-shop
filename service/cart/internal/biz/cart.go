@@ -7,15 +7,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-//var (
-//	// ErrUserNotFound is user not found.
-//	ErrUserNotFound = errors.NotFound(v1.ErrorReason_USER_NOT_FOUND.String(), "user not found")
-//)
-type Greeter struct {
-}
-
 type CartRepo interface {
-	Create(ctx context.Context,c *domain.ShopCart) (*domain.ShopCart, error)
+	Create(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error)
 }
 
 type CartUsecase struct {

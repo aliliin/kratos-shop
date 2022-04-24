@@ -14,7 +14,7 @@ type CartService struct {
 }
 
 func NewCartService(cart *biz.CartUsecase) *CartService {
-	return &CartService{cart:cart}
+	return &CartService{cart: cart}
 }
 
 func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest) (*v1.CartInfo, error) {
@@ -46,6 +46,7 @@ func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest)
 		IsSelect:   rv.IsSelect,
 	}, nil
 }
+
 //func (s *CartService) UpdateCart(ctx context.Context, req *pb.UpdateCartRequest) (*pb.UpdateCartReply, error) {
 //	return &pb.UpdateCartReply{}, nil
 //}

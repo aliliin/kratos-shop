@@ -2,10 +2,11 @@ package data
 
 import (
 	"cart/internal/conf"
-	"github.com/go-redis/redis/v8"
 	slog "log"
 	"os"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/extra/redisotel"
