@@ -18,7 +18,7 @@ func TestData(t *testing.T) {
 	// 使用 RegisterFailHandler 将此函数传递给 Gomega 。这是 Ginkgo 和 Gomega 之间的唯一连接点
 	RegisterFailHandler(Fail)
 	// 通知 Ginkgo 启动测试套件。如果您的任何 specs 失败，Ginkgo 将自动使 testing.T 失败。
-	RunSpecs(t, "biz data test order")
+	RunSpecs(t, "biz data test s")
 }
 
 var cleaner func()      // 定义删除 mysql 容器的回调函数

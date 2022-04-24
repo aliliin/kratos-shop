@@ -65,7 +65,7 @@ extend google.protobuf.MethodOptions {
   // A definition of a client library method signature.
   //
   // In client libraries, each proto RPC corresponds to one or more methods
-  // which the end order is able to call, and calls the underlying RPC.
+  // which the end user is able to call, and calls the underlying RPC.
   // Normally, this method receives a single argument (a struct or instance
   // corresponding to the RPC request object). Defining this field will
   // add one or more overloads providing flattened or simpler method signatures

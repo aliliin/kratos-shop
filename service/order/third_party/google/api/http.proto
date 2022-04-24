@@ -187,14 +187,14 @@ message Http {
 //         option (google.api.http) = {
 //           get: "/v1/messages/{message_id}"
 //           additional_bindings {
-//             get: "/v1/orders/{order_id}/messages/{message_id}"
+//             get: "/v1/users/{user_id}/messages/{message_id}"
 //           }
 //         };
 //       }
 //     }
 //     message GetMessageRequest {
 //       string message_id = 1;
-//       string order_id = 2;
+//       string user_id = 2;
 //     }
 //
 // This enables the following two alternative HTTP JSON to RPC mappings:
@@ -202,7 +202,7 @@ message Http {
 // HTTP | gRPC
 // -----|-----
 // `GET /v1/messages/123456` | `GetMessage(message_id: "123456")`
-// `GET /v1/orders/me/messages/123456` | `GetMessage(order_id: "me" message_id:
+// `GET /v1/users/me/messages/123456` | `GetMessage(user_id: "me" message_id:
 // "123456")`
 //
 // ## Rules for HTTP mapping
@@ -263,7 +263,7 @@ message Http {
 // ## Using gRPC API Service Configuration
 //
 // gRPC API Service Configuration (service config) is a configuration language
-// for configuring a gRPC service to become a order-facing product. The
+// for configuring a gRPC service to become a user-facing product. The
 // service config is simply the YAML representation of the `google.api.Service`
 // proto message.
 //

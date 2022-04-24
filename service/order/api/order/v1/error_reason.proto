@@ -1,14 +1,13 @@
 syntax = "proto3";
 
-package order.v1;
-import "errors/errors.proto";
+package Order.v1;
 
 option go_package = "order/api/order/v1;v1";
-option objc_class_prefix = "APIorderErrors";
+option java_multiple_files = true;
+option java_package = "Order.v1";
+option objc_class_prefix = "APIOrderV1";
 
 enum ErrorReason {
-  option (errors.default_code) = 500;
-
-  order_NOT_FOUND = 0 [(errors.code) = 404];
-  CONTENT_MISSING = 1 [(errors.code) = 400];
+  ORDER_UNSPECIFIED = 0;
+  ORDER_NOT_FOUND = 1;
 }

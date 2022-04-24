@@ -11,7 +11,7 @@ import (
 	"order/internal/service"
 )
 
-// NewGRPCServer new a gRPC server.
+// NewGRPCServer new a gRPC s.
 func NewGRPCServer(c *conf.Server, u *service.OrderService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(

@@ -2,33 +2,19 @@ syntax = "proto3";
 
 package order.v1;
 
-import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "order/api/order/v1;v1";
 
-// 订单
+// The Order service definition.
 service Order {
   rpc CreateOrder(OrderRequest) returns (OrderInfoResponse); // 创建订单
-  rpc OrderList(OrderFilterRequest) returns (OrderListResponse); // 订单列表
-  rpc OrderDetail(OrderRequest) returns (OrderInfoDetailResponse); // 订单详情
-  rpc UpdateOrderStatus(OrderStatus) returns (google.protobuf.Empty); // 修改订单状态
 }
-
-
-message OrderStatus {
-  int32 id = 1;
-  string orderSn = 2;
-  string status = 3;
-}
-
 
 message OrderRequest {
-  int32 id = 1;
-  int32 userId = 2 [(validate.rules).int64.gte = 1];;
-  string address = 3 [(validate.rules).int64.gte = 1];;
-  string name = 4 [(validate.rules).string.min_len = 1];
-  string mobile = 5 [(validate.rules).string.len = 11];
-  string post = 6;
+  int64 id = 1;
+  int64 userId = 2 [(validate.rules).int64 = {gt:0}];
+  int64 addressId = 3 [(validate.rules).int64 = {gt:0}];
 }
 
 message OrderInfoResponse {
@@ -44,31 +30,4 @@ message OrderInfoResponse {
   string mobile = 10;
   string addTime = 11;
 }
-
-message OrderItemResponse {
-  int32 id = 1;
-  int32 orderId = 2;
-  int32 goodsId = 3;
-  string goodsName = 4;
-  string goodsImage = 5;
-  float goodsPrice = 6;
-  int32 nums = 7;
-}
-
-message OrderInfoDetailResponse {
-  OrderInfoResponse orderInfo = 1;
-  repeated OrderItemResponse goods = 2;
-}
-
-message OrderFilterRequest {
-  int32 userId = 1;
-  int32 pages = 2;
-  int32 pagePerNums = 3;
-}
-
-message OrderListResponse {
-  int32 total = 1;
-  repeated OrderInfoResponse data = 2;
-}
-
 

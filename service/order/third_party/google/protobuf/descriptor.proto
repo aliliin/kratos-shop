@@ -207,7 +207,7 @@ message FieldDescriptorProto {
   optional int32 oneof_index = 9;
 
   // JSON name of this field. The value is set by protocol compiler. If the
-  // order has set a "json_name" option on this field, that option's value
+  // user has set a "json_name" option on this field, that option's value
   // will be used. Otherwise, it's deduced from the field's name by converting
   // it to camelCase.
   optional string json_name = 10;
@@ -226,7 +226,7 @@ message FieldDescriptorProto {
   //
   // For message fields, proto3_optional doesn't create any semantic change,
   // since non-repeated message fields always track presence. However it still
-  // indicates the semantic detail of whether the order wrote "optional" or not.
+  // indicates the semantic detail of whether the user wrote "optional" or not.
   // This can be useful for round-tripping the .proto file. For consistency we
   // give message fields a synthetic oneof also, even though it is not required
   // to track presence. This is especially important because the parser can't
@@ -828,7 +828,7 @@ message SourceCodeInfo {
     // end line (optional, otherwise assumed same as start line), end column.
     // These are packed into a single field for efficiency.  Note that line
     // and column numbers are zero-based -- typically you will want to add
-    // 1 to each before displaying to a order.
+    // 1 to each before displaying to a user.
     repeated int32 span = 2 [packed = true];
 
     // If this SourceCodeInfo represents a complete declaration, these are any

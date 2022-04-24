@@ -14,11 +14,10 @@ type OrderService struct {
 	log *log.Helper
 }
 
-// NewOrderService new a order service.
 func NewOrderService(o *biz.OrderUsecase, logger log.Logger) *OrderService {
 	return &OrderService{oc: o, log: log.NewHelper(logger)}
 }
 
-func (o *OrderService) CreateGoodsSpecification(ctx context.Context, r *v1.OrderRequest) (*v1.OrderInfoResponse, error) {
-	return nil, nil
+func (o *OrderService) CreateOrder(ctx context.Context, r *v1.OrderRequest) (*v1.OrderInfoResponse, error) {
+	return &v1.OrderInfoResponse{}, nil
 }
