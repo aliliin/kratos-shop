@@ -53,21 +53,23 @@ func (p *ShopCart) ToDomain() *domain.ShopCart {
 }
 
 func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error) {
-	cartInfo := ShopCart{
-		UserId:     c.UserId,
-		GoodsId:    c.GoodsId,
-		SkuId:      c.SkuId,
-		GoodsPrice: c.GoodsPrice,
-		GoodsNum:   c.GoodsNum,
-		GoodsSn:    c.GoodsSn,
-		GoodsName:  c.GoodsName,
-		IsSelect:   c.IsSelect,
+	var shopCart ShopCart
+	if result := r.data.db.Where(&ShopCart{UserId: c.UserId, SkuId: c.SkuId}).First(&shopCart); result.RowsAffected == 1 {
+		shopCart.GoodsNum += c.GoodsNum
+	} else {
+		shopCart.UserId = c.UserId
+		shopCart.GoodsId = c.GoodsId
+		shopCart.SkuId = c.SkuId
+		shopCart.GoodsPrice = c.GoodsPrice
+		shopCart.GoodsNum = c.GoodsNum
+		shopCart.GoodsSn = c.GoodsSn
+		shopCart.GoodsName = c.GoodsName
+		shopCart.IsSelect = c.IsSelect
 	}
 
-	result := r.data.db.Save(&cartInfo)
-	if result.Error != nil {
-		return nil, errors.NotFound("CREATE_CART_NOT_FOUND", "创建购物车失败")
+	if result := r.data.db.Save(&shopCart); result.Error != nil {
+		return nil, errors.InternalServer("CREATE_CART_NOT_FOUND", "创建购物车失败")
 	}
 
-	return cartInfo.ToDomain(), nil
+	return shopCart.ToDomain(), nil
 }
