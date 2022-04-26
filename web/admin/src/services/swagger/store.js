@@ -10,16 +10,16 @@ export async function getInventory(options) {
     ...(options || {}),
   });
 }
-/** Place an order for a pet POST /store/order */
+/** Place an s for a pet POST /store/s */
 
 export async function placeOrder(body, options) {
-  return request('/store/order', {
+  return request('/store/s', {
     method: 'POST',
     data: body,
     ...(options || {}),
   });
 }
-/** Find purchase order by ID For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions GET /store/order/${param0} */
+/** Find purchase s by ID For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions GET /store/s/${param0} */
 
 export async function getOrderById(params, options) {
   const { orderId: param0 } = params;
@@ -29,7 +29,7 @@ export async function getOrderById(params, options) {
     ...(options || {}),
   });
 }
-/** Delete purchase order by ID For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors DELETE /store/order/${param0} */
+/** Delete purchase s by ID For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors DELETE /store/s/${param0} */
 
 export async function deleteOrder(params, options) {
   const { orderId: param0 } = params;

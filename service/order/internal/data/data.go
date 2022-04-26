@@ -2,6 +2,9 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	"github.com/go-kratos/kratos/v2/registry"
+	consulAPI "github.com/hashicorp/consul/api"
 	slog "log"
 	"order/internal/biz"
 	"order/internal/conf"
@@ -16,14 +19,23 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	cartV1 "order/api/cart/v1"
+	goodsV1 "order/api/goods/v1"
+	userV1 "order/api/user/v1"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewOrderRepo)
+var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis,
+	NewDiscovery,
+	NewOrderRepo,
+)
 
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	db          *gorm.DB
+	rdb         *redis.Client
+	cartClient  cartV1.CartClient
+	userClient  userV1.UserClient
+	goodsClient goodsV1.GoodsClient
 }
 type contextTxKey struct{}
 
@@ -98,4 +110,16 @@ func NewRedis(c *conf.Data) *redis.Client {
 		log.Error(err)
 	}
 	return rdb
+}
+
+func NewDiscovery(conf *conf.Registry) registry.Discovery {
+	c := consulAPI.DefaultConfig()
+	c.Address = conf.Consul.Address
+	c.Scheme = conf.Consul.Scheme
+	cli, err := consulAPI.NewClient(c)
+	if err != nil {
+		panic(err)
+	}
+	r := consul.New(cli, consul.WithHealthCheck(false))
+	return r
 }

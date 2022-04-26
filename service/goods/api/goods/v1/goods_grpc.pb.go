@@ -202,7 +202,7 @@ func (c *goodsClient) GoodsList(ctx context.Context, in *GoodsFilterRequest, opt
 	return out, nil
 }
 
-// GoodsServer is the server API for Goods service.
+// GoodsServer is the s API for Goods service.
 // All implementations must embed UnimplementedGoodsServer
 // for forward compatibility
 type GoodsServer interface {

@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/handlers"
 )
 
-// NewHTTPServer new an HTTP server.
+// NewHTTPServer new an HTTP s.
 func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.AdminService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(

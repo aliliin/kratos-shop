@@ -147,9 +147,6 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 		return nil, err
 	}
 	createUser, err := uc.uRepo.CreateUser(ctx, &newUser)
-	if err != nil {
-		return nil, err
-	}
 	claims := auth.CustomClaims{
 		ID:          createUser.ID,
 		NickName:    createUser.NickName,

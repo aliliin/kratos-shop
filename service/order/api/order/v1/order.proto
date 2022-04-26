@@ -14,7 +14,8 @@ service Order {
 message OrderRequest {
   int64 id = 1;
   int64 userId = 2 [(validate.rules).int64 = {gt:0}];
-  int64 addressId = 3 [(validate.rules).int64 = {gt:0}];
+  string userPhone = 3;
+  string addressInfo = 4;
 }
 
 message OrderInfoResponse {

@@ -26,7 +26,7 @@ type Bootstrap struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Server  *Server  `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
+	Server  *Server  `protobuf:"bytes,1,opt,name=s,proto3" json:"s,omitempty"`
 	Data    *Data    `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	Trace   *Trace   `protobuf:"bytes,3,opt,name=trace,proto3" json:"trace,omitempty"`
 	Auth    *Auth    `protobuf:"bytes,4,opt,name=auth,proto3" json:"auth,omitempty"`
@@ -927,7 +927,7 @@ var file_internal_conf_conf_proto_goTypes = []interface{}{
 	(*durationpb.Duration)(nil), // 14: google.protobuf.Duration
 }
 var file_internal_conf_conf_proto_depIdxs = []int32{
-	1,  // 0: shop.api.Bootstrap.server:type_name -> shop.api.Server
+	1,  // 0: shop.api.Bootstrap.s:type_name -> shop.api.Server
 	2,  // 1: shop.api.Bootstrap.data:type_name -> shop.api.Data
 	4,  // 2: shop.api.Bootstrap.trace:type_name -> shop.api.Trace
 	6,  // 3: shop.api.Bootstrap.auth:type_name -> shop.api.Auth

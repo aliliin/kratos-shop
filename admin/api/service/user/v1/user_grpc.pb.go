@@ -144,7 +144,7 @@ func (c *userClient) DeleteAddress(ctx context.Context, in *AddressReq, opts ...
 	return out, nil
 }
 
-// UserServer is the server API for User service.
+// UserServer is the s API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {

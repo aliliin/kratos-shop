@@ -21,3 +21,8 @@ type Order struct {
 	UpdatedAt    time.Time
 	DeletedAt    time.Time
 }
+
+type CreateOrder struct {
+	UserId    int64
+	AddressId int64
+}

@@ -123,7 +123,7 @@ func (c *adminClient) DeleteAddress(ctx context.Context, in *AddressReq, opts ..
 	return out, nil
 }
 
-// AdminServer is the server API for Admin service.
+// AdminServer is the s API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
 type AdminServer interface {

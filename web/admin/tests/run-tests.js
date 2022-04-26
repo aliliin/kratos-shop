@@ -23,14 +23,14 @@ startServer.on('exit', () => {
   kill(process.env.PORT || 8000);
 });
 
-console.log('Starting development server for e2e tests...');
+console.log('Starting development s for e2e tests...');
 startServer.stdout.on('data', (data) => {
   console.log(data.toString());
   // hack code , wait umi
   if (!once && data.toString().indexOf('Serving your umi project!') >= 0) {
     // eslint-disable-next-line
     once = true;
-    console.log('Development server is started, ready to run tests.');
+    console.log('Development s is started, ready to run tests.');
     const testCmd = spawn(
       /^win/.test(process.platform) ? 'npm.cmd' : 'npm',
       ['run', 'playwright'],

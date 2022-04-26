@@ -1,7 +1,9 @@
 package biz
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"order/internal/domain"
 )
 
 //go:generate mockgen -destination=../mocks/mrepo/order.go -package=mrepo . OrderRepo
@@ -16,4 +18,8 @@ type OrderUsecase struct {
 
 func NewOrderUsecase(repo OrderRepo, logger log.Logger) *OrderUsecase {
 	return &OrderUsecase{repo: repo, log: log.NewHelper(logger)}
+}
+
+func (oc *OrderUsecase) CreateOrder(ctx context.Context, o *domain.CreateOrder) {
+
 }

@@ -26,7 +26,7 @@ type Bootstrap struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Server *Server `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
+	Server *Server `protobuf:"bytes,1,opt,name=s,proto3" json:"s,omitempty"`
 	Data   *Data   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	Trace  *Trace  `protobuf:"bytes,3,opt,name=trace,proto3" json:"trace,omitempty"`
 }
@@ -725,7 +725,7 @@ var file_internal_conf_conf_proto_goTypes = []interface{}{
 	(*durationpb.Duration)(nil), // 10: google.protobuf.Duration
 }
 var file_internal_conf_conf_proto_depIdxs = []int32{
-	1,  // 0: kratos.api.Bootstrap.server:type_name -> kratos.api.Server
+	1,  // 0: kratos.api.Bootstrap.s:type_name -> kratos.api.Server
 	2,  // 1: kratos.api.Bootstrap.data:type_name -> kratos.api.Data
 	4,  // 2: kratos.api.Bootstrap.trace:type_name -> kratos.api.Trace
 	5,  // 3: kratos.api.Server.http:type_name -> kratos.api.Server.HTTP

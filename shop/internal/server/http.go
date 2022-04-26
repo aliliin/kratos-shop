@@ -17,7 +17,7 @@ import (
 	"shop/internal/service"
 )
 
-// NewHTTPServer new an HTTP server.
+// NewHTTPServer new an HTTP s.
 func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.ShopService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(

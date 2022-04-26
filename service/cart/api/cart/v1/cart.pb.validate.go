@@ -35,22 +35,22 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CartInfo with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on CartInfoReply with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *CartInfo) Validate() error {
+func (m *CartInfoReply) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CartInfo with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in CartInfoMultiError, or nil
-// if none found.
-func (m *CartInfo) ValidateAll() error {
+// ValidateAll checks the field values on CartInfoReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in CartInfoReplyMultiError, or
+// nil if none found.
+func (m *CartInfoReply) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CartInfo) validate(all bool) error {
+func (m *CartInfoReply) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -76,18 +76,19 @@ func (m *CartInfo) validate(all bool) error {
 	// no validation rules for IsSelect
 
 	if len(errors) > 0 {
-		return CartInfoMultiError(errors)
+		return CartInfoReplyMultiError(errors)
 	}
 
 	return nil
 }
 
-// CartInfoMultiError is an error wrapping multiple validation errors returned
-// by CartInfo.ValidateAll() if the designated constraints aren't met.
-type CartInfoMultiError []error
+// CartInfoReplyMultiError is an error wrapping multiple validation errors
+// returned by CartInfoReply.ValidateAll() if the designated constraints
+// aren't met.
+type CartInfoReplyMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CartInfoMultiError) Error() string {
+func (m CartInfoReplyMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -96,11 +97,11 @@ func (m CartInfoMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CartInfoMultiError) AllErrors() []error { return m }
+func (m CartInfoReplyMultiError) AllErrors() []error { return m }
 
-// CartInfoValidationError is the validation error returned by
-// CartInfo.Validate if the designated constraints aren't met.
-type CartInfoValidationError struct {
+// CartInfoReplyValidationError is the validation error returned by
+// CartInfoReply.Validate if the designated constraints aren't met.
+type CartInfoReplyValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -108,22 +109,22 @@ type CartInfoValidationError struct {
 }
 
 // Field function returns field value.
-func (e CartInfoValidationError) Field() string { return e.field }
+func (e CartInfoReplyValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CartInfoValidationError) Reason() string { return e.reason }
+func (e CartInfoReplyValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CartInfoValidationError) Cause() error { return e.cause }
+func (e CartInfoReplyValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CartInfoValidationError) Key() bool { return e.key }
+func (e CartInfoReplyValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CartInfoValidationError) ErrorName() string { return "CartInfoValidationError" }
+func (e CartInfoReplyValidationError) ErrorName() string { return "CartInfoReplyValidationError" }
 
 // Error satisfies the builtin error interface
-func (e CartInfoValidationError) Error() string {
+func (e CartInfoReplyValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -135,14 +136,14 @@ func (e CartInfoValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCartInfo.%s: %s%s",
+		"invalid %sCartInfoReply.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CartInfoValidationError{}
+var _ error = CartInfoReplyValidationError{}
 
 var _ interface {
 	Field() string
@@ -150,7 +151,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CartInfoValidationError{}
+} = CartInfoReplyValidationError{}
 
 // Validate checks the field values on CreateCartRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -231,7 +232,16 @@ func (m *CreateCartRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for GoodsPrice
+	if m.GetGoodsPrice() <= 0 {
+		err := CreateCartRequestValidationError{
+			field:  "GoodsPrice",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if m.GetGoodsNum() <= 0 {
 		err := CreateCartRequestValidationError{

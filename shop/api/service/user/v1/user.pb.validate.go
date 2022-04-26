@@ -62,6 +62,7 @@ func (m *ListAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -179,6 +180,7 @@ func (m *AddressInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return AddressInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -311,6 +313,7 @@ func (m *ListAddressReply) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAddressReplyMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -428,6 +431,7 @@ func (m *CreateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -547,6 +551,7 @@ func (m *UpdateAddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateAddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -650,6 +655,7 @@ func (m *AddressReq) validate(all bool) error {
 	if len(errors) > 0 {
 		return AddressReqMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -750,6 +756,7 @@ func (m *CheckResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return CheckResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -853,6 +860,7 @@ func (m *PageInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PageInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -965,6 +973,7 @@ func (m *UserInfoResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserInfoResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1100,6 +1109,7 @@ func (m *UserListResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return UserListResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1201,6 +1211,7 @@ func (m *MobileRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return MobileRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1302,6 +1313,7 @@ func (m *IdRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return IdRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1406,6 +1418,7 @@ func (m *CreateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1513,6 +1526,7 @@ func (m *UpdateUserInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateUserInfoMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1616,6 +1630,7 @@ func (m *PasswordCheckInfo) validate(all bool) error {
 	if len(errors) > 0 {
 		return PasswordCheckInfoMultiError(errors)
 	}
+
 	return nil
 }
 

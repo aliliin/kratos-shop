@@ -9,7 +9,7 @@ import (
 	consulAPI "github.com/hashicorp/consul/api"
 )
 
-// ProviderSet is server providers.
+// ProviderSet is s providers.
 var ProviderSet = wire.NewSet(NewGRPCServer, NewRegistrar)
 
 // NewRegistrar 引入 consul

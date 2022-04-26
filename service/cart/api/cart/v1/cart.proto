@@ -55,5 +55,5 @@ message GetCartReply {}
 
 message ListCartRequest {}
 message CartListReply {
-  repeated CartInfo results = 1;
+  repeated CartInfoReply results = 1;
 }
