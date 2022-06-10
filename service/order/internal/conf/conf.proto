@@ -10,7 +10,6 @@ message Bootstrap {
   Data data = 2;
   Trace trace = 3;
   Auth auth = 4;
-  Service service = 5;
 }
 
 message Server {
@@ -44,21 +43,6 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
-}
-
-message Service {
-  message User {
-    string endpoint = 1;
-  }
-  message Goods {
-    string endpoint = 1;
-  }
-  message Cart {
-    string endpoint = 1;
-  }
-  User user = 1;
-  Goods goods = 2;
-  Cart cart = 3;
 }
 
 message Auth {

@@ -15,8 +15,7 @@ type Order struct {
 	OrderAmount int64
 	GoodsAmount int64
 
-	PayType string `gorm:"type:varchar(20) comment 'alipay(支付宝)， wechat(微信)'"`
-	// status 大家可以考虑使用 iota 来做
+	PayType string     `gorm:"type:varchar(20) comment 'alipay(支付宝)， wechat(微信)'"`
 	Status  string     `gorm:"type:varchar(20)  comment 'PAYING(待支付), TRADE_SUCCESS(成功)， TRADE_CLOSED(超时关闭), WAIT_BUYER_PAY(交易创建), TRADE_FINISHED(交易结束)'"`
 	TradeNo string     `gorm:"type:varchar(100) comment '交易号'"` // 交易号就是支付宝的订单号 查账
 	PayTime *time.Time `gorm:"type:datetime"`
