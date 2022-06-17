@@ -43,6 +43,21 @@ func NewAddressRepo(data *Data, logger log.Logger) biz.AddressRepo {
 	}
 }
 
+func (p *Address) ToDomain() *domain.Address {
+	return &domain.Address{
+		ID:        p.ID,
+		UserID:    p.UserID,
+		IsDefault: p.IsDefault,
+		Mobile:    p.Mobile,
+		Name:      p.Name,
+		Province:  p.Province,
+		City:      p.City,
+		Districts: p.Districts,
+		Address:   p.Address,
+		PostCode:  p.PostCode,
+	}
+}
+
 func (a *adderessRepo) DeleteAddress(ctx context.Context, r *domain.Address) error {
 	var address Address
 	result := a.data.db.Where(&Address{ID: r.ID}).First(&address)
@@ -180,4 +195,13 @@ func modelToBizResponse(addInfo Address) *domain.Address {
 		Address:   addInfo.Address,
 		PostCode:  addInfo.PostCode,
 	}
+}
+
+func (a *adderessRepo) GetAddress(ctx context.Context, r *domain.Address) (*domain.Address, error) {
+	var address Address
+	result := a.data.db.Where(&Address{ID: r.ID, UserID: r.UserID}).First(&address)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.NotFound("USER_ADDRESS_NOT_FOUND", "user address not found")
+	}
+	return address.ToDomain(), nil
 }

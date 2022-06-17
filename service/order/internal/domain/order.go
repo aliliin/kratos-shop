@@ -25,4 +25,11 @@ type Order struct {
 type CreateOrder struct {
 	UserId    int64
 	AddressId int64
+	CartItem  []*CartItem
+}
+
+type CartItem struct {
+	CartId int64
+	SkuId  int64
+	SkuNum int32
 }

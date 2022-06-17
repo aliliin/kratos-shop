@@ -13,6 +13,7 @@ type AddressRepo interface {
 	UpdateAddress(ctx context.Context, a *domain.Address) error
 	DefaultAddress(ctx context.Context, a *domain.Address) error
 	DeleteAddress(ctx context.Context, a *domain.Address) error
+	GetAddress(ctx context.Context, a *domain.Address) (*domain.Address, error)
 }
 
 type AddressUsecase struct {
@@ -42,4 +43,8 @@ func (uc *AddressUsecase) DefaultAddress(ctx context.Context, a *domain.Address)
 
 func (uc *AddressUsecase) DeleteAddress(ctx context.Context, a *domain.Address) error {
 	return uc.repo.DeleteAddress(ctx, a)
+}
+
+func (uc *AddressUsecase) GetAddress(ctx context.Context, a *domain.Address) (*domain.Address, error) {
+	return uc.repo.GetAddress(ctx, a)
 }

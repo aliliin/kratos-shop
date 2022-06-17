@@ -13,7 +13,7 @@ service Order {
 message CartItem {
   int64 cartId = 1;
   int64 skuId = 2;
-  int64 skuNum = 3;
+  int32 skuNum = 3;
 }
 
 message OrderRequest {

@@ -112,3 +112,24 @@ func (ua *UserService) CreateAddress(ctx context.Context, req *v1.CreateAddressR
 		IsDefault: int32(rv.IsDefault),
 	}, nil
 }
+
+func (ua *UserService) GetAddress(ctx context.Context, req *v1.AddressReq) (*v1.AddressInfo, error) {
+	address, err := ua.ac.GetAddress(ctx, &domain.Address{
+		ID:     req.Id,
+		UserID: req.Uid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.AddressInfo{
+		Id:        address.ID,
+		Name:      address.Name,
+		Mobile:    address.Mobile,
+		Province:  address.Province,
+		City:      address.City,
+		Districts: address.Districts,
+		Address:   address.Address,
+		PostCode:  address.PostCode,
+		IsDefault: int32(address.IsDefault),
+	}, nil
+}

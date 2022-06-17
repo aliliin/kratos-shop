@@ -2,6 +2,13 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+	consulAPI "github.com/hashicorp/consul/api"
+	grpcx "google.golang.org/grpc"
 	slog "log"
 	"order/internal/biz"
 	"order/internal/conf"
@@ -16,25 +23,26 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	userV1 "order/api/user/v1"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis,
-	NewOrderRepo,
-)
+var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewOrderRepo, NewUserServiceClient,
+	NewDiscovery)
 
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	db      *gorm.DB
+	rdb     *redis.Client
+	userRPC userV1.UserClient
 }
 type contextTxKey struct{}
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, userRPC userV1.UserClient) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
-	return &Data{db: db, rdb: rdb}, cleanup, nil
+	return &Data{db: db, rdb: rdb, userRPC: userRPC}, cleanup, nil
 }
 
 func NewTransaction(d *Data) biz.Transaction {
@@ -82,6 +90,7 @@ func NewDB(c *conf.Data) *gorm.DB {
 		log.Errorf("failed opening connection to sqlite: %v", err)
 		panic("failed to connect database")
 	}
+	// &Order{}, &OrderGoods{},
 	_ = db.AutoMigrate(&Order{}, &OrderGoods{}, &OrderPay{}, &OrderAddress{})
 	return db
 }
@@ -100,4 +109,35 @@ func NewRedis(c *conf.Data) *redis.Client {
 		log.Error(err)
 	}
 	return rdb
+}
+
+// NewUserServiceClient 链接用户服务 grpc
+func NewUserServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) userV1.UserClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.User.Endpoint),
+		grpc.WithDiscovery(rr),
+		grpc.WithMiddleware(
+			tracing.Client(),
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := userV1.NewUserClient(conn)
+	return c
+}
+func NewDiscovery(conf *conf.Registry) registry.Discovery {
+	c := consulAPI.DefaultConfig()
+	c.Address = conf.Consul.Address
+	c.Scheme = conf.Consul.Scheme
+	cli, err := consulAPI.NewClient(c)
+	if err != nil {
+		panic(err)
+	}
+	r := consul.New(cli, consul.WithHealthCheck(false))
+	return r
 }
