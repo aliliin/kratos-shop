@@ -1,22 +1,22 @@
 package data
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type OrderGoods struct {
-	ID       int64  `gorm:"primarykey;type:int" json:"id"`
-	OrderId  int64  `gorm:"type:int;index"`
-	SkuId    int64  `gorm:"type:int;index"`
-	SkuName  string `gorm:"type:varchar(100);index"`
-	SkuPrice int64
-	Nums     int32 `gorm:"type:int"`
-	// 商品快照信息
+	ID         int64  `gorm:"primarykey;type:int" json:"id"`
+	OrderSn    string `gorm:"type:varchar(30) not null;default:'';index"` // 订单号，我们平台自己生成的订单号
+	UserId     int64  `gorm:"type:int not null;default:0;index"`
+	SkuId      int64  `gorm:"type:int not null;default:0;index"`
+	SkuName    string `gorm:"type:varchar(100);index"`
+	SkuPrice   int64  `gorm:"type:int not null;default:0;comment:'生成订单时的商品价格(单)'"`
+	Nums       int32  `gorm:"type:int(10) not null;default:0;comment:'商品数量'"`
+	TotalPrice int64  `gorm:"type:int not null;default:0;comment:'生成订单时的商品总价'"`
+	// 商品快照信息根据需求后期添加
 
-	CreatedAt time.Time      `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"deleted_at"`
+	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 func (OrderGoods) TableName() string {

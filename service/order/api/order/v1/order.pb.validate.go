@@ -35,6 +35,111 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on CartItem with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *CartItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CartItem with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in CartItemMultiError, or nil
+// if none found.
+func (m *CartItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CartItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for CartId
+
+	// no validation rules for SkuId
+
+	// no validation rules for SkuNum
+
+	if len(errors) > 0 {
+		return CartItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// CartItemMultiError is an error wrapping multiple validation errors returned
+// by CartItem.ValidateAll() if the designated constraints aren't met.
+type CartItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CartItemMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CartItemMultiError) AllErrors() []error { return m }
+
+// CartItemValidationError is the validation error returned by
+// CartItem.Validate if the designated constraints aren't met.
+type CartItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CartItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CartItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CartItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CartItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CartItemValidationError) ErrorName() string { return "CartItemValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CartItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCartItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CartItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CartItemValidationError{}
+
 // Validate checks the field values on OrderRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -70,15 +175,49 @@ func (m *OrderRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetAddressId() <= 0 {
+	if m.GetAddress() <= 0 {
 		err := OrderRequestValidationError{
-			field:  "AddressId",
+			field:  "Address",
 			reason: "value must be greater than 0",
 		}
 		if !all {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetCartItem() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, OrderRequestValidationError{
+						field:  fmt.Sprintf("CartItem[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, OrderRequestValidationError{
+						field:  fmt.Sprintf("CartItem[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return OrderRequestValidationError{
+					field:  fmt.Sprintf("CartItem[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	}
 
 	if len(errors) > 0 {

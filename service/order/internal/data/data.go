@@ -82,7 +82,7 @@ func NewDB(c *conf.Data) *gorm.DB {
 		log.Errorf("failed opening connection to sqlite: %v", err)
 		panic("failed to connect database")
 	}
-	_ = db.AutoMigrate(&Order{})
+	_ = db.AutoMigrate(&Order{}, &OrderGoods{}, &OrderPay{}, &OrderAddress{})
 	return db
 }
 

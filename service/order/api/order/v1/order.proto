@@ -6,16 +6,21 @@ import "validate/validate.proto";
 
 option go_package = "order/api/order/v1;v1";
 
-// The Order service definition.
 service Order {
   rpc CreateOrder(OrderRequest) returns (OrderInfoResponse); // 创建订单
+}
+
+message CartItem {
+  int64 cartId = 1;
+  int64 skuId = 2;
+  int64 skuNum = 3;
 }
 
 message OrderRequest {
   int64 id = 1;
   int64 userId = 2 [(validate.rules).int64 = {gt:0}];
-  string userPhone = 3;
-  string addressInfo = 4;
+  int64 address = 3 [(validate.rules).int64 = {gt:0}];
+  repeated CartItem cartItem = 4; //  购物车购买和直接购买
 }
 
 message OrderInfoResponse {
