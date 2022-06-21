@@ -33,6 +33,7 @@ kratos 框架写商品微服务
 
 * 有任何建议，请扫码添加我微信进行交流。
 
-![扫码提建议](https://gitee.com/aliliin/picture/raw/master/2022-3-2/1646202139081-WechatIMG7.jpeg)
+![扫码提建议](https://cdn.jsdelivr.net/gh/aliliin/blog-image@main/uPic/扫码_搜索联合传播样式-白色版.png)
+
 
 
