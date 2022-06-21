@@ -13,6 +13,7 @@ kratos 框架写商品微服务
     |-- service
         |-- user // 用户服务 grpc
         |-- goods // 商品服务 grpc
+        |-- cart // 购物车服务 grpc
         |-- order // 订单服务 grpc
         |-- inventory // 库存服务服务 grpc
     |-- shop // shop 商城服务 http (后期会考虑把订单单独拆出来)
@@ -27,7 +28,7 @@ kratos 框架写商品微服务
         │       └── v1
         │           ├── error_reason.proto 
         │           ├── shop.proto 
-    |-- admin // 后端管理系统 http
+    |-- admin // 后端管理系统 web 
 ```
 
 
