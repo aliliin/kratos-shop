@@ -11,3 +11,8 @@ type ShopCart struct {
 	GoodsName  string
 	IsSelect   bool
 }
+
+type ShopCartList struct {
+	Total int32
+	List  []*ShopCart
+}

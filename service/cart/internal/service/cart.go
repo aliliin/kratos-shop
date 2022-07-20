@@ -17,7 +17,7 @@ func NewCartService(cart *biz.CartUsecase) *CartService {
 	return &CartService{cart: cart}
 }
 
-func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest) (*v1.CartInfo, error) {
+func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest) (*v1.CartInfoReply, error) {
 
 	rv, err := s.cart.CreateCart(ctx, &domain.ShopCart{
 		UserId:     req.UserId,
@@ -34,7 +34,7 @@ func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest)
 		return nil, err
 	}
 
-	return &v1.CartInfo{
+	return &v1.CartInfoReply{
 		Id:         rv.ID,
 		UserId:     rv.UserId,
 		GoodsId:    rv.GoodsId,
@@ -47,6 +47,31 @@ func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest)
 	}, nil
 }
 
+func (s *CartService) ListCart(ctx context.Context, req *v1.ListCartRequest) (*v1.CartListReply, error) {
+	res, err := s.cart.List(ctx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	var rsp v1.CartListReply
+
+	rsp.Total = res.Total
+	for _, cart := range res.List {
+		rsp.Results = append(rsp.Results, &v1.CartInfoReply{
+			Id:         cart.ID,
+			UserId:     cart.UserId,
+			GoodsId:    cart.GoodsId,
+			GoodsSn:    cart.GoodsSn,
+			GoodsName:  cart.GoodsName,
+			SkuId:      cart.SkuId,
+			GoodsPrice: cart.GoodsPrice,
+			GoodsNum:   cart.GoodsNum,
+			IsSelect:   cart.IsSelect,
+		})
+	}
+
+	return &rsp, nil
+}
+
 //func (s *CartService) UpdateCart(ctx context.Context, req *pb.UpdateCartRequest) (*pb.UpdateCartReply, error) {
 //	return &pb.UpdateCartReply{}, nil
 //}
@@ -55,7 +80,4 @@ func (s *CartService) CreateCart(ctx context.Context, req *v1.CreateCartRequest)
 //}
 //func (s *CartService) GetCart(ctx context.Context, req *pb.GetCartRequest) (*pb.GetCartReply, error) {
 //	return &pb.GetCartReply{}, nil
-//}
-//func (s *CartService) ListCart(ctx context.Context, req *pb.ListCartRequest) (*pb.ListCartReply, error) {
-//	return &pb.ListCartReply{}, nil
 //}

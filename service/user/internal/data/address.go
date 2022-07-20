@@ -175,6 +175,7 @@ func (a *adderessRepo) CreateAddress(c context.Context, r *domain.Address) (*dom
 	}
 
 	result := a.data.db.Save(&addInfo)
+
 	if result.Error != nil {
 		return nil, errors.NotFound("CREATE_ADDRESS_NOT_FOUND", "创建用户地址失败")
 	}

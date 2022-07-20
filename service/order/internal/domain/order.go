@@ -29,7 +29,8 @@ type CreateOrder struct {
 }
 
 type CartItem struct {
-	CartId int64
-	SkuId  int64
-	SkuNum int32
+	CartId   int64
+	SkuId    int64
+	SkuPrice int64
+	SkuNum   int32
 }

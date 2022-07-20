@@ -9,6 +9,7 @@ import (
 
 type CartRepo interface {
 	Create(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error)
+	List(ctx context.Context, userId int64) (*domain.ShopCartList, error)
 }
 
 type CartUsecase struct {
@@ -22,4 +23,7 @@ func NewCartUsecase(repo CartRepo, logger log.Logger) *CartUsecase {
 
 func (uc *CartUsecase) CreateCart(ctx context.Context, c *domain.ShopCart) (*domain.ShopCart, error) {
 	return uc.repo.Create(ctx, c)
+}
+func (uc *CartUsecase) List(ctx context.Context, userId int64) (*domain.ShopCartList, error) {
+	return uc.repo.List(ctx, userId)
 }

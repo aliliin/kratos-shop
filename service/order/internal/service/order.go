@@ -23,12 +23,14 @@ func (o *OrderService) CreateOrder(ctx context.Context, r *v1.OrderRequest) (*v1
 	var cartItem []*domain.CartItem
 	for _, cart := range r.CartItem {
 		res := &domain.CartItem{
-			CartId: cart.CartId,
-			SkuId:  cart.SkuId,
-			SkuNum: cart.SkuNum,
+			CartId:   cart.CartId,
+			SkuId:    cart.SkuId,
+			SkuPrice: cart.SkuPrice,
+			SkuNum:   cart.SkuNum,
 		}
 		cartItem = append(cartItem, res)
 	}
+
 	o.oc.CreateOrder(ctx, &domain.CreateOrder{
 		UserId:    r.UserId,
 		AddressId: r.Address,

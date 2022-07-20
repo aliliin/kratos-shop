@@ -61,6 +61,8 @@ func (m *CartItem) validate(all bool) error {
 
 	// no validation rules for SkuId
 
+	// no validation rules for SkuPrice
+
 	// no validation rules for SkuNum
 
 	if len(errors) > 0 {

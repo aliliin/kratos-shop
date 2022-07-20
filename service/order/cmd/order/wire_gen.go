@@ -22,14 +22,16 @@ import (
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
-	discovery := data.NewDiscovery(registry)
-	userClient := data.NewUserServiceClient(auth, confService, discovery)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client, userClient)
+	dataData, cleanup, err := data.NewData(confData, logger, db, client)
 	if err != nil {
 		return nil, nil, err
 	}
 	orderRepo := data.NewOrderRepo(dataData, logger)
-	orderUsecase := biz.NewOrderUsecase(orderRepo, logger)
+	discovery := data.NewDiscovery(registry)
+	userClient := data.NewUserServiceClient(auth, confService, discovery)
+	cartClient := data.NewCartServiceClient(auth, confService, discovery)
+	goodsClient := data.NewGoodsServiceClient(auth, confService, discovery)
+	orderUsecase := biz.NewOrderUsecase(orderRepo, userClient, cartClient, goodsClient, logger)
 	orderService := service.NewOrderService(orderUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, orderService, logger)
 	registrar := server.NewRegistrar(registry)

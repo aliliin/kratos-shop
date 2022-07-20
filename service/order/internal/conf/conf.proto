@@ -67,9 +67,13 @@ message Service {
   message User {
     string endpoint = 1;
   }
+  message Cart {
+    string endpoint = 1;
+  }
   message Goods {
     string endpoint = 1;
   }
   User user = 1;
-  Goods goods = 2;
+  Cart cart = 2;
+  Goods goods = 3;
 }

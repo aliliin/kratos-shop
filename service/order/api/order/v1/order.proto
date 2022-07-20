@@ -10,17 +10,19 @@ service Order {
   rpc CreateOrder(OrderRequest) returns (OrderInfoResponse); // 创建订单
 }
 
+
 message CartItem {
   int64 cartId = 1;
   int64 skuId = 2;
-  int32 skuNum = 3;
+  int64 skuPrice = 3;
+  int32 skuNum = 4;
 }
 
 message OrderRequest {
   int64 id = 1;
   int64 userId = 2 [(validate.rules).int64 = {gt:0}];
   int64 address = 3 [(validate.rules).int64 = {gt:0}];
-  repeated CartItem cartItem = 4; //  购物车购买和直接购买
+  repeated CartItem cartItem = 4; //  购物车购买
 }
 
 message OrderInfoResponse {

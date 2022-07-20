@@ -1,0 +1,309 @@
+syntax = "proto3";
+
+package goods.v1;
+
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+option go_package = "goods/api/goods/v1;v1";
+
+service Goods {
+  // 商品分类
+  rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); // 获取所有的分类
+  rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);// 获取子分类
+  rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); // 新建分类信息
+  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); // 删除分类
+  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); // 修改分类信息
+
+  // 商品品牌
+  rpc BrandList(BrandListRequest) returns(BrandListResponse);
+  rpc CreateBrand(BrandRequest) returns(BrandInfoResponse);
+  rpc DeleteBrand(BrandRequest) returns(google.protobuf.Empty);
+  rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty);
+
+  // 商品类型 goods_property_names
+  // 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
+  rpc CreateGoodsType(GoodsTypeRequest) returns(GoodsTypeResponse); // 商品类型基本信息创建
+
+  // 创建商品规格 也就是 手机的颜色、内存版本、购买方式之类的
+  // 商品规格的值，比如手机颜色对应的有 红、白、黑，内存，128g、256g, 也一起创建了
+  rpc CreateGoodsSpecification(SpecificationRequest) returns(SpecificationResponse); // 商品规格或属性的信息
+
+  // 商品参数属性 ,手机:主体,屏幕, 操作系统,网络支持之类的
+  rpc CreateAttrGroup(AttrGroupRequest) returns(AttrGroupResponse);
+
+  // 商品参数属性组下的一些信息 ,主体:上市年份 产品名称 ,网络支持 5G网络,双卡双待类型,
+  rpc CreateAttrValue(AttrRequest) returns(AttrResponse);
+
+  // 商品接口
+  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsResponse);
+  rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
+  rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
+  //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
+  //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
+  //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+}
+
+message AttrValueRequest {
+  int64 id = 1;
+  int64 attrId = 2;
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string value = 4 [(validate.rules).string.min_len = 3];
+}
+
+message AttrRequest {
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  int64 groupId = 3 [(validate.rules).int64.gte = 1];
+  string title = 4 [(validate.rules).string = {min_len: 1}];
+  string  desc = 5;
+  bool status = 6;
+  int32 sort = 7 [(validate.rules).int32.gte = 1];
+  repeated AttrValueRequest attrValue = 8;
+}
+
+message AttrValueResponse {
+  int64 id = 1;
+  int64 attrId = 2;
+  int64 groupId = 3;
+  string value = 4;
+}
+
+message AttrResponse {
+  int64 id = 1;
+  int64 typeId = 2;
+  int64 groupId = 3;
+  string title = 4;
+  string  desc = 5;
+  bool status = 6;
+  int32 sort = 7;
+  repeated AttrValueResponse attrValue = 8;
+}
+
+message AttrGroupRequest {
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  string title = 3 [(validate.rules).string.min_len = 3];
+  string  desc = 4;
+  bool status = 5;
+  int32 sort = 6 [(validate.rules).int32.gte = 1];
+}
+message AttrGroupResponse {
+  int64 id = 1;
+  int64 typeId = 2;
+  string title = 3;
+  string  desc = 4;
+  bool status = 5;
+  int32 sort = 6;
+}
+
+message SpecificationValue {
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 [(validate.rules).string.min_len = 3];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
+}
+
+message SpecificationValueResponse {
+  int64 id = 1;
+  int64 attrId = 2;
+  string value = 3 ;
+  int32 sort = 4;
+}
+
+message SpecificationRequest {
+  int64 id = 1;
+  int64 typeId = 2 [(validate.rules).int64.gte = 1];
+  string name = 3 [(validate.rules).string.min_len = 2];
+  int32 sort = 4 [(validate.rules).int32.gte = 1];
+  bool status = 5;
+  bool isSku = 6;
+  bool isSelect = 7;
+  repeated SpecificationValue specificationValue = 8;
+}
+
+message SpecificationResponse {
+  int64 id = 1;
+}
+message GoodsTypeRequest {
+  int64 id = 1;
+  string name = 2  [(validate.rules).string.min_len = 3];
+  string typeCode = 3 [(validate.rules).string.min_len = 3];
+  string nameAlias = 4;
+  bool isVirtual = 5;
+  string desc = 6;
+  int32 sort = 7;
+  string brandIds = 8 [(validate.rules).string.min_len = 1];
+}
+message GoodsTypeResponse {
+  int64 id = 1;
+}
+
+message CreateGoodsRequest {
+  int64 id = 1;
+  int32 categoryId = 2 [(validate.rules).int32.gte = 1];
+  int32 brandId = 3 [(validate.rules).int32.gte = 1];
+  int64 typeId = 4 [(validate.rules).int64.gte = 1];
+  string name = 5;
+  string nameAlias = 6;
+  string goodsTags = 7;
+  string goodsSn = 8;
+  int64 shopPrice = 9;
+  int64 marketPrice = 10;
+  int64 inventory = 11;
+  string goodsBrief = 12;
+  string goodsFrontImage = 13;
+  repeated string goodsImages = 14;
+  bool shipFree = 15;
+  int32 shipId = 16;
+  bool isNew = 17;
+  bool isHot = 18;
+  bool onSale = 19;
+  // 根据商品类型 选择商品规格信息并选择
+  // 商品 sku 属性值 里面有规格的ID和属性的ID，分别是几组信息
+  message goodsSku {
+    int64 id = 1;
+    int64 goodsId = 2;
+    string skuName = 3 [(validate.rules).string.min_len = 1];
+    string code = 4 [(validate.rules).string.min_len = 1];
+    string barCode = 5 [(validate.rules).string.min_len = 1];
+    int64 price = 6;
+    int64 promotionPrice = 7;
+    int64 points = 8;
+    string image = 9;
+    int32 sort = 10;
+    int64 inventory = 11; // sku 库存
+    // 规格
+    message specification {
+      int64 sId = 1 [(validate.rules).int64.gte = 1];
+      int64 vId = 2 [(validate.rules).int64.gte = 1];
+    }
+    repeated specification specificationInfo = 12;
+    // 属性组
+    message groupAttr {
+      int64 groupId = 1;
+      string groupName = 2;
+      message attr {
+        int64 attrId = 1 [(validate.rules).int64.gte = 1];
+        string attrName = 2 [(validate.rules).string.min_len = 1];
+        int64 attrValueId = 3 [(validate.rules).int64.gte = 1];
+        string attrValueName = 4 [(validate.rules).string.min_len = 1];
+      }
+      repeated attr attrInfo = 3;
+    }
+    repeated groupAttr groupAttrInfo = 13;
+  }
+  repeated goodsSku sku = 20;
+}
+message CreateGoodsResponse {
+  int64 ID = 1;
+}
+
+message GoodsInfoResponse {
+  int64 id = 1;
+  int32 categoryId = 2;
+  int32 brandId = 3;
+  string name = 4;
+  string goodsSn = 5;
+  int64 clickNum = 6;
+  int64 soldNum = 7;
+  int64 favNum = 8;
+  int64 marketPrice = 9;
+  string goodsBrief = 10;
+  string goodsDesc = 11;
+  bool shipFree = 12;
+  string images = 13;
+  repeated string goodsImages = 14;
+  bool isNew = 15;
+  bool isHot = 16;
+  bool onSale = 17;
+}
+
+message GoodsListResponse {
+  int64 total = 1;
+  repeated GoodsInfoResponse list = 2;
+}
+
+message GoodsFilterRequest  {
+  string keywords = 1;
+  int32 categoryId = 2;
+  int32 brandId = 3;
+  int64 minPrice = 4;
+  int64 maxPrice = 5;
+  bool  isHot = 6;
+  bool  isNew = 7;
+  bool  isTab = 8;
+  int64 clickNum = 9;
+  int64 soldNum = 10;
+  int64 favNum = 11;
+  int64 pages = 12;
+  int64 pagePerNums = 13;
+  int64 id = 14;
+}
+
+// 商品分类
+message CategoryInfoResponse {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message CategoryListResponse {
+  string jsonData = 1;
+}
+message CategoryListRequest {
+  int32 id = 1;
+  int32 level = 2;
+}
+message SubCategoryListResponse {
+  CategoryInfoResponse info = 1;
+  repeated CategoryInfoResponse subCategory = 2;
+}
+message CategoryInfoRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+message BatchCategoryInfoRequest {
+  repeated int32 id = 1;
+  int32 goodsNums = 2;
+  int32 brandNums = 3;
+}
+
+message DeleteCategoryRequest {
+  int32 id = 1;
+}
+
+message BrandListRequest {
+  int32 pages = 1;
+  int32 pagePerNums = 2;
+}
+
+message BrandRequest {
+  int32 id = 1;
+  string name = 2;
+  string logo = 3;
+  string desc = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message BrandInfoResponse {
+  int32 id = 1;
+  string name = 2;
+  string logo = 3;
+  string desc = 4;
+  bool isTab = 5;
+  int32 sort = 6;
+}
+
+message BrandListResponse {
+  int32 total = 1;
+  repeated BrandInfoResponse data = 2;
+}

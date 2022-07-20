@@ -66,7 +66,7 @@ func NewDB(c *conf.Data) *gorm.DB {
 			LogLevel: logger.Info, // Log lever
 		},
 	)
-
+	log.Info("failed opening connection to ")
 	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{
 		Logger:                                   newLogger,
 		DisableForeignKeyConstraintWhenMigrating: true,

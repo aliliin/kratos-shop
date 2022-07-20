@@ -23,26 +23,27 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	cartV1 "order/api/cart/v1"
+	goodsV1 "order/api/goods/v1"
 	userV1 "order/api/user/v1"
 )
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewOrderRepo, NewUserServiceClient,
-	NewDiscovery)
+	NewCartServiceClient, NewGoodsServiceClient, NewDiscovery)
 
 type Data struct {
-	db      *gorm.DB
-	rdb     *redis.Client
-	userRPC userV1.UserClient
+	db  *gorm.DB
+	rdb *redis.Client
 }
 type contextTxKey struct{}
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, userRPC userV1.UserClient) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
-	return &Data{db: db, rdb: rdb, userRPC: userRPC}, cleanup, nil
+	return &Data{db: db, rdb: rdb}, cleanup, nil
 }
 
 func NewTransaction(d *Data) biz.Transaction {
@@ -130,6 +131,47 @@ func NewUserServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery
 	c := userV1.NewUserClient(conn)
 	return c
 }
+
+// NewCartServiceClient 链接购物车 grpc
+func NewCartServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) cartV1.CartClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Cart.Endpoint),
+		grpc.WithDiscovery(rr),
+		grpc.WithMiddleware(
+			tracing.Client(),
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := cartV1.NewCartClient(conn)
+	return c
+}
+
+// NewGoodsServiceClient 链接购物车 grpc
+func NewGoodsServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) goodsV1.GoodsClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Cart.Endpoint),
+		grpc.WithDiscovery(rr),
+		grpc.WithMiddleware(
+			tracing.Client(),
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := goodsV1.NewGoodsClient(conn)
+	return c
+}
+
 func NewDiscovery(conf *conf.Registry) registry.Discovery {
 	c := consulAPI.DefaultConfig()
 	c.Address = conf.Consul.Address

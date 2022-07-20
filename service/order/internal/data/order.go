@@ -4,7 +4,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	userService "order/api/user/v1"
 	"order/internal/biz"
 	"order/internal/domain"
 	"time"
@@ -66,23 +65,5 @@ func (p *Order) ToDomain() *domain.Order {
 }
 
 func (o *orderRepo) GetAddressByID(c context.Context, id, uid int64) (*domain.OrderAddress, error) {
-	user, err := o.data.userRPC.GetAddress(c, &userService.AddressReq{
-		Id:  id,
-		Uid: uid,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	return &domain.OrderAddress{
-		ID:              user.Id,
-		User:            uid,
-		RecipientName:   user.Name,
-		RecipientMobile: user.Mobile,
-		Province:        user.Province,
-		City:            user.City,
-		Districts:       user.Districts,
-		Address:         user.Address,
-		PostCode:        user.PostCode,
-	}, nil
+	return &domain.OrderAddress{}, nil
 }
