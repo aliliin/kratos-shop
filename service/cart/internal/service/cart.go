@@ -54,8 +54,7 @@ func (s *CartService) ListCart(ctx context.Context, req *v1.ListCartRequest) (*v
 	}
 	var rsp v1.CartListReply
 
-	rsp.Total = res.Total
-	for _, cart := range res.List {
+	for _, cart := range res {
 		rsp.Results = append(rsp.Results, &v1.CartInfoReply{
 			Id:         cart.ID,
 			UserId:     cart.UserId,

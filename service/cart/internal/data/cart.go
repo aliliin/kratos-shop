@@ -76,17 +76,16 @@ func (r *cartRepo) Create(ctx context.Context, c *domain.ShopCart) (*domain.Shop
 	return shopCart.ToDomain(), nil
 }
 
-func (r *cartRepo) List(ctx context.Context, userId int64) (*domain.ShopCartList, error) {
+func (r *cartRepo) List(ctx context.Context, userId int64) (domain.ShopCartList, error) {
 	var shopCarts []ShopCart
 	if result := r.data.db.Where(&ShopCart{UserId: userId}).Find(&shopCarts); result.Error != nil {
 		return nil, errors.InternalServer("SELECT_CART_ERROR", "用户购物车列表查询失败")
 	} else {
 		var rsp domain.ShopCartList
-		rsp.Total = int32(result.RowsAffected)
 
 		for _, cart := range shopCarts {
-			rsp.List = append(rsp.List, cart.ToDomain())
+			rsp = append(rsp, cart.ToDomain())
 		}
-		return &rsp, nil
+		return rsp, nil
 	}
 }
