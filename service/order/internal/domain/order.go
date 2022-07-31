@@ -25,7 +25,7 @@ type Order struct {
 type CreateOrder struct {
 	UserId    int64
 	AddressId int64
-	CartItem  []*CartItem
+	CartItem  CartItemList
 }
 
 type CartItem struct {
@@ -33,4 +33,23 @@ type CartItem struct {
 	SkuId    int64
 	SkuPrice int64
 	SkuNum   int32
+}
+
+type CartItemList []*CartItem
+
+func (p CartItemList) FindById(id int64) *CartItem {
+	for _, item := range p {
+		if item.CartId == id {
+			return item
+		}
+	}
+	return nil
+}
+
+func (p CartItemList) SkuId() []int64 {
+	var l []int64
+	for _, item := range p {
+		l = append(l, item.SkuId)
+	}
+	return l
 }

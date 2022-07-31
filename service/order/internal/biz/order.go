@@ -44,8 +44,14 @@ func (oc *OrderUsecase) CreateOrder(ctx context.Context, order *domain.CreateOrd
 			fmt.Println(err)
 		}
 
+		if len(cartList.Results) != len(order.CartItem) {
+			fmt.Println(err)
+		}
+
 		for _, cart := range cartList.Results {
-			cart.Id == order.CartItem.Id
+			if ci := order.CartItem.FindById(cart.Id); ci == nil {
+				fmt.Println(err)
+			}
 		}
 
 		for _, item := range order.CartItem {
