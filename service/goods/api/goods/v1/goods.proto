@@ -42,6 +42,9 @@ service Goods {
   //  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
   //  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
   //  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+
+  // Sku
+  rpc SkuList(SkuListRequest) returns(SkuListResponse);
 }
 
 message AttrValueRequest {
@@ -306,4 +309,13 @@ message BrandInfoResponse {
 message BrandListResponse {
   int32 total = 1;
   repeated BrandInfoResponse data = 2;
+}
+
+
+message SkuListRequest{
+  repeated int64 id = 1;
+}
+
+message SkuListResponse {
+
 }

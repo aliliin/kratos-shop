@@ -36,7 +36,7 @@ func NewOrderUsecase(repo OrderRepo, userRPC userV1.UserClient, cartRPC cartV1.C
 }
 
 func (oc *OrderUsecase) CreateOrder(ctx context.Context, order *domain.CreateOrder) {
-	// 跨服务（购物车购买）查询商品信息
+	// 跨服务（购物车)查询购物车信息
 	{
 		// 已选中，根据用户ID，查询这个用户的所有已经选中的购物车商品
 		cartList, err := oc.cartRPC.ListCart(ctx, &cartV1.ListCartRequest{UserId: order.UserId})
@@ -44,25 +44,28 @@ func (oc *OrderUsecase) CreateOrder(ctx context.Context, order *domain.CreateOrd
 			fmt.Println(err)
 		}
 
+		// 判断购物车的数量跟用户提交数量是否一致
 		if len(cartList.Results) != len(order.CartItem) {
 			fmt.Println(err)
 		}
 
+		// 判断购物车是否真实存在
 		for _, cart := range cartList.Results {
 			if ci := order.CartItem.FindById(cart.Id); ci == nil {
 				fmt.Println(err)
 			}
 		}
+	}
 
-		for _, item := range order.CartItem {
-			fmt.Println(item.CartId)
-			fmt.Println()
-			fmt.Println(item.SkuId)
-		}
+	{
+		// 跨服务（商品服务）查询商品信息
 
 		// 商品ID，去查询商品对比价格
-		// 商品里面价格对不上，就返回价格已经更改
+		skuIds := order.CartItem.GetSkuId()
+		cartList, err := oc.goodsRPC.SkuList(ctx, &goodsV1.SkuIds{UserId: order.UserId})
+
 	}
+
 	// 跨服务 查询用户收货地址
 	{
 		address, err := oc.userRPC.GetAddress(ctx, &userV1.AddressReq{

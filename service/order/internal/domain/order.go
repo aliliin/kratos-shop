@@ -46,7 +46,7 @@ func (p CartItemList) FindById(id int64) *CartItem {
 	return nil
 }
 
-func (p CartItemList) SkuId() []int64 {
+func (p CartItemList) GetSkuId() []int64 {
 	var l []int64
 	for _, item := range p {
 		l = append(l, item.SkuId)
