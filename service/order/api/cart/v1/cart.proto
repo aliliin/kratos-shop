@@ -57,6 +57,5 @@ message ListCartRequest {
   int64 userId = 1;
 }
 message CartListReply {
-  int32 total = 1;
   repeated CartInfoReply results = 2;
 }

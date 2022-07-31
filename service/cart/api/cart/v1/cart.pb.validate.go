@@ -1178,8 +1178,6 @@ func (m *CartListReply) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Total
-
 	for idx, item := range m.GetResults() {
 		_, _ = idx, item
 

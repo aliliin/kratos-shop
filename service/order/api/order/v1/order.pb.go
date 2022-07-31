@@ -100,7 +100,7 @@ type OrderRequest struct {
 	Id       int64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId   int64       `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
 	Address  int64       `protobuf:"varint,3,opt,name=address,proto3" json:"address,omitempty"`
-	CartItem []*CartItem `protobuf:"bytes,4,rep,name=cartItem,proto3" json:"cartItem,omitempty"` //  购物车购买或直接购买
+	CartItem []*CartItem `protobuf:"bytes,4,rep,name=cartItem,proto3" json:"cartItem,omitempty"` //  购物车购买
 }
 
 func (x *OrderRequest) Reset() {
