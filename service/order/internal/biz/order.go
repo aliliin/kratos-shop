@@ -39,9 +39,12 @@ func (oc *OrderUsecase) CreateOrder(ctx context.Context, order *domain.CreateOrd
 	// 跨服务（购物车购买）查询商品信息
 	{
 		// 已选中，根据用户ID，查询这个用户的所有已经选中的购物车商品
-		//cartList, err := oc.cartRPC.ListCart(ctx, &cartV1.ListCartRequest{UserId: order.UserId})
-		//bytes.Compare()
+		cartList, err := oc.cartRPC.ListCart(ctx, &cartV1.ListCartRequest{UserId: order.UserId})
 
+		for i, i2 := range cartList {
+			fmt.Println(i)
+			fmt.Println(i2)
+		}
 		for _, item := range order.CartItem {
 			fmt.Println(item.CartId)
 			fmt.Println()

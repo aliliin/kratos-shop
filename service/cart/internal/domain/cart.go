@@ -12,7 +12,19 @@ type ShopCart struct {
 	IsSelect   bool
 }
 
+type ShopCarts []*ShopCart
+
 type ShopCartList struct {
 	Total int32
 	List  []*ShopCart
+}
+
+func (p ShopCarts) SelectedLists() []*ShopCart {
+	var list []*ShopCart
+	for _, cart := range p {
+		if cart.IsSelect == true {
+			list = append(list, cart)
+		}
+	}
+	return list
 }
