@@ -1,34 +1,34 @@
-package data_test
+package repo_test
 
 import (
 	"context"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"order/internal/conf"
-	"order/internal/data"
+	"order/internal/repo"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-// 测试 data 方法
+// 测试 repo 方法
 func TestData(t *testing.T) {
 	//  Ginkgo 测试通过调用 Fail(description string) 功能来表示失败
 	// 使用 RegisterFailHandler 将此函数传递给 Gomega 。这是 Ginkgo 和 Gomega 之间的唯一连接点
 	RegisterFailHandler(Fail)
 	// 通知 Ginkgo 启动测试套件。如果您的任何 specs 失败，Ginkgo 将自动使 testing.T 失败。
-	RunSpecs(t, "biz data test s")
+	RunSpecs(t, "usecase repo test s")
 }
 
 var cleaner func()      // 定义删除 mysql 容器的回调函数
-var Db *data.Data       // 用于测试的 data
+var Db *repo.Data       // 用于测试的 repo
 var ctx context.Context // 上下文
 
 // initialize  AutoMigrate gorm自动建表
 func initialize(db *gorm.DB) error {
 	err := db.AutoMigrate(
-		&data.Order{},
+		&repo.Order{},
 	)
 	return errors.WithStack(err)
 }
@@ -36,12 +36,12 @@ func initialize(db *gorm.DB) error {
 // ginkgo 使用 BeforeEach 为您的 Specs 设置状态
 var _ = BeforeSuite(func() {
 	// 执行测试数据库操作之前，链接之前 docker 容器创建的 mysql
-	//con, f := data.DockerMysql("mysql", "latest")
-	con, f := data.DockerMysql("mariadb", "latest")
+	//con, f := repo.DockerMysql("mysql", "latest")
+	con, f := repo.DockerMysql("mariadb", "latest")
 	cleaner = f // 测试完成，关闭容器的回调方法
 	config := &conf.Data{Database: &conf.Data_Database{Driver: "mysql", Source: con}}
-	db := data.NewDB(config)
-	mySQLDb, _, err := data.NewData(config, nil, db, nil)
+	db := repo.NewDB(config)
+	mySQLDb, _, err := repo.NewData(config, nil, db, nil)
 	if err != nil {
 		return
 	}

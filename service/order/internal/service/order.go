@@ -4,18 +4,18 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	v1 "order/api/order/v1"
-	"order/internal/biz"
 	"order/internal/domain"
+	"order/internal/usecase"
 )
 
 type OrderService struct {
 	v1.UnimplementedOrderServer
 
-	oc  *biz.OrderUsecase
+	oc  *usecase.OrderUsecase
 	log *log.Helper
 }
 
-func NewOrderService(o *biz.OrderUsecase, logger log.Logger) *OrderService {
+func NewOrderService(o *usecase.OrderUsecase, logger log.Logger) *OrderService {
 	return &OrderService{oc: o, log: log.NewHelper(logger)}
 }
 

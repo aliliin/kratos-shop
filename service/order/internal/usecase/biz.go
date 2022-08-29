@@ -1,4 +1,4 @@
-package biz
+package usecase
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/wire"
 )
 
-// ProviderSet is biz providers.
+// ProviderSet is usecase providers.
 var ProviderSet = wire.NewSet(NewOrderUsecase)
 
 type Transaction interface {

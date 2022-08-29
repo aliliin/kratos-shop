@@ -1,8 +1,7 @@
-package data
+package repo
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	"order/internal/biz"
 	"order/internal/domain"
 	"time"
 )
@@ -35,7 +34,7 @@ type orderAddressRepo struct {
 }
 
 // NewOrderAddressRepo .
-func NewOrderAddressRepo(data *Data, logger log.Logger) biz.OrderRepo {
+func NewOrderAddressRepo(data *Data, logger log.Logger) OrderRepo {
 	return &orderRepo{
 		data: data,
 		log:  log.NewHelper(logger),

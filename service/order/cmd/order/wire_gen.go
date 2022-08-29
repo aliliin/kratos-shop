@@ -9,29 +9,29 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"order/internal/biz"
 	"order/internal/conf"
-	"order/internal/data"
+	"order/internal/repo"
 	"order/internal/server"
 	"order/internal/service"
+	"order/internal/usecase"
 )
 
 // Injectors from wire.go:
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger) (*kratos.App, func(), error) {
-	db := data.NewDB(confData)
-	client := data.NewRedis(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client)
+	db := repo.NewDB(confData)
+	client := repo.NewRedis(confData)
+	dataData, cleanup, err := repo.NewData(confData, logger, db, client)
 	if err != nil {
 		return nil, nil, err
 	}
-	orderRepo := data.NewOrderRepo(dataData, logger)
-	discovery := data.NewDiscovery(registry)
-	userClient := data.NewUserServiceClient(auth, confService, discovery)
-	cartClient := data.NewCartServiceClient(auth, confService, discovery)
-	goodsClient := data.NewGoodsServiceClient(auth, confService, discovery)
-	orderUsecase := biz.NewOrderUsecase(orderRepo, userClient, cartClient, goodsClient, logger)
+	orderRepo := repo.NewOrderRepo(dataData, logger)
+	discovery := repo.NewDiscovery(registry)
+	userClient := repo.NewUserServiceClient(auth, confService, discovery)
+	cartClient := repo.NewCartServiceClient(auth, confService, discovery)
+	goodsClient := repo.NewGoodsServiceClient(auth, confService, discovery)
+	orderUsecase := usecase.NewOrderUsecase(orderRepo, userClient, cartClient, goodsClient, logger)
 	orderService := service.NewOrderService(orderUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, orderService, logger)
 	registrar := server.NewRegistrar(registry)
