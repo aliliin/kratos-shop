@@ -1,4 +1,4 @@
-package repo
+package data
 
 import (
 	"database/sql"

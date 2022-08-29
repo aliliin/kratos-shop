@@ -1,4 +1,4 @@
-package repo
+package data
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 	consulAPI "github.com/hashicorp/consul/api"
 	grpcx "google.golang.org/grpc"
 	slog "log"
+	"order/internal/biz"
 	"order/internal/conf"
-	"order/internal/usecase"
 	"os"
 	"time"
 
@@ -28,7 +28,7 @@ import (
 	userV1 "order/api/user/v1"
 )
 
-// ProviderSet is repo providers.
+// ProviderSet is data providers.
 var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewOrderRepo, NewUserServiceClient,
 	NewCartServiceClient, NewGoodsServiceClient, NewDiscovery)
 
@@ -41,12 +41,12 @@ type contextTxKey struct{}
 // NewData .
 func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
 	cleanup := func() {
-		log.NewHelper(logger).Info("closing the repo resources")
+		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{db: db, rdb: rdb}, cleanup, nil
 }
 
-func NewTransaction(d *Data) usecase.Transaction {
+func NewTransaction(d *Data) biz.Transaction {
 	return d
 }
 

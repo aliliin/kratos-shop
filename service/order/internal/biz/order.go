@@ -1,4 +1,4 @@
-package usecase
+package biz
 
 import (
 	"context"
@@ -8,20 +8,22 @@ import (
 	goodsV1 "order/api/goods/v1"
 	userV1 "order/api/user/v1"
 	"order/internal/domain"
-	"order/internal/repo"
 )
 
 //go:generate mockgen -destination=../mocks/mrepo/order.go -package=mrepo . OrderRepo
+type OrderRepo interface {
+	GetAddressByID(ctx context.Context, aid int64, userId int64) (*domain.OrderAddress, error)
+}
 
 type OrderUsecase struct {
-	repo     repo.OrderRepo
+	repo     OrderRepo
 	userRPC  userV1.UserClient
 	cartRPC  cartV1.CartClient
 	goodsRPC goodsV1.GoodsClient
 	log      *log.Helper
 }
 
-func NewOrderUsecase(repo repo.OrderRepo, userRPC userV1.UserClient, cartRPC cartV1.CartClient, goodsRPC goodsV1.GoodsClient,
+func NewOrderUsecase(repo OrderRepo, userRPC userV1.UserClient, cartRPC cartV1.CartClient, goodsRPC goodsV1.GoodsClient,
 	logger log.Logger) *OrderUsecase {
 
 	return &OrderUsecase{

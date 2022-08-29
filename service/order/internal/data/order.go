@@ -1,10 +1,10 @@
-package repo
+package data
 
 import (
-	context2 "context"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"order/internal/biz"
 	"order/internal/domain"
 	"time"
 )
@@ -31,6 +31,19 @@ func (Order) TableName() string {
 	return "orders"
 }
 
+type orderRepo struct {
+	data *Data
+	log  *log.Helper
+}
+
+// NewOrderRepo .
+func NewOrderRepo(data *Data, logger log.Logger) biz.OrderRepo {
+	return &orderRepo{
+		data: data,
+		log:  log.NewHelper(logger),
+	}
+}
+
 func (p *Order) ToDomain() *domain.Order {
 	return &domain.Order{
 		ID:           0,
@@ -48,24 +61,6 @@ func (p *Order) ToDomain() *domain.Order {
 		CreatedAt:    time.Time{},
 		UpdatedAt:    time.Time{},
 		DeletedAt:    time.Time{},
-	}
-}
-
-//go:generate mockgen -destination=../mocks/mrepo/order.go -package=mrepo . OrderRepo
-type OrderRepo interface {
-	GetAddressByID(ctx context2.Context, aid int64, userId int64) (*domain.OrderAddress, error)
-}
-
-type orderRepo struct {
-	data *Data
-	log  *log.Helper
-}
-
-// NewOrderRepo .
-func NewOrderRepo(data *Data, logger log.Logger) OrderRepo {
-	return &orderRepo{
-		data: data,
-		log:  log.NewHelper(logger),
 	}
 }
 
